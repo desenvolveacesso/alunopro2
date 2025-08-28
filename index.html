@@ -3,44 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Acadêmico Universitário</title>
+    <title>Controle Acadêmico Universitário - Direito</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
+            --primary: #1a3a6c;
+            --secondary: #2d5b8f;
+            --accent: #9d7b5f;
             --light: #f8f9fa;
             --dark: #212529;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --light-accent: #e9e1d9;
+            --text-dark: #333;
+            --text-light: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
         body {
             background-color: #f5f7fb;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav-item {
+            margin: 5px 15px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link {
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-link i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 1.1rem;
         }
 
         .main-content {
-            padding: 20px;
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            transition: var(--transition);
         }
-        
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-accent);
+        }
+
         .card-link {
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
             color: var(--dark);
+            border: none;
+            height: 100%;
+            background: white;
         }
 
         .card-link:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
         .card-link .card-body {
             display: flex;
             align-items: center;
             justify-content: flex-start;
+            padding: 20px;
         }
 
         .card-link .icon-wrapper {
@@ -58,42 +156,96 @@
 
         .card-link h5 {
             margin-bottom: 0;
-            font-weight: bold;
+            font-weight: 600;
         }
 
         .content-panel {
             display: none;
-            margin-top: 2rem;
+            animation: fadeIn 0.3s ease;
         }
         
         .content-panel.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .card-dashboard {
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            background: white;
+            height: 100%;
         }
         
         .card-dashboard:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
         
-        .progress { height: 10px; border-radius: 5px; }
+        .card-dashboard .card-body {
+            padding: 1.5rem;
+        }
         
-        .event-calendar { background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
+        .progress { 
+            height: 10px; 
+            border-radius: 5px; 
+            background-color: #e9ecef;
+        }
         
-        .calendar-day { text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
-        .calendar-day:not(.empty):hover { background-color: #e9ecef; }
-        .calendar-day.has-event { background-color: rgba(67, 97, 238, 0.1); color: var(--primary); font-weight: bold; }
-        .calendar-day.current { background-color: var(--primary); color: white; }
+        .event-calendar { 
+            background-color: white; 
+            border-radius: 12px; 
+            padding: 20px; 
+            box-shadow: var(--shadow);
+        }
         
-        .badge-priority { padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; color: white; }
-        .priority-high { background-color: #ff6b6b; }
-        .priority-medium { background-color: #ffd166; color: #333; }
-        .priority-low { background-color: #06d6a0; }
+        .calendar-day { 
+            text-align: center; 
+            padding: 10px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: background-color 0.2s; 
+        }
+        
+        .calendar-day:not(.empty):hover { 
+            background-color: #e9ecef; 
+        }
+        
+        .calendar-day.has-event { 
+            background-color: rgba(26, 58, 108, 0.1); 
+            color: var(--primary); 
+            font-weight: bold; 
+        }
+        
+        .calendar-day.current { 
+            background-color: var(--primary); 
+            color: white; 
+        }
+        
+        .badge-priority { 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            font-size: 0.7rem; 
+            color: white; 
+        }
+        
+        .priority-high { 
+            background-color: var(--danger); 
+        }
+        
+        .priority-medium { 
+            background-color: var(--warning); 
+            color: #333; 
+        }
+        
+        .priority-low { 
+            background-color: var(--success); 
+        }
 
         .avg-grade-badge {
             font-size: 1.25rem;
@@ -104,26 +256,35 @@
 
         .schedule-grid {
             display: grid;
-            grid-template-columns: 50px repeat(5, 1fr);
-            gap: 5px;
+            grid-template-columns: 60px repeat(5, 1fr);
+            gap: 8px;
         }
 
         .schedule-header, .schedule-time, .schedule-cell {
-            padding: 10px;
+            padding: 12px;
             text-align: center;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
 
         .schedule-header {
             font-weight: bold;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .schedule-time {
+            background-color: var(--light-accent);
+            font-weight: 500;
         }
 
         .schedule-cell {
-            background-color: #e9ecef;
+            background-color: #f8f9fa;
             border: 1px solid #dee2e6;
-            min-height: 80px;
+            min-height: 90px;
             position: relative;
         }
+        
         .schedule-cell.has-class {
             background-color: var(--primary);
             color: white;
@@ -137,205 +298,627 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: var(--primary);
+            border-top: none;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .stats-card {
+            display: flex;
+            align-items: center;
+        }
+        
+        .stats-card i {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        
+        .stats-info {
+            margin-left: 15px;
+        }
+        
+        .stats-info h4 {
+            margin-bottom: 0;
+            font-weight: 700;
+        }
+        
+        .stats-info p {
+            margin-bottom: 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                bottom: 0;
+                z-index: 1000;
+                padding: 10px 0;
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+            
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 10px;
+            }
+            
+            .nav-item {
+                margin: 0 5px;
+                flex-shrink: 0;
+            }
+            
+            .nav-link {
+                flex-direction: column;
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+            
+            .nav-link i {
+                margin-right: 0;
+                margin-bottom: 5px;
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                padding: 20px 15px 80px;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 40px repeat(5, 1fr);
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .content-header .btn-group {
+                margin-top: 15px;
+                align-self: flex-end;
+            }
+            
+            .card-link .card-body {
+                padding: 15px;
+            }
+            
+            .card-link .icon-wrapper {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .stats-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-info {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+
+        /* Toggle sidebar para mobile */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .sidebar {
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <main class="main-content">
-                <div id="home-links" class="content-panel">
-                    <h2 class="mb-4">Controle Acadêmico Universitário</h2>
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="dashboard">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-primary"><i class="fas fa-home fa-2x"></i></div>
-                                    <h5>Dashboard</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="disciplinas">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-success"><i class="fas fa-tasks fa-2x"></i></div>
-                                    <h5>Disciplinas</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="trabalhos">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-info"><i class="fas fa-clipboard-list fa-2x"></i></div>
-                                    <h5>Trabalhos</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="provas">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-warning"><i class="fas fa-file-alt fa-2x"></i></div>
-                                    <h5>Provas</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="agenda">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-danger"><i class="fas fa-calendar-alt fa-2x"></i></div>
-                                    <h5>Agenda</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="quadro-horarios">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-secondary"><i class="fas fa-calendar-week fa-2x"></i></div>
-                                    <h5>Quadro de Horários</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="horas">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-dark"><i class="fas fa-clock fa-2x"></i></div>
-                                    <h5>Horas Complementares</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a class="card card-link h-100" data-target="config">
-                                <div class="card-body">
-                                    <div class="icon-wrapper bg-light text-dark"><i class="fas fa-cog fa-2x"></i></div>
-                                    <h5>Configurações</h5>
-                                </div>
-                            </a>
-                        </div>
+    <div class="app-container">
+        <!-- Sidebar com navegação -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Lex Academica</div>
+                <div class="sidebar-subtitle">Controle Acadêmico Jurídico</div>
+            </div>
+            <nav>
+                <div class="nav-menu">
+                    <div class="nav-item">
+                        <a class="nav-link active" href="#" data-target="home-links">
+                            <i class="fas fa-home"></i>
+                            <span>Início</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="dashboard">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="disciplinas">
+                            <i class="fas fa-book"></i>
+                            <span>Disciplinas</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="trabalhos">
+                            <i class="fas fa-tasks"></i>
+                            <span>Trabalhos</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="provas">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Provas</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="agenda">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Agenda</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="quadro-horarios">
+                            <i class="fas fa-calendar-week"></i>
+                            <span>Horários</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="horas">
+                            <i class="fas fa-clock"></i>
+                            <span>Horas Complementares</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="config">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                        </a>
                     </div>
                 </div>
+            </nav>
+        </aside>
 
-                <div id="dashboard" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Dashboard</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="fas fa-plus me-1"></i> Nova Tarefa</button>
-                        </div>
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Painel Inicial com Cards -->
+            <div id="home-links" class="content-panel active">
+                <div class="content-header">
+                    <h2>Controle Acadêmico Jurídico</h2>
+                    <div>
+                        <span class="badge bg-primary">Direito</span>
+                        <span class="badge bg-secondary">Acadêmico</span>
                     </div>
-                    <div class="row">
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard"><div class="card-body"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="text-muted mb-1">Trabalhos Pendentes</p><h4 class="mb-0" id="pendingAssignments">0</h4></div><div class="flex-shrink-0"><i class="fas fa-clipboard-list fa-2x text-primary"></i></div></div></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard"><div class="card-body"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="text-muted mb-1">Próximas Provas</p><h4 class="mb-0" id="upcomingExams">0</h4></div><div class="flex-shrink-0"><i class="fas fa-file-alt fa-2x text-success"></i></div></div></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard"><div class="card-body"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="text-muted mb-1">Horas Complementares</p><h4 class="mb-0" id="complementaryHours">0/0h</h4></div><div class="flex-shrink-0"><i class="fas fa-clock fa-2x text-warning"></i></div></div><div class="progress mt-3"><div class="progress-bar" id="hoursProgressBar" role="progressbar" style="width: 0%" aria-valuenow="0"></div></div></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard"><div class="card-body"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="text-muted mb-1">Média Geral</p><h4 class="mb-0" id="generalAverage">N/A</h4></div><div class="flex-shrink-0"><i class="fas fa-chart-line fa-2x text-info"></i></div></div></div></div></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-8 mb-4"><div class="card card-dashboard"><div class="card-header bg-white"><h5 class="card-title mb-0">Próximas Atividades</h5></div><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Atividade</th><th>Disciplina</th><th>Data</th><th>Prioridade</th><th>Ações</th></tr></thead><tbody id="tasksTableBody"></tbody></table></div></div></div></div>
-                        <div class="col-lg-4 mb-4"><div class="event-calendar"><div class="d-flex justify-content-between align-items-center mb-3"><h5 id="calendarMonthYear"></h5><div><button id="prevMonth" class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-chevron-left"></i></button><button id="nextMonth" class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button></div></div><div class="row mb-2 text-center"><div class="col"><small>D</small></div><div class="col"><small>S</small></div><div class="col"><small>T</small></div><div class="col"><small>Q</small></div><div class="col"><small>Q</small></div><div class="col"><small>S</small></div><div class="col"><small>S</small></div></div><div id="calendarDays" class="row"></div></div></div>
-                    </div>
-                </div>
-
-                <div id="disciplinas" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Minhas Disciplinas</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subjectModal"><i class="fas fa-plus me-1"></i> Nova Disciplina</button>
-                        </div>
-                    </div>
-                    <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Nome</th><th>Professor</th><th>Média</th><th>Ações</th></tr></thead><tbody id="subjectsTableBody"></tbody></table></div></div></div>
-                </div>
-
-                <div id="trabalhos" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Meus Trabalhos</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal"><i class="fas fa-plus me-1"></i> Novo Trabalho</button>
-                        </div>
-                    </div>
-                    <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Trabalho</th><th>Disciplina</th><th>Nota</th><th>Data de Entrega</th><th>Status</th><th>Ações</th></tr></thead><tbody id="assignmentsTableBody"></tbody></table></div></div></div>
                 </div>
                 
-                <div id="provas" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Minhas Provas</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examModal"><i class="fas fa-plus me-1"></i> Nova Prova</button>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    <div class="col">
+                        <div class="card card-link" data-target="dashboard">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-primary"><i class="fas fa-chart-line fa-2x"></i></div>
+                                <h5>Dashboard</h5>
+                            </div>
                         </div>
                     </div>
-                    <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Prova</th><th>Disciplina</th><th>Nota</th><th>Data da Prova</th><th>Ações</th></tr></thead><tbody id="examsTableBody"></tbody></table></div></div></div>
-                </div>
-
-                <div id="agenda" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Minha Agenda</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"><i class="fas fa-plus me-1"></i> Novo Evento</button>
+                    <div class="col">
+                        <div class="card card-link" data-target="disciplinas">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-success"><i class="fas fa-book fa-2x"></i></div>
+                                <h5>Disciplinas</h5>
+                            </div>
                         </div>
                     </div>
-                    <div class="card card-dashboard">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Título</th>
-                                            <th>Data e Hora</th>
-                                            <th>Descrição</th>
-                                            <th>Prioridade</th>
-                                            <th>Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="eventsTableBody">
-                                        </tbody>
-                                </table>
+                    <div class="col">
+                        <div class="card card-link" data-target="trabalhos">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-info"><i class="fas fa-tasks fa-2x"></i></div>
+                                <h5>Trabalhos</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card card-link" data-target="provas">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-warning"><i class="fas fa-file-alt fa-2x"></i></div>
+                                <h5>Provas</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card card-link" data-target="agenda">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-danger"><i class="fas fa-calendar-alt fa-2x"></i></div>
+                                <h5>Agenda</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card card-link" data-target="quadro-horarios">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-secondary"><i class="fas fa-calendar-week fa-2x"></i></div>
+                                <h5>Quadro de Horários</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card card-link" data-target="horas">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-dark"><i class="fas fa-clock fa-2x"></i></div>
+                                <h5>Horas Complementares</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card card-link" data-target="config">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-light text-dark"><i class="fas fa-cog fa-2x"></i></div>
+                                <h5>Configurações</h5>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div id="quadro-horarios" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Quadro de Horários</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button>
+            <!-- Dashboard -->
+            <div id="dashboard" class="content-panel">
+                <div class="content-header">
+                    <h2>Dashboard Acadêmico</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="fas fa-plus me-1"></i> Nova Tarefa</button>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <div class="stats-card">
+                                    <i class="fas fa-clipboard-list text-primary"></i>
+                                    <div class="stats-info">
+                                        <p class="text-muted mb-1">Trabalhos Pendentes</p>
+                                        <h4 class="mb-0" id="pendingAssignments">0</h4>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card card-dashboard">
-                        <div class="card-body">
-                            <div class="schedule-grid" id="scheduleGrid">
-                                <div class="schedule-header"></div>
-                                <div class="schedule-header">Segunda</div>
-                                <div class="schedule-header">Terça</div>
-                                <div class="schedule-header">Quarta</div>
-                                <div class="schedule-header">Quinta</div>
-                                <div class="schedule-header">Sexta</div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <div class="stats-card">
+                                    <i class="fas fa-file-alt text-success"></i>
+                                    <div class="stats-info">
+                                        <p class="text-muted mb-1">Próximas Provas</p>
+                                        <h4 class="mb-0" id="upcomingExams">0</h4>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <div class="stats-card">
+                                    <i class="fas fa-clock text-warning"></i>
+                                    <div class="stats-info">
+                                        <p class="text-muted mb-1">Horas Complementares</p>
+                                        <h4 class="mb-0" id="complementaryHours">0/0h</h4>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3">
+                                    <div class="progress-bar" id="hoursProgressBar" role="progressbar" style="width: 0%" aria-valuenow="0"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <div class="stats-card">
+                                    <i class="fas fa-chart-line text-info"></i>
+                                    <div class="stats-info">
+                                        <p class="text-muted mb-1">Média Geral</p>
+                                        <h4 class="mb-0" id="generalAverage">N/A</h4>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div id="horas" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Horas Complementares</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button>
+                <div class="row">
+                    <div class="col-lg-8 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">Próximas Atividades</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Atividade</th>
+                                                <th>Disciplina</th>
+                                                <th>Data</th>
+                                                <th>Prioridade</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tasksTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Atividade</th><th>Horas</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="hoursTableBody"></tbody></table></div></div></div>
+                    
+                    <div class="col-lg-4 mb-4">
+                        <div class="event-calendar">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 id="calendarMonthYear"></h5>
+                                <div>
+                                    <button id="prevMonth" class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-chevron-left"></i></button>
+                                    <button id="nextMonth" class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="row mb-2 text-center">
+                                <div class="col"><small>D</small></div>
+                                <div class="col"><small>S</small></div>
+                                <div class="col"><small>T</small></div>
+                                <div class="col"><small>Q</small></div>
+                                <div class="col"><small>Q</small></div>
+                                <div class="col"><small>S</small></div>
+                                <div class="col"><small>S</small></div>
+                            </div>
+                            <div id="calendarDays" class="row"></div>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div id="config" class="content-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Configurações</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+            <!-- Disciplinas -->
+            <div id="disciplinas" class="content-panel">
+                <div class="content-header">
+                    <h2>Minhas Disciplinas</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subjectModal"><i class="fas fa-plus me-1"></i> Nova Disciplina</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Professor</th>
+                                        <th>Média</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectsTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="card card-dashboard mb-4"><div class="card-body">
+                </div>
+            </div>
+
+            <!-- Trabalhos -->
+            <div id="trabalhos" class="content-panel">
+                <div class="content-header">
+                    <h2>Meus Trabalhos</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal"><i class="fas fa-plus me-1"></i> Novo Trabalho</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Trabalho</th>
+                                        <th>Disciplina</th>
+                                        <th>Nota</th>
+                                        <th>Data de Entrega</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assignmentsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Provas -->
+            <div id="provas" class="content-panel">
+                <div class="content-header">
+                    <h2>Minhas Provas</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examModal"><i class="fas fa-plus me-1"></i> Nova Prova</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Prova</th>
+                                        <th>Disciplina</th>
+                                        <th>Nota</th>
+                                        <th>Data da Prova</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="examsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agenda -->
+            <div id="agenda" class="content-panel">
+                <div class="content-header">
+                    <h2>Minha Agenda</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"><i class="fas fa-plus me-1"></i> Novo Evento</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Data e Hora</th>
+                                        <th>Descrição</th>
+                                        <th>Prioridade</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eventsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quadro de Horários -->
+            <div id="quadro-horarios" class="content-panel">
+                <div class="content-header">
+                    <h2>Quadro de Horários</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard">
+                    <div class="card-body">
+                        <div class="schedule-grid" id="scheduleGrid"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Horas Complementares -->
+            <div id="horas" class="content-panel">
+                <div class="content-header">
+                    <h2>Horas Complementares</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Atividade</th>
+                                        <th>Horas</th>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hoursTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações -->
+            <div id="config" class="content-panel">
+                <div class="content-header">
+                    <h2>Configurações</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                    </div>
+                </div>
+                <div class="card card-dashboard mb-4">
+                    <div class="card-body">
                         <h5 class="card-title">Metas Acadêmicas</h5>
                         <form id="goalForm">
                             <div class="mb-3">
@@ -348,9 +931,11 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Salvar Metas</button>
                         </form>
-                    </div></div>
+                    </div>
+                </div>
 
-                    <div class="card card-dashboard"><div class="card-body">
+                <div class="card card-dashboard">
+                    <div class="card-body">
                         <h5 class="card-title">Backup de Dados</h5>
                         <p class="text-muted">Salve seus dados em um arquivo local ou carregue um backup existente.</p>
                         <div class="d-grid gap-2 d-md-block mb-3">
@@ -360,38 +945,268 @@
                             <input type="file" class="form-control" id="restoreFile" accept=".json">
                             <button id="restoreBtn" class="btn btn-warning"><i class="fas fa-upload me-1"></i> Carregar Backup</button>
                         </div>
-                    </div></div>
-
+                    </div>
                 </div>
-            </main>
+            </div>
+        </main>
+    </div>
+
+    <!-- Botão para toggle da sidebar em mobile -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Modais -->
+    <div class="modal fade" id="taskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalLabel">Nova Tarefa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm">
+                        <input type="hidden" id="taskId">
+                        <div class="mb-3">
+                            <label for="taskName" class="form-label">Nome da Atividade</label>
+                            <input type="text" class="form-control" id="taskName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskSubject" class="form-label">Disciplina</label>
+                            <select class="form-select" id="taskSubject" required>
+                                <option value="">Selecione a disciplina</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskDate" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="taskDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskPriority" class="form-label">Prioridade</label>
+                            <select class="form-select" id="taskPriority" required>
+                                <option value="low">Baixa</option>
+                                <option value="medium">Média</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskType" class="form-label">Tipo</label>
+                            <select class="form-select" id="taskType" required>
+                                <option value="assignment">Trabalho</option>
+                                <option value="exam">Prova</option>
+                                <option value="other">Outro</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="modal fade" id="taskModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="taskModalLabel">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="taskForm"><input type="hidden" id="taskId"><div class="mb-3"><label for="taskName" class="form-label">Nome da Atividade</label><input type="text" class="form-control" id="taskName" required></div><div class="mb-3"><label for="taskSubject" class="form-label">Disciplina</label><select class="form-select" id="taskSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="taskDate" class="form-label">Data</label><input type="date" class="form-control" id="taskDate" required></div><div class="mb-3"><label for="taskPriority" class="form-label">Prioridade</label><select class="form-select" id="taskPriority" required><option value="low">Baixa</option><option value="medium">Média</option><option value="high">Alta</option></select></div><div class="mb-3"><label for="taskType" class="form-label">Tipo</label><select class="form-select" id="taskType" required><option value="assignment">Trabalho</option><option value="exam">Prova</option><option value="other">Outro</option></select></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="subjectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subjectModalLabel">Nova Disciplina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="subjectForm">
+                        <input type="hidden" id="subjectId">
+                        <div class="mb-3">
+                            <label for="subjectName" class="form-label">Nome da Disciplina</label>
+                            <input type="text" class="form-control" id="subjectName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subjectProfessor" class="form-label">Professor</label>
+                            <input type="text" class="form-control" id="subjectProfessor" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal fade" id="subjectModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="subjectModalLabel">Nova Disciplina</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="subjectForm"><input type="hidden" id="subjectId"><div class="mb-3"><label for="subjectName" class="form-label">Nome da Disciplina</label><input type="text" class="form-control" id="subjectName" required></div><div class="mb-3"><label for="subjectProfessor" class="form-label">Professor</label><input type="text" class="form-control" id="subjectProfessor" required></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="assignmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignmentModalLabel">Novo Trabalho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="assignmentForm">
+                        <input type="hidden" id="assignmentId">
+                        <div class="mb-3">
+                            <label for="assignmentName" class="form-label">Nome do Trabalho</label>
+                            <input type="text" class="form-control" id="assignmentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignmentSubject" class="form-label">Disciplina</label>
+                            <select class="form-select" id="assignmentSubject" required>
+                                <option value="">Selecione a disciplina</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignmentDueDate" class="form-label">Data de Entrega</label>
+                            <input type="date" class="form-control" id="assignmentDueDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="assignmentDone">
+                                <label class="form-check-label" for="assignmentDone">Concluído</label>
+                            </div>
+                        </div>
+                        <div class="mb-3" id="assignmentGradeContainer">
+                            <label for="assignmentGrade" class="form-label">Nota</label>
+                            <input type="number" step="0.1" class="form-control" id="assignmentGrade" min="0" max="10">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal fade" id="assignmentModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="assignmentModalLabel">Novo Trabalho</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="assignmentForm"><input type="hidden" id="assignmentId"><div class="mb-3"><label for="assignmentName" class="form-label">Nome do Trabalho</label><input type="text" class="form-control" id="assignmentName" required></div><div class="mb-3"><label for="assignmentSubject" class="form-label">Disciplina</label><select class="form-select" id="assignmentSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="assignmentDueDate" class="form-label">Data de Entrega</label><input type="date" class="form-control" id="assignmentDueDate" required></div><div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentDone"><label class="form-check-label" for="assignmentDone">Concluído</label></div></div>
-                    <div class="mb-3" id="assignmentGradeContainer">
-                        <label for="assignmentGrade" class="form-label">Nota</label>
-                        <input type="number" step="0.1" class="form-control" id="assignmentGrade" min="0" max="10">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </form></div></div></div></div>
+    <div class="modal fade" id="examModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="examModalLabel">Nova Prova</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="examForm">
+                        <input type="hidden" id="examId">
+                        <div class="mb-3">
+                            <label for="examName" class="form-label">Nome da Prova</label>
+                            <input type="text" class="form-control" id="examName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="examSubject" class="form-label">Disciplina</label>
+                            <select class="form-select" id="examSubject" required>
+                                <option value="">Selecione a disciplina</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="examDate" class="form-label">Data da Prova</label>
+                            <input type="date" class="form-control" id="examDate" required>
+                        </div>
+                        <div class="mb-3" id="examGradeContainer">
+                            <label for="examGrade" class="form-label">Nota</label>
+                            <input type="number" step="0.1" class="form-control" id="examGrade" min="0" max="10">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal fade" id="examModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="examModalLabel">Nova Prova</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="examForm"><input type="hidden" id="examId"><div class="mb-3"><label for="examName" class="form-label">Nome da Prova</label><input type="text" class="form-control" id="examName" required></div><div class="mb-3"><label for="examSubject" class="form-label">Disciplina</label><select class="form-select" id="examSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="examDate" class="form-label">Data da Prova</label><input type="date" class="form-control" id="examDate" required></div>
-                    <div class="mb-3" id="examGradeContainer">
-                        <label for="examGrade" class="form-label">Nota</label>
-                        <input type="number" step="0.1" class="form-control" id="examGrade" min="0" max="10">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </form></div></div></div></div>
+    <div class="modal fade" id="hoursModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="hoursModalLabel">Nova Atividade Complementar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="hoursForm">
+                        <input type="hidden" id="hoursId">
+                        <div class="mb-3">
+                            <label for="hoursActivity" class="form-label">Atividade</label>
+                            <input type="text" class="form-control" id="hoursActivity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursAmount" class="form-label">Horas</label>
+                            <input type="number" class="form-control" id="hoursAmount" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursDate" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="hoursDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hoursApproved">
+                                <label class="form-check-label" for="hoursApproved">Aprovada</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal fade" id="hoursModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="hoursModalLabel">Nova Atividade Complementar</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="hoursForm"><input type="hidden" id="hoursId"><div class="mb-3"><label for="hoursActivity" class="form-label">Atividade</label><input type="text" class="form-control" id="hoursActivity" required></div><div class="mb-3"><label for="hoursAmount" class="form-label">Horas</label><input type="number" class="form-control" id="hoursAmount" required min="1"></div><div class="mb-3"><label for="hoursDate" class="form-label">Data</label><input type="date" class="form-control" id="hoursDate" required></div><div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="hoursApproved"><label class="form-check-label" for="hoursApproved">Aprovada</label></div></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Novo Evento na Agenda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <input type="hidden" id="eventId">
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Título do Evento</label>
+                            <input type="text" class="form-control" id="eventTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDateTime" class="form-label">Data e Hora</label>
+                            <input type="datetime-local" class="form-control" id="eventDateTime" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventPriority" class="form-label">Prioridade</label>
+                            <select class="form-select" id="eventPriority" required>
+                                <option value="low">Baixa</option>
+                                <option value="medium">Média</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal fade" id="eventModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="eventModalLabel">Novo Evento na Agenda</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="eventForm"><input type="hidden" id="eventId"><div class="mb-3"><label for="eventTitle" class="form-label">Título do Evento</label><input type="text" class="form-control" id="eventTitle" required></div><div class="mb-3"><label for="eventDateTime" class="form-label">Data e Hora</label><input type="datetime-local" class="form-control" id="eventDateTime" required></div><div class="mb-3"><label for="eventDescription" class="form-label">Descrição</label><textarea class="form-control" id="eventDescription" rows="3"></textarea></div><div class="mb-3"><label for="eventPriority" class="form-label">Prioridade</label><select class="form-select" id="eventPriority" required><option value="low">Baixa</option><option value="medium">Média</option><option value="high">Alta</option></select></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
-
-    <div class="modal fade" id="scheduleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="scheduleModalLabel">Nova Aula</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="scheduleForm"><input type="hidden" id="scheduleId"><div class="mb-3"><label for="scheduleSubject" class="form-label">Disciplina</label><select class="form-select" id="scheduleSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="scheduleProfessor" class="form-label">Professor</label><input type="text" class="form-control" id="scheduleProfessor"></div><div class="mb-3"><label for="scheduleDay" class="form-label">Dia da Semana</label><select class="form-select" id="scheduleDay" required><option value="1">Segunda-feira</option><option value="2">Terça-feira</option><option value="3">Quarta-feira</option><option value="4">Quinta-feira</option><option value="5">Sexta-feira</option></select></div>
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scheduleModalLabel">Nova Aula</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <input type="hidden" id="scheduleId">
+                        <div class="mb-3">
+                            <label for="scheduleSubject" class="form-label">Disciplina</label>
+                            <select class="form-select" id="scheduleSubject" required>
+                                <option value="">Selecione a disciplina</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleProfessor" class="form-label">Professor</label>
+                            <input type="text" class="form-control" id="scheduleProfessor">
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleDay" class="form-label">Dia da Semana</label>
+                            <select class="form-select" id="scheduleDay" required>
+                                <option value="1">Segunda-feira</option>
+                                <option value="2">Terça-feira</option>
+                                <option value="3">Quarta-feira</option>
+                                <option value="4">Quinta-feira</option>
+                                <option value="5">Sexta-feira</option>
+                            </select>
+                        </div>
                         <div class="row">
                             <div class="col-6 mb-3">
                                 <label for="scheduleStartTime" class="form-label">Hora de Início</label>
@@ -403,8 +1218,11 @@
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Salvar</button>
-                    </form></div></div></div></div>
-
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -426,35 +1244,67 @@
         };
 
         // =====================================================================
-        // Lógica de persistência de dados
+        // Lógica de persistência de dados - CORRIGIDA
         // =====================================================================
         const saveToLocalStorage = () => {
-            const dataToSave = { tasks, subjects, assignments, exams, events, schedule, complementaryHours, academicGoals };
+            const dataToSave = { 
+                tasks, subjects, assignments, exams, events, 
+                schedule, complementaryHours, academicGoals 
+            };
             localStorage.setItem('academicData', JSON.stringify(dataToSave));
         };
 
         const loadFromLocalStorage = () => {
             const storedData = localStorage.getItem('academicData');
             if (storedData) {
-                const data = JSON.parse(storedData);
-                tasks = data.tasks || [];
-                subjects = data.subjects || [];
-                assignments = data.assignments || [];
-                exams = data.exams || [];
-                events = data.events || [];
-                schedule = data.schedule || [];
-                complementaryHours = data.complementaryHours || [];
-                academicGoals = data.academicGoals || { totalHours: 200, requiredAvg: 7.0 };
+                try {
+                    const data = JSON.parse(storedData);
+                    tasks = data.tasks || [];
+                    subjects = data.subjects || [];
+                    assignments = data.assignments || [];
+                    exams = data.exams || [];
+                    events = data.events || [];
+                    schedule = data.schedule || [];
+                    complementaryHours = data.complementaryHours || [];
+                    academicGoals = data.academicGoals || { totalHours: 200, requiredAvg: 7.0 };
+                } catch (e) {
+                    console.error("Erro ao carregar dados:", e);
+                    // Inicializa com valores padrão se houver erro na leitura
+                    initializeDefaultData();
+                }
+            } else {
+                initializeDefaultData();
             }
         };
 
-        // Carrega os dados ao iniciar a aplicação (CORRIGIDO)
+        const initializeDefaultData = () => {
+            // Dados iniciais para demonstração
+            subjects = [
+                { id: 1, name: "Direito Civil I", professor: "Dr. Silva" },
+                { id: 2, name: "Direito Penal", professor: "Dra. Costa" },
+                { id: 3, name: "Direito Constitucional", professor: "Dr. Oliveira" }
+            ];
+            
+            tasks = [
+                { id: 1, name: "Resumo Capítulo 3", subject: "Direito Civil I", date: new Date().toISOString().split('T')[0], priority: "medium", type: "assignment" },
+                { id: 2, name: "Estudo Caso Penal", subject: "Direito Penal", date: new Date(Date.now() + 86400000).toISOString().split('T')[0], priority: "high", type: "exam" }
+            ];
+            
+            assignments = [
+                { id: 1, name: "Trabalho sobre Contratos", subject: "Direito Civil I", grade: 8.5, dueDate: new Date().toISOString().split('T')[0], done: true },
+                { id: 2, name: "Análise de Caso", subject: "Direito Penal", grade: null, dueDate: new Date(Date.now() + 86400000 * 7).toISOString().split('T')[0], done: false }
+            ];
+            
+            saveToLocalStorage();
+        };
+
+        // Carrega os dados ao iniciar a aplicação
         loadFromLocalStorage();
 
         // =====================================================================
-        // Lógica de Navegação entre Painéis (CORRIGIDO)
+        // Lógica de Navegação entre Painéis - CORRIGIDA
         // =====================================================================
-        const navCards = document.querySelectorAll('.card-link');
+        const navLinks = document.querySelectorAll('.nav-link, .card-link');
         const contentPanels = document.querySelectorAll('.content-panel');
         const backButtons = document.querySelectorAll('.back-btn');
         const homePanel = document.getElementById('home-links');
@@ -464,32 +1314,54 @@
             contentPanels.forEach(panel => {
                 panel.classList.remove('active');
             });
+            
+            // Atualiza a navegação ativa
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-target') === targetId) {
+                    link.classList.add('active');
+                }
+            });
+            
             const targetPanel = document.getElementById(targetId);
             if (targetPanel) {
                 targetPanel.classList.add('active');
             }
-            renderAll(); // Garante que o conteúdo seja renderizado ao mudar de página
+            
+            // Renderiza o conteúdo do painel
+            renderAll();
         };
 
-        // Lógica para mostrar o painel selecionado pelo cartão
-        navCards.forEach(card => {
-            card.addEventListener('click', (e) => {
+        // Lógica para mostrar o painel selecionado
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const targetId = card.getAttribute('data-target');
+                const targetId = link.getAttribute('data-target');
                 showPanel(targetId);
             });
         });
 
-        // Lógica para voltar para o menu principal (cartões)
+        // Lógica para voltar para o menu principal
         backButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                showPanel('home-links'); // Sempre volta para o painel principal
+                showPanel('home-links');
             });
         });
 
-        // Garante que o painel inicial 'home-links' esteja ativo ao carregar a página
-        showPanel('home-links');
+        // Toggle da sidebar em mobile
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // Fecha a sidebar ao clicar em um link (em mobile)
+        if (window.innerWidth <= 992) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.remove('open');
+                });
+            });
+        }
 
         // =====================================================================
         // Funções de Renderização e Atualização do Dashboard
@@ -534,7 +1406,6 @@
         const backupBtn = document.getElementById('backupBtn');
         const restoreFile = document.getElementById('restoreFile');
         const restoreBtn = document.getElementById('restoreBtn');
-
 
         const renderCalendar = () => {
             currentDate.setDate(1);
@@ -598,7 +1469,6 @@
             }
         });
 
-
         const updateDashboardCards = () => {
             const pendingAssignmentsCount = assignments.filter(a => !a.done && new Date(a.dueDate) > new Date()).length;
             const upcomingExamsCount = exams.filter(e => new Date(e.date) > new Date()).length;
@@ -612,9 +1482,9 @@
             document.getElementById('upcomingExams').textContent = upcomingExamsCount;
             document.getElementById('complementaryHours').textContent = `${approvedHours}/${academicGoals.totalHours}h`;
             document.getElementById('hoursProgressBar').style.width = `${Math.min(progressPercentage, 100)}%`;
-            document.getElementById('hoursProgressBar').className = `progress-bar bg-${progressPercentage >= 100 ? 'success' : 'bg-warning'}`;
+            document.getElementById('hoursProgressBar').className = `progress-bar ${progressPercentage >= 100 ? 'bg-success' : 'bg-warning'}`;
             document.getElementById('generalAverage').textContent = generalAverage;
-            document.getElementById('generalAverage').className = `mb-0 avg-grade-badge badge bg-${generalAverage >= academicGoals.requiredAvg ? 'bg-success' : 'bg-danger'}`;
+            document.getElementById('generalAverage').className = `mb-0 avg-grade-badge ${generalAverage >= academicGoals.requiredAvg ? 'bg-success' : 'bg-danger'}`;
         };
 
         const renderTasks = () => {
@@ -812,7 +1682,6 @@
             updateDashboardCards();
         };
 
-
         // =====================================================================
         // Lógica de Backup
         // =====================================================================
@@ -868,7 +1737,6 @@
             reader.readAsText(file);
         });
 
-
         // =====================================================================
         // Event Listeners para Formulários e Botões
         // =====================================================================
@@ -896,7 +1764,6 @@
         
         document.getElementById('assignmentModal').addEventListener('show.bs.modal', () => handleGradeFieldVisibility(assignmentDueDateInput, assignmentGradeContainer));
         document.getElementById('examModal').addEventListener('show.bs.modal', () => handleGradeFieldVisibility(examDateInput, examGradeContainer));
-
 
         // Dashboard (Tarefas)
         taskForm.addEventListener('submit', (e) => {
@@ -1018,7 +1885,6 @@
             saveToLocalStorage();
             renderAll();
         });
-
 
         // Horas Complementares
         hoursForm.addEventListener('submit', (e) => {
@@ -1174,6 +2040,8 @@
         document.getElementById('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
         document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
 
+        // Inicializa a aplicação
+        showPanel('home-links');
         renderAll();
     });
     </script>
