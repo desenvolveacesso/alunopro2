@@ -143,7 +143,7 @@
     <div class="container-fluid">
         <div class="row">
             <main class="main-content">
-                <div id="home-links" class="content-panel active">
+                <div id="home-links" class="content-panel">
                     <h2 class="mb-4">Controle Acadêmico Universitário</h2>
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                         <div class="col">
@@ -411,6 +411,21 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // =====================================================================
+        // Estruturas de dados (simulam um banco de dados)
+        // =====================================================================
+        let tasks = [];
+        let subjects = [];
+        let assignments = [];
+        let exams = [];
+        let events = [];
+        let schedule = [];
+        let complementaryHours = [];
+        let academicGoals = {
+            totalHours: 200,
+            requiredAvg: 7.0
+        };
+
+        // =====================================================================
         // Lógica de persistência de dados
         // =====================================================================
         const saveToLocalStorage = () => {
@@ -434,17 +449,6 @@
         };
 
         // Carrega os dados ao iniciar a aplicação (CORRIGIDO)
-        let tasks = [];
-        let subjects = [];
-        let assignments = [];
-        let exams = [];
-        let events = [];
-        let schedule = [];
-        let complementaryHours = [];
-        let academicGoals = {
-            totalHours: 200,
-            requiredAvg: 7.0
-        };
         loadFromLocalStorage();
 
         // =====================================================================
@@ -460,7 +464,10 @@
             contentPanels.forEach(panel => {
                 panel.classList.remove('active');
             });
-            document.getElementById(targetId).classList.add('active');
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
             renderAll(); // Garante que o conteúdo seja renderizado ao mudar de página
         };
 
@@ -726,9 +733,7 @@
                         const cellTimeHour = time.substring(0, 2);
                         const startHour = c.startTime.substring(0, 2);
                         const endHour = c.endTime.substring(0, 2);
-
-                        // Lógica para verificar se a aula está dentro do intervalo de tempo da célula
-                        // Considera aulas que começam ou terminam na hora da célula
+                        
                         return c.day == i && (
                             (startHour <= cellTimeHour && endHour > cellTimeHour) ||
                             (startHour === cellTimeHour && c.startTime.substring(3, 5) > '00')
@@ -871,7 +876,7 @@
         // Lógica para mostrar/esconder o campo de nota nos modais
         const handleGradeFieldVisibility = (dateInput, gradeContainer) => {
             const today = new Date().toISOString().split('T')[0];
-            dateInput.addEventListener('change', () => {
+            const updateVisibility = () => {
                 if (dateInput.value > today) {
                     gradeContainer.style.display = 'none';
                     gradeContainer.querySelector('input').removeAttribute('required');
@@ -879,14 +884,19 @@
                     gradeContainer.style.display = 'block';
                     gradeContainer.querySelector('input').setAttribute('required', 'required');
                 }
-            });
-            // Esconde o campo ao abrir o modal, se a data for futura
-            dateInput.dispatchEvent(new Event('change'));
+            };
+            dateInput.addEventListener('change', updateVisibility);
+            // Chama a função uma vez ao abrir o modal para o estado inicial
+            updateVisibility();
         };
 
         // Aplica a lógica aos modais de Trabalho e Prova
-        handleGradeFieldVisibility(assignmentDueDateInput, assignmentGradeContainer);
-        handleGradeFieldVisibility(examDateInput, examGradeContainer);
+        assignmentDueDateInput.addEventListener('change', () => handleGradeFieldVisibility(assignmentDueDateInput, assignmentGradeContainer));
+        examDateInput.addEventListener('change', () => handleGradeFieldVisibility(examDateInput, examGradeContainer));
+        
+        document.getElementById('assignmentModal').addEventListener('show.bs.modal', () => handleGradeFieldVisibility(assignmentDueDateInput, assignmentGradeContainer));
+        document.getElementById('examModal').addEventListener('show.bs.modal', () => handleGradeFieldVisibility(examDateInput, examGradeContainer));
+
 
         // Dashboard (Tarefas)
         taskForm.addEventListener('submit', (e) => {
@@ -1115,6 +1125,7 @@
                 document.getElementById('assignmentGrade').value = item.grade;
                 document.getElementById('assignmentDueDate').value = item.dueDate;
                 document.getElementById('assignmentDone').checked = item.done;
+                // Dispara o evento de 'change' para ocultar/exibir a nota
                 assignmentDueDateInput.dispatchEvent(new Event('change'));
             } else if (type === 'exam') {
                 document.getElementById('examModalLabel').textContent = 'Editar Prova';
@@ -1123,6 +1134,7 @@
                 document.getElementById('examSubject').value = item.subject;
                 document.getElementById('examGrade').value = item.grade;
                 document.getElementById('examDate').value = item.date;
+                // Dispara o evento de 'change' para ocultar/exibir a nota
                 examDateInput.dispatchEvent(new Event('change'));
             } else if (type === 'event') {
                 document.getElementById('eventModalLabel').textContent = 'Editar Evento';
