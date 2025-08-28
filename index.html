@@ -20,32 +20,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        .sidebar {
-            background-color: var(--primary);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            transition: all 0.3s;
-        }
-        
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 0.8rem 1rem;
-            border-radius: 0.3rem;
-            margin-bottom: 0.2rem;
-            cursor: pointer;
-        }
-        
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
+        /* Oculta o sidebar no desktop e o ajusta para mobile */
+        @media (min-width: 768px) {
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                left: 0;
+                top: 0;
+            }
+            .main-content {
+                margin-left: 250px;
+                padding: 20px;
+            }
         }
 
         /* Esconde todos os painéis por padrão */
@@ -127,8 +113,14 @@
         }
         
         @media (max-width: 768px) {
-            .sidebar { position: relative; width: 100%; height: auto; }
-            .main-content { margin-left: 0; }
+            .sidebar { 
+                position: relative; 
+                width: 100%; 
+                height: auto; 
+            }
+            .main-content { 
+                margin-left: 0; 
+            }
         }
     </style>
 </head>
@@ -136,18 +128,31 @@
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 sidebar px-0">
-                <div class="p-4">
-                    <h4 class="mb-4"><i class="fas fa-graduation-cap me-2"></i>Controle Acadêmico</h4>
-                    <ul class="nav flex-column" id="main-nav">
-                        <li class="nav-item"><a class="nav-link active" data-target="dashboard"><i class="fas fa-home me-2"></i>Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="disciplinas"><i class="fas fa-tasks me-2"></i>Disciplinas</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="trabalhos"><i class="fas fa-clipboard-list me-2"></i>Trabalhos</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="provas"><i class="fas fa-file-alt me-2"></i>Provas</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="agenda"><i class="fas fa-calendar-alt me-2"></i>Agenda</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="quadro-horarios"><i class="fas fa-calendar-week me-2"></i>Quadro de Horários</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="horas"><i class="fas fa-clock me-2"></i>Horas Complementares</a></li>
-                        <li class="nav-item"><a class="nav-link" data-target="config"><i class="fas fa-cog me-2"></i>Configurações</a></li>
-                    </ul>
+                <div class="d-flex justify-content-between align-items-center d-md-none p-3 bg-primary text-white">
+                    <h5 class="mb-0">Menu</h5>
+                    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                
+                <div class="offcanvas-md offcanvas-start bg-primary text-white" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavLabel">Controle Acadêmico</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNav" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <h4 class="mb-4 d-none d-md-block"><i class="fas fa-graduation-cap me-2"></i>Controle Acadêmico</h4>
+                        <ul class="nav flex-column" id="main-nav">
+                            <li class="nav-item"><a class="nav-link active" data-target="dashboard"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="disciplinas"><i class="fas fa-tasks me-2"></i>Disciplinas</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="trabalhos"><i class="fas fa-clipboard-list me-2"></i>Trabalhos</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="provas"><i class="fas fa-file-alt me-2"></i>Provas</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="agenda"><i class="fas fa-calendar-alt me-2"></i>Agenda</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="quadro-horarios"><i class="fas fa-calendar-week me-2"></i>Quadro de Horários</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="horas"><i class="fas fa-clock me-2"></i>Horas Complementares</a></li>
+                            <li class="nav-item"><a class="nav-link" data-target="config"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                        </ul>
+                    </div>
                 </div>
             </nav>
 
@@ -592,6 +597,22 @@
         // =====================================================================
         // Lógica de Backup
         // =====================================================================
+        const offcanvasNav = document.getElementById('offcanvasNav');
+        if (offcanvasNav) {
+            offcanvasNav.addEventListener('hide.bs.offcanvas', () => {
+                // Ao fechar o offcanvas em mobile, remove a classe 'active' do link anterior
+                // para que a próxima página seja renderizada corretamente
+                const currentActive = document.querySelector('.nav-link.active');
+                if (currentActive) {
+                    currentActive.classList.remove('active');
+                }
+                const firstLink = document.querySelector('#main-nav .nav-link');
+                if (firstLink) {
+                    firstLink.click();
+                }
+            });
+        }
+
         backupBtn.addEventListener('click', () => {
             const dataToSave = {
                 tasks, subjects, assignments, exams, events, schedule, complementaryHours, academicGoals
