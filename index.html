@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,101 +12,65 @@
             --primary: #4361ee;
             --secondary: #3f37c9;
             --success: #4cc9f0;
-            --warning: #fca311;
-            --light: #f5f7fb;
+            --light: #f8f9fa;
             --dark: #212529;
         }
-        
+
         body {
-            background-color: var(--light);
+            background-color: #f5f7fb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Classes personalizadas para os botões */
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary);
-            border-color: var(--secondary);
-        }
-
-        .btn-success {
-            background-color: var(--success);
-            border-color: var(--success);
-            color: var(--dark);
-        }
-
-        .btn-success:hover {
-            background-color: #38b6e6; /* Tom mais escuro do sucesso */
-            border-color: #38b6e6;
-        }
-
-        .btn-warning {
-            background-color: var(--warning);
-            border-color: var(--warning);
-            color: var(--dark);
-        }
-
-        .btn-warning:hover {
-            background-color: #e5910b; /* Tom mais escuro do aviso */
-            border-color: #e5910b;
-        }
-
-        /* Estilos do offcanvas e sidebar */
-        .offcanvas-md {
-            background-color: var(--primary);
-            color: white;
-            transition: transform 0.3s ease-in-out;
-        }
-        .offcanvas-body {
-            padding-top: 2rem;
-        }
-        .offcanvas-header .btn-close {
-            filter: invert(1) grayscale(100%) brightness(200%);
+        .main-content {
+            padding: 20px;
         }
         
-        /* Layout responsivo */
-        @media (min-width: 768px) {
-            .offcanvas-md {
-                transform: none;
-                visibility: visible !important;
-                position: fixed;
-                width: 250px;
-                height: 100vh;
-            }
-            .main-content {
-                margin-left: 250px;
-                padding: 20px;
-            }
-        }
-
-        /* Estilos do sidebar */
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 0.8rem 1rem;
-            border-radius: 0.3rem;
-            margin-bottom: 0.2rem;
+        .card-link {
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-        }
-        
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            color: var(--dark);
         }
 
-        /* Estilos do conteúdo principal */
+        .card-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-link .card-body {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .card-link .icon-wrapper {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-right: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+        }
+
+        .card-link h5 {
+            margin-bottom: 0;
+            font-weight: bold;
+        }
+
         .content-panel {
             display: none;
+            margin-top: 2rem;
         }
         
         .content-panel.active {
             display: block;
         }
-        
+
         .card-dashboard {
             border-radius: 10px;
             border: none;
@@ -178,40 +143,81 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-3 col-lg-2 px-0">
-                <div class="offcanvas offcanvas-start sidebar text-white" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
-                    <div class="offcanvas-header d-md-none">
-                        <h5 class="offcanvas-title" id="offcanvasNavLabel">Controle Acadêmico</h5>
-                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNav" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body p-4">
-                        <h4 class="mb-4 d-none d-md-block"><i class="fas fa-graduation-cap me-2"></i>Controle Acadêmico</h4>
-                        <ul class="nav flex-column" id="main-nav">
-                            <li class="nav-item"><a class="nav-link active" data-target="dashboard"><i class="fas fa-home me-2"></i>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="disciplinas"><i class="fas fa-tasks me-2"></i>Disciplinas</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="trabalhos"><i class="fas fa-clipboard-list me-2"></i>Trabalhos</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="provas"><i class="fas fa-file-alt me-2"></i>Provas</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="agenda"><i class="fas fa-calendar-alt me-2"></i>Agenda</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="quadro-horarios"><i class="fas fa-calendar-week me-2"></i>Quadro de Horários</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="horas"><i class="fas fa-clock me-2"></i>Horas Complementares</a></li>
-                            <li class="nav-item"><a class="nav-link" data-target="config"><i class="fas fa-cog me-2"></i>Configurações</a></li>
-                        </ul>
+            <main class="main-content">
+                <div id="home-links" class="content-panel active">
+                    <h2 class="mb-4">Controle Acadêmico Universitário</h2>
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="dashboard">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-primary"><i class="fas fa-home fa-2x"></i></div>
+                                    <h5>Dashboard</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="disciplinas">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-success"><i class="fas fa-tasks fa-2x"></i></div>
+                                    <h5>Disciplinas</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="trabalhos">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-info"><i class="fas fa-clipboard-list fa-2x"></i></div>
+                                    <h5>Trabalhos</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="provas">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-warning"><i class="fas fa-file-alt fa-2x"></i></div>
+                                    <h5>Provas</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="agenda">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-danger"><i class="fas fa-calendar-alt fa-2x"></i></div>
+                                    <h5>Agenda</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="quadro-horarios">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-secondary"><i class="fas fa-calendar-week fa-2x"></i></div>
+                                    <h5>Quadro de Horários</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="horas">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-dark"><i class="fas fa-clock fa-2x"></i></div>
+                                    <h5>Horas Complementares</h5>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a class="card card-link h-100" data-target="config">
+                                <div class="card-body">
+                                    <div class="icon-wrapper bg-light text-dark"><i class="fas fa-cog fa-2x"></i></div>
+                                    <h5>Configurações</h5>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </nav>
 
-            <main class="col-md-9 col-lg-10 main-content">
-                <div class="d-flex justify-content-between align-items-center d-md-none p-3 bg-primary text-white">
-                    <h5 class="mb-0">Menu</h5>
-                    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
-
-                <div id="dashboard" class="content-panel active">
+                <div id="dashboard" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Dashboard</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="fas fa-plus me-1"></i> Nova Tarefa</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="fas fa-plus me-1"></i> Nova Tarefa</button></div>
                     </div>
                     <div class="row">
                         <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard"><div class="card-body"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="text-muted mb-1">Trabalhos Pendentes</p><h4 class="mb-0" id="pendingAssignments">0</h4></div><div class="flex-shrink-0"><i class="fas fa-clipboard-list fa-2x text-primary"></i></div></div></div></div></div>
@@ -228,7 +234,7 @@
                 <div id="disciplinas" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Minhas Disciplinas</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subjectModal"><i class="fas fa-plus me-1"></i> Nova Disciplina</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subjectModal"><i class="fas fa-plus me-1"></i> Nova Disciplina</button></div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Nome</th><th>Professor</th><th>Média</th><th>Ações</th></tr></thead><tbody id="subjectsTableBody"></tbody></table></div></div></div>
                 </div>
@@ -236,7 +242,7 @@
                 <div id="trabalhos" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Meus Trabalhos</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal"><i class="fas fa-plus me-1"></i> Novo Trabalho</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal"><i class="fas fa-plus me-1"></i> Novo Trabalho</button></div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Trabalho</th><th>Disciplina</th><th>Nota</th><th>Data de Entrega</th><th>Status</th><th>Ações</th></tr></thead><tbody id="assignmentsTableBody"></tbody></table></div></div></div>
                 </div>
@@ -244,7 +250,7 @@
                 <div id="provas" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Minhas Provas</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examModal"><i class="fas fa-plus me-1"></i> Nova Prova</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examModal"><i class="fas fa-plus me-1"></i> Nova Prova</button></div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Prova</th><th>Disciplina</th><th>Nota</th><th>Data da Prova</th><th>Ações</th></tr></thead><tbody id="examsTableBody"></tbody></table></div></div></div>
                 </div>
@@ -252,7 +258,7 @@
                 <div id="agenda" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Minha Agenda</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"><i class="fas fa-plus me-1"></i> Novo Evento</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"><i class="fas fa-plus me-1"></i> Novo Evento</button></div>
                     </div>
                     <div class="card card-dashboard">
                         <div class="card-body">
@@ -278,7 +284,7 @@
                 <div id="quadro-horarios" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quadro de Horários</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button></div>
                     </div>
                     <div class="card card-dashboard">
                         <div class="card-body">
@@ -297,7 +303,7 @@
                 <div id="horas" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Horas Complementares</h2>
-                        <div><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button></div>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button></div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Atividade</th><th>Horas</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="hoursTableBody"></tbody></table></div></div></div>
                 </div>
@@ -305,6 +311,7 @@
                 <div id="config" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Configurações</h2>
+                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button></div>
                     </div>
                     <div class="card card-dashboard mb-4"><div class="card-body">
                         <h5 class="card-title">Metas Acadêmicas</h5>
@@ -378,19 +385,17 @@
         // =====================================================================
         // Lógica de Navegação entre Painéis
         // =====================================================================
-        const navLinks = document.querySelectorAll('#main-nav .nav-link');
+        const navCards = document.querySelectorAll('.card-link');
         const contentPanels = document.querySelectorAll('.content-panel');
-        const offcanvasNav = document.getElementById('offcanvasNav');
-        const offcanvas = new bootstrap.Offcanvas(offcanvasNav);
+        const backButtons = document.querySelectorAll('.back-btn');
+        const homePanel = document.getElementById('home-links');
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+        // Lógica para mostrar o painel selecionado pelo cartão
+        navCards.forEach(card => {
+            card.addEventListener('click', (e) => {
                 e.preventDefault();
-                const targetId = link.getAttribute('data-target');
+                const targetId = card.getAttribute('data-target');
                 
-                navLinks.forEach(navLink => navLink.classList.remove('active'));
-                link.classList.add('active');
-
                 contentPanels.forEach(panel => {
                     if (panel.id === targetId) {
                         panel.classList.add('active');
@@ -398,15 +403,18 @@
                         panel.classList.remove('active');
                     }
                 });
-                renderAll(); 
-                
-                // Fecha o offcanvas após o clique em um link do menu, se ele estiver visível
-                if (offcanvasNav.classList.contains('show')) {
-                    offcanvas.hide();
-                }
+                renderAll(); // Garante que o conteúdo seja renderizado ao mudar de página
             });
         });
 
+        // Lógica para voltar para o menu principal (cartões)
+        backButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                contentPanels.forEach(panel => panel.classList.remove('active'));
+                homePanel.classList.add('active');
+            });
+        });
 
         // =====================================================================
         // Funções de Renderização e Atualização do Dashboard
