@@ -11,22 +11,71 @@
             --primary: #4361ee;
             --secondary: #3f37c9;
             --success: #4cc9f0;
-            --light: #f8f9fa;
+            --warning: #fca311;
+            --light: #f5f7fb;
             --dark: #212529;
         }
         
         body {
-            background-color: #f5f7fb;
+            background-color: var(--light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        /* Classes personalizadas para os botões */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: var(--dark);
+        }
+
+        .btn-success:hover {
+            background-color: #38b6e6; /* Tom mais escuro do sucesso */
+            border-color: #38b6e6;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            border-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #e5910b; /* Tom mais escuro do aviso */
+            border-color: #e5910b;
+        }
+
+        /* Estilos do offcanvas e sidebar */
+        .offcanvas-md {
+            background-color: var(--primary);
+            color: white;
+            transition: transform 0.3s ease-in-out;
+        }
+        .offcanvas-body {
+            padding-top: 2rem;
+        }
+        .offcanvas-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
         
-        /* Oculta o sidebar no desktop e o ajusta para mobile */
+        /* Layout responsivo */
         @media (min-width: 768px) {
-            .sidebar {
+            .offcanvas-md {
+                transform: none;
+                visibility: visible !important;
                 position: fixed;
+                width: 250px;
                 height: 100vh;
-                left: 0;
-                top: 0;
             }
             .main-content {
                 margin-left: 250px;
@@ -34,12 +83,25 @@
             }
         }
 
-        /* Esconde todos os painéis por padrão */
+        /* Estilos do sidebar */
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1rem;
+            border-radius: 0.3rem;
+            margin-bottom: 0.2rem;
+            cursor: pointer;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Estilos do conteúdo principal */
         .content-panel {
             display: none;
         }
-
-        /* Mostra o painel ativo */
+        
         .content-panel.active {
             display: block;
         }
@@ -112,22 +174,12 @@
             text-overflow: ellipsis;
         }
         
-        @media (max-width: 768px) {
-            .sidebar { 
-                position: relative; 
-                width: 100%; 
-                height: auto; 
-            }
-            .main-content { 
-                margin-left: 0; 
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-3 col-lg-2 sidebar px-0">
+            <nav class="col-md-3 col-lg-2 px-0">
                 <div class="d-flex justify-content-between align-items-center d-md-none p-3 bg-primary text-white">
                     <h5 class="mb-0">Menu</h5>
                     <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
@@ -135,12 +187,12 @@
                     </button>
                 </div>
                 
-                <div class="offcanvas-md offcanvas-start bg-primary text-white" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+                <div class="offcanvas-md offcanvas-start sidebar text-white" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
                     <div class="offcanvas-header">
                         <h5 class="offcanvas-title" id="offcanvasNavLabel">Controle Acadêmico</h5>
                         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNav" aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body">
+                    <div class="offcanvas-body p-4">
                         <h4 class="mb-4 d-none d-md-block"><i class="fas fa-graduation-cap me-2"></i>Controle Acadêmico</h4>
                         <ul class="nav flex-column" id="main-nav">
                             <li class="nav-item"><a class="nav-link active" data-target="dashboard"><i class="fas fa-home me-2"></i>Dashboard</a></li>
@@ -600,8 +652,6 @@
         const offcanvasNav = document.getElementById('offcanvasNav');
         if (offcanvasNav) {
             offcanvasNav.addEventListener('hide.bs.offcanvas', () => {
-                // Ao fechar o offcanvas em mobile, remove a classe 'active' do link anterior
-                // para que a próxima página seja renderizada corretamente
                 const currentActive = document.querySelector('.nav-link.active');
                 if (currentActive) {
                     currentActive.classList.remove('active');
