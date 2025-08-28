@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -217,7 +216,10 @@
                 <div id="dashboard" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Dashboard</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="fas fa-plus me-1"></i> Nova Tarefa</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="fas fa-plus me-1"></i> Nova Tarefa</button>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard"><div class="card-body"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="text-muted mb-1">Trabalhos Pendentes</p><h4 class="mb-0" id="pendingAssignments">0</h4></div><div class="flex-shrink-0"><i class="fas fa-clipboard-list fa-2x text-primary"></i></div></div></div></div></div>
@@ -234,7 +236,10 @@
                 <div id="disciplinas" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Minhas Disciplinas</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subjectModal"><i class="fas fa-plus me-1"></i> Nova Disciplina</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subjectModal"><i class="fas fa-plus me-1"></i> Nova Disciplina</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Nome</th><th>Professor</th><th>Média</th><th>Ações</th></tr></thead><tbody id="subjectsTableBody"></tbody></table></div></div></div>
                 </div>
@@ -242,7 +247,10 @@
                 <div id="trabalhos" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Meus Trabalhos</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal"><i class="fas fa-plus me-1"></i> Novo Trabalho</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal"><i class="fas fa-plus me-1"></i> Novo Trabalho</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Trabalho</th><th>Disciplina</th><th>Nota</th><th>Data de Entrega</th><th>Status</th><th>Ações</th></tr></thead><tbody id="assignmentsTableBody"></tbody></table></div></div></div>
                 </div>
@@ -250,7 +258,10 @@
                 <div id="provas" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Minhas Provas</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examModal"><i class="fas fa-plus me-1"></i> Nova Prova</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examModal"><i class="fas fa-plus me-1"></i> Nova Prova</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Prova</th><th>Disciplina</th><th>Nota</th><th>Data da Prova</th><th>Ações</th></tr></thead><tbody id="examsTableBody"></tbody></table></div></div></div>
                 </div>
@@ -258,7 +269,10 @@
                 <div id="agenda" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Minha Agenda</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"><i class="fas fa-plus me-1"></i> Novo Evento</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"><i class="fas fa-plus me-1"></i> Novo Evento</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard">
                         <div class="card-body">
@@ -284,7 +298,10 @@
                 <div id="quadro-horarios" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quadro de Horários</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard">
                         <div class="card-body">
@@ -303,7 +320,10 @@
                 <div id="horas" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Horas Complementares</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Atividade</th><th>Horas</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="hoursTableBody"></tbody></table></div></div></div>
                 </div>
@@ -311,7 +331,9 @@
                 <div id="config" class="content-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Configurações</h2>
-                        <div><button class="btn btn-secondary me-2 back-btn"><i class="fas fa-arrow-left"></i> Voltar</button></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        </div>
                     </div>
                     <div class="card card-dashboard mb-4"><div class="card-body">
                         <h5 class="card-title">Metas Acadêmicas</h5>
