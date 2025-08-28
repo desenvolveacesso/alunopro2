@@ -173,22 +173,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
     </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 px-0">
-                <div class="d-flex justify-content-between align-items-center d-md-none p-3 bg-primary text-white">
-                    <h5 class="mb-0">Menu</h5>
-                    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
-                
-                <div class="offcanvas-md offcanvas-start sidebar text-white" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
-                    <div class="offcanvas-header">
+                <div class="offcanvas offcanvas-start sidebar text-white" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+                    <div class="offcanvas-header d-md-none">
                         <h5 class="offcanvas-title" id="offcanvasNavLabel">Controle Acadêmico</h5>
                         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNav" aria-label="Close"></button>
                     </div>
@@ -209,6 +201,13 @@
             </nav>
 
             <main class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center d-md-none p-3 bg-primary text-white">
+                    <h5 class="mb-0">Menu</h5>
+                    <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+
                 <div id="dashboard" class="content-panel active">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Dashboard</h2>
@@ -402,7 +401,7 @@
                 renderAll(); 
                 
                 // Fecha o offcanvas após o clique em um link do menu, se ele estiver visível
-                if (window.innerWidth < 768) {
+                if (offcanvasNav.classList.contains('show')) {
                     offcanvas.hide();
                 }
             });
@@ -657,9 +656,6 @@
         // =====================================================================
         // Lógica de Backup
         // =====================================================================
-        const offcanvasNav = document.getElementById('offcanvasNav');
-        const offcanvas = new bootstrap.Offcanvas(offcanvasNav);
-        
         backupBtn.addEventListener('click', () => {
             const dataToSave = {
                 tasks, subjects, assignments, exams, events, schedule, complementaryHours, academicGoals
