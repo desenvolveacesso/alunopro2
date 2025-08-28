@@ -381,6 +381,8 @@
         // =====================================================================
         const navLinks = document.querySelectorAll('#main-nav .nav-link');
         const contentPanels = document.querySelectorAll('.content-panel');
+        const offcanvasNav = document.getElementById('offcanvasNav');
+        const offcanvas = new bootstrap.Offcanvas(offcanvasNav);
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -397,9 +399,15 @@
                         panel.classList.remove('active');
                     }
                 });
-                renderAll(); // Garante que o conteúdo seja renderizado ao mudar de página
+                renderAll(); 
+                
+                // Fecha o offcanvas após o clique em um link do menu, se ele estiver visível
+                if (window.innerWidth < 768) {
+                    offcanvas.hide();
+                }
             });
         });
+
 
         // =====================================================================
         // Funções de Renderização e Atualização do Dashboard
@@ -650,19 +658,8 @@
         // Lógica de Backup
         // =====================================================================
         const offcanvasNav = document.getElementById('offcanvasNav');
-        if (offcanvasNav) {
-            offcanvasNav.addEventListener('hide.bs.offcanvas', () => {
-                const currentActive = document.querySelector('.nav-link.active');
-                if (currentActive) {
-                    currentActive.classList.remove('active');
-                }
-                const firstLink = document.querySelector('#main-nav .nav-link');
-                if (firstLink) {
-                    firstLink.click();
-                }
-            });
-        }
-
+        const offcanvas = new bootstrap.Offcanvas(offcanvasNav);
+        
         backupBtn.addEventListener('click', () => {
             const dataToSave = {
                 tasks, subjects, assignments, exams, events, schedule, complementaryHours, academicGoals
