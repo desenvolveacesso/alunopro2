@@ -367,25 +367,63 @@
         </div>
     </div>
 
-    <div class="modal fade" id="taskModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="taskModalLabel">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="taskForm"><input type="hidden" id="taskId"><div class="mb-3"><label for="taskName" class="form-label">Nome da Atividade</label><input type="text" class="form-control" id="taskName" required></div><div class="mb-3"><label for="taskSubject" class="form-label">Disciplina</label><input type="text" class="form-control" id="taskSubject" required></div><div class="mb-3"><label for="taskDate" class="form-label">Data</label><input type="date" class="form-control" id="taskDate" required></div><div class="mb-3"><label for="taskPriority" class="form-label">Prioridade</label><select class="form-select" id="taskPriority" required><option value="low">Baixa</option><option value="medium">Média</option><option value="high">Alta</option></select></div><div class="mb-3"><label for="taskType" class="form-label">Tipo</label><select class="form-select" id="taskType" required><option value="assignment">Trabalho</option><option value="exam">Prova</option><option value="other">Outro</option></select></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="taskModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="taskModalLabel">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="taskForm"><input type="hidden" id="taskId"><div class="mb-3"><label for="taskName" class="form-label">Nome da Atividade</label><input type="text" class="form-control" id="taskName" required></div><div class="mb-3"><label for="taskSubject" class="form-label">Disciplina</label><select class="form-select" id="taskSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="taskDate" class="form-label">Data</label><input type="date" class="form-control" id="taskDate" required></div><div class="mb-3"><label for="taskPriority" class="form-label">Prioridade</label><select class="form-select" id="taskPriority" required><option value="low">Baixa</option><option value="medium">Média</option><option value="high">Alta</option></select></div><div class="mb-3"><label for="taskType" class="form-label">Tipo</label><select class="form-select" id="taskType" required><option value="assignment">Trabalho</option><option value="exam">Prova</option><option value="other">Outro</option></select></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
 
     <div class="modal fade" id="subjectModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="subjectModalLabel">Nova Disciplina</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="subjectForm"><input type="hidden" id="subjectId"><div class="mb-3"><label for="subjectName" class="form-label">Nome da Disciplina</label><input type="text" class="form-control" id="subjectName" required></div><div class="mb-3"><label for="subjectProfessor" class="form-label">Professor</label><input type="text" class="form-control" id="subjectProfessor" required></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
 
-    <div class="modal fade" id="assignmentModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="assignmentModalLabel">Novo Trabalho</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="assignmentForm"><input type="hidden" id="assignmentId"><div class="mb-3"><label for="assignmentName" class="form-label">Nome do Trabalho</label><input type="text" class="form-control" id="assignmentName" required></div><div class="mb-3"><label for="assignmentSubject" class="form-label">Disciplina</label><input type="text" class="form-control" id="assignmentSubject" required></div><div class="mb-3"><label for="assignmentGrade" class="form-label">Nota</label><input type="number" step="0.1" class="form-control" id="assignmentGrade" min="0" max="10"></div><div class="mb-3"><label for="assignmentDueDate" class="form-label">Data de Entrega</label><input type="date" class="form-control" id="assignmentDueDate" required></div><div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentDone"><label class="form-check-label" for="assignmentDone">Concluído</label></div></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="assignmentModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="assignmentModalLabel">Novo Trabalho</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="assignmentForm"><input type="hidden" id="assignmentId"><div class="mb-3"><label for="assignmentName" class="form-label">Nome do Trabalho</label><input type="text" class="form-control" id="assignmentName" required></div><div class="mb-3"><label for="assignmentSubject" class="form-label">Disciplina</label><select class="form-select" id="assignmentSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="assignmentGrade" class="form-label">Nota</label><input type="number" step="0.1" class="form-control" id="assignmentGrade" min="0" max="10"></div><div class="mb-3"><label for="assignmentDueDate" class="form-label">Data de Entrega</label><input type="date" class="form-control" id="assignmentDueDate" required></div><div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="assignmentDone"><label class="form-check-label" for="assignmentDone">Concluído</label></div></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
 
-    <div class="modal fade" id="examModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="examModalLabel">Nova Prova</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="examForm"><input type="hidden" id="examId"><div class="mb-3"><label for="examName" class="form-label">Nome da Prova</label><input type="text" class="form-control" id="examName" required></div><div class="mb-3"><label for="examSubject" class="form-label">Disciplina</label><input type="text" class="form-control" id="examSubject" required></div><div class="mb-3"><label for="examGrade" class="form-label">Nota</label><input type="number" step="0.1" class="form-control" id="examGrade" min="0" max="10"></div><div class="mb-3"><label for="examDate" class="form-label">Data da Prova</label><input type="date" class="form-control" id="examDate" required></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="examModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="examModalLabel">Nova Prova</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="examForm"><input type="hidden" id="examId"><div class="mb-3"><label for="examName" class="form-label">Nome da Prova</label><input type="text" class="form-control" id="examName" required></div><div class="mb-3"><label for="examSubject" class="form-label">Disciplina</label><select class="form-select" id="examSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="examGrade" class="form-label">Nota</label><input type="number" step="0.1" class="form-control" id="examGrade" min="0" max="10"></div><div class="mb-3"><label for="examDate" class="form-label">Data da Prova</label><input type="date" class="form-control" id="examDate" required></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
 
     <div class="modal fade" id="hoursModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="hoursModalLabel">Nova Atividade Complementar</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="hoursForm"><input type="hidden" id="hoursId"><div class="mb-3"><label for="hoursActivity" class="form-label">Atividade</label><input type="text" class="form-control" id="hoursActivity" required></div><div class="mb-3"><label for="hoursAmount" class="form-label">Horas</label><input type="number" class="form-control" id="hoursAmount" required min="1"></div><div class="mb-3"><label for="hoursDate" class="form-label">Data</label><input type="date" class="form-control" id="hoursDate" required></div><div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="hoursApproved"><label class="form-check-label" for="hoursApproved">Aprovada</label></div></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
 
     <div class="modal fade" id="eventModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="eventModalLabel">Novo Evento na Agenda</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="eventForm"><input type="hidden" id="eventId"><div class="mb-3"><label for="eventTitle" class="form-label">Título do Evento</label><input type="text" class="form-control" id="eventTitle" required></div><div class="mb-3"><label for="eventDateTime" class="form-label">Data e Hora</label><input type="datetime-local" class="form-control" id="eventDateTime" required></div><div class="mb-3"><label for="eventDescription" class="form-label">Descrição</label><textarea class="form-control" id="eventDescription" rows="3"></textarea></div><div class="mb-3"><label for="eventPriority" class="form-label">Prioridade</label><select class="form-select" id="eventPriority" required><option value="low">Baixa</option><option value="medium">Média</option><option value="high">Alta</option></select></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
 
-    <div class="modal fade" id="scheduleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="scheduleModalLabel">Nova Aula</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="scheduleForm"><input type="hidden" id="scheduleId"><div class="mb-3"><label for="scheduleSubject" class="form-label">Disciplina</label><input type="text" class="form-control" id="scheduleSubject" required></div><div class="mb-3"><label for="scheduleProfessor" class="form-label">Professor</label><input type="text" class="form-control" id="scheduleProfessor"></div><div class="mb-3"><label for="scheduleDay" class="form-label">Dia da Semana</label><select class="form-select" id="scheduleDay" required><option value="1">Segunda-feira</option><option value="2">Terça-feira</option><option value="3">Quarta-feira</option><option value="4">Quinta-feira</option><option value="5">Sexta-feira</option></select></div><div class="mb-3"><label for="scheduleTime" class="form-label">Horário</label><select class="form-select" id="scheduleTime" required><option value="08:00">08:00 - 09:00</option><option value="09:00">09:00 - 10:00</option><option value="10:00">10:00 - 11:00</option><option value="11:00">11:00 - 12:00</option><option value="13:00">13:00 - 14:00</option><option value="14:00">14:00 - 15:00</option><option value="15:00">15:00 - 16:00</option><option value="16:00">16:00 - 17:00</option><option value="17:00">17:00 - 18:00</option></select></div><button type="submit" class="btn btn-primary">Salvar</button></form></div></div></div></div>
+    <div class="modal fade" id="scheduleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="scheduleModalLabel">Nova Aula</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="scheduleForm"><input type="hidden" id="scheduleId"><div class="mb-3"><label for="scheduleSubject" class="form-label">Disciplina</label><select class="form-select" id="scheduleSubject" required><option value="">Selecione a disciplina</option></select></div><div class="mb-3"><label for="scheduleProfessor" class="form-label">Professor</label><input type="text" class="form-control" id="scheduleProfessor"></div><div class="mb-3"><label for="scheduleDay" class="form-label">Dia da Semana</label><select class="form-select" id="scheduleDay" required><option value="1">Segunda-feira</option><option value="2">Terça-feira</option><option value="3">Quarta-feira</option><option value="4">Quinta-feira</option><option value="5">Sexta-feira</option></select></div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="scheduleStartTime" class="form-label">Hora de Início</label>
+                                <input type="time" class="form-control" id="scheduleStartTime" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="scheduleEndTime" class="form-label">Hora de Fim</label>
+                                <input type="time" class="form-control" id="scheduleEndTime" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form></div></div></div></div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // =====================================================================
+        // Lógica de persistência de dados
+        // =====================================================================
+        const saveToLocalStorage = () => {
+            const dataToSave = { tasks, subjects, assignments, exams, events, schedule, complementaryHours, academicGoals };
+            localStorage.setItem('academicData', JSON.stringify(dataToSave));
+        };
+
+        const loadFromLocalStorage = () => {
+            const storedData = localStorage.getItem('academicData');
+            if (storedData) {
+                const data = JSON.parse(storedData);
+                tasks = data.tasks || [];
+                subjects = data.subjects || [];
+                assignments = data.assignments || [];
+                exams = data.exams || [];
+                events = data.events || [];
+                schedule = data.schedule || [];
+                complementaryHours = data.complementaryHours || [];
+                academicGoals = data.academicGoals || { totalHours: 200, requiredAvg: 7.0 };
+            }
+        };
+
+        // Carrega os dados ao iniciar a aplicação
+        loadFromLocalStorage();
+
         // =====================================================================
         // Estruturas de dados (simulam um banco de dados)
         // Removidos todos os dados de exemplo para iniciar o sistema do zero.
@@ -405,27 +443,28 @@
 
 
         // =====================================================================
-        // Lógica de Navegação entre Painéis
+        // Lógica de Navegação entre Painéis (CORRIGIDO)
         // =====================================================================
         const navCards = document.querySelectorAll('.card-link');
         const contentPanels = document.querySelectorAll('.content-panel');
         const backButtons = document.querySelectorAll('.back-btn');
         const homePanel = document.getElementById('home-links');
 
+        // Função para mostrar um painel e esconder os outros
+        const showPanel = (targetId) => {
+            contentPanels.forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(targetId).classList.add('active');
+            renderAll(); // Garante que o conteúdo seja renderizado ao mudar de página
+        };
+
         // Lógica para mostrar o painel selecionado pelo cartão
         navCards.forEach(card => {
             card.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = card.getAttribute('data-target');
-                
-                contentPanels.forEach(panel => {
-                    if (panel.id === targetId) {
-                        panel.classList.add('active');
-                    } else {
-                        panel.classList.remove('active');
-                    }
-                });
-                renderAll(); // Garante que o conteúdo seja renderizado ao mudar de página
+                showPanel(targetId);
             });
         });
 
@@ -433,10 +472,12 @@
         backButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                contentPanels.forEach(panel => panel.classList.remove('active'));
-                homePanel.classList.add('active');
+                showPanel('home-links'); // Sempre volta para o painel principal
             });
         });
+
+        // Garante que o painel inicial 'home-links' esteja ativo ao carregar a página
+        showPanel('home-links');
 
         // =====================================================================
         // Funções de Renderização e Atualização do Dashboard
@@ -491,22 +532,58 @@
             const lastDayIndex = new Date(year, month, lastDay).getDay();
             const nextDays = 7 - lastDayIndex - 1;
 
+            // Combina datas de tarefas e eventos
+            const allEventDates = [
+                ...tasks.map(t => new Date(t.date).setHours(24,0,0,0)),
+                ...events.map(e => new Date(e.dateTime.split('T')[0]).setHours(24,0,0,0))
+            ];
+            const uniqueEventDates = new Set(allEventDates);
+
+            const today = new Date().setHours(0,0,0,0);
             let daysHtml = '';
             for (let x = firstDayIndex; x > 0; x--) { daysHtml += `<div class="col p-1"><div class="calendar-day empty">${prevLastDay - x + 1}</div></div>`; }
             
-            const taskDates = tasks.map(t => new Date(t.date).setHours(24,0,0,0));
-            const today = new Date().setHours(0,0,0,0);
-
             for (let i = 1; i <= lastDay; i++) {
-                let dayDate = new Date(year, month, i).setHours(0,0,0,0);
+                let dayDate = new Date(year, month, i).setHours(24,0,0,0);
                 let classes = 'calendar-day';
-                if (dayDate === today) classes += ' current';
-                if (taskDates.includes(dayDate)) classes += ' has-event';
-                daysHtml += `<div class="col p-1"><div class="${classes}">${i}</div></div>`;
+                if (new Date(year, month, i).setHours(0,0,0,0) === today) classes += ' current';
+                if (uniqueEventDates.has(dayDate)) classes += ' has-event';
+                daysHtml += `<div class="col p-1" data-day="${i}" data-month="${month}" data-year="${year}"><div class="${classes}">${i}</div></div>`;
             }
             for (let j = 1; j <= nextDays; j++) { daysHtml += `<div class="col p-1"><div class="calendar-day empty">${j}</div></div>`; }
             calendarDays.innerHTML = daysHtml;
         };
+        
+        // Event listener para o calendário
+        calendarDays.addEventListener('click', (e) => {
+            const dayElement = e.target.closest('.calendar-day:not(.empty)');
+            if (dayElement && dayElement.classList.contains('has-event')) {
+                const day = dayElement.textContent;
+                const month = dayElement.parentElement.dataset.month;
+                const year = dayElement.parentElement.dataset.year;
+                
+                const clickedDate = new Date(year, month, day).setHours(0,0,0,0);
+                
+                let dayEvents = [];
+
+                tasks.forEach(task => {
+                    if (new Date(task.date).setHours(0,0,0,0) === clickedDate) {
+                        dayEvents.push(`- Tarefa: ${task.name} (${task.subject}) - Data: ${new Date(task.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`);
+                    }
+                });
+
+                events.forEach(event => {
+                    if (new Date(event.dateTime.split('T')[0]).setHours(0,0,0,0) === clickedDate) {
+                        dayEvents.push(`- Evento: ${event.title} - Data: ${new Date(event.dateTime).toLocaleString('pt-BR')}`);
+                    }
+                });
+                
+                if (dayEvents.length > 0) {
+                    alert(`Eventos para o dia ${day}/${parseInt(month) + 1}/${year}:\n\n${dayEvents.join('\n')}`);
+                }
+            }
+        });
+
 
         const updateDashboardCards = () => {
             const pendingAssignmentsCount = tasks.filter(t => t.type === 'assignment' && new Date(t.date) > new Date()).length;
@@ -521,7 +598,7 @@
             document.getElementById('upcomingExams').textContent = upcomingExamsCount;
             document.getElementById('complementaryHours').textContent = `${approvedHours}/${academicGoals.totalHours}h`;
             document.getElementById('hoursProgressBar').style.width = `${Math.min(progressPercentage, 100)}%`;
-            document.getElementById('hoursProgressBar').className = `progress-bar bg-${progressPercentage >= 100 ? 'success' : 'warning'}`;
+            document.getElementById('hoursProgressBar').className = `progress-bar bg-${progressPercentage >= 100 ? 'success' : 'bg-warning'}`;
             document.getElementById('generalAverage').textContent = generalAverage;
             document.getElementById('generalAverage').className = `mb-0 avg-grade-badge badge bg-${generalAverage >= academicGoals.requiredAvg ? 'bg-success' : 'bg-danger'}`;
         };
@@ -611,7 +688,11 @@
 
         const renderSchedule = () => {
             const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-            const times = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+            const times = Array.from({length: 15}, (_, i) => {
+                const hour = 8 + i;
+                const paddedHour = hour.toString().padStart(2, '0');
+                return `${paddedHour}:00`;
+            });
             
             scheduleGrid.innerHTML = `
                 <div class="schedule-header"></div>
@@ -634,16 +715,23 @@
                     cell.dataset.day = i;
                     cell.dataset.time = time;
                     
-                    const classItem = schedule.find(c => c.day == i && c.time === time);
-                    if (classItem) {
+                    const classItems = schedule.filter(c => {
+                        const classStartTime = c.startTime.substring(0, 2);
+                        const classEndTime = c.endTime.substring(0, 2);
+                        const cellTimeHour = time.substring(0, 2);
+                        
+                        return c.day == i && (classStartTime === cellTimeHour || classEndTime === cellTimeHour);
+                    });
+                    
+                    if (classItems.length > 0) {
                         cell.classList.add('has-class');
-                        cell.dataset.id = classItem.id;
-                        cell.innerHTML = `
-                            <div class="schedule-class-details">
-                                <strong>${classItem.subject}</strong><br>
-                                <small>${classItem.professor}</small>
+                        const details = classItems.map(c => `
+                            <div class="schedule-class-details" data-id="${c.id}">
+                                <strong>${c.subject}</strong><br>
+                                <small>${c.startTime} - ${c.endTime}</small>
                             </div>
-                        `;
+                        `).join('');
+                        cell.innerHTML = details;
                     }
                     scheduleGrid.appendChild(cell);
                 }
@@ -670,7 +758,27 @@
             document.getElementById('requiredAvg').value = academicGoals.requiredAvg;
         };
 
+        const updateSubjectSelects = () => {
+            const selectFields = [
+                document.getElementById('taskSubject'),
+                document.getElementById('assignmentSubject'),
+                document.getElementById('examSubject'),
+                document.getElementById('scheduleSubject')
+            ];
+
+            selectFields.forEach(select => {
+                select.innerHTML = '<option value="">Selecione a disciplina</option>';
+                subjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject.name;
+                    option.textContent = subject.name;
+                    select.appendChild(option);
+                });
+            });
+        };
+
         const renderAll = () => {
+            updateSubjectSelects();
             renderTasks();
             renderSubjects();
             renderAssignments();
@@ -723,6 +831,7 @@
                             complementaryHours = loadedData.complementaryHours;
                             academicGoals = loadedData.academicGoals;
                             
+                            saveToLocalStorage(); // Salva os dados restaurados
                             alert('Dados restaurados com sucesso!');
                             renderAll();
                         }
@@ -759,6 +868,7 @@
                 tasks.push(taskData);
             }
             tasksModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -776,6 +886,7 @@
                 subjects.push(subjectData);
             }
             subjectModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -796,6 +907,7 @@
                 assignments.push(assignmentData);
             }
             assignmentModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -815,6 +927,7 @@
                 exams.push(examData);
             }
             examModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -834,6 +947,7 @@
                 events.push(eventData);
             }
             eventModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -845,7 +959,8 @@
                 subject: document.getElementById('scheduleSubject').value,
                 professor: document.getElementById('scheduleProfessor').value,
                 day: document.getElementById('scheduleDay').value,
-                time: document.getElementById('scheduleTime').value
+                startTime: document.getElementById('scheduleStartTime').value,
+                endTime: document.getElementById('scheduleEndTime').value
             };
             if (document.getElementById('scheduleId').value) {
                 schedule = schedule.map(s => s.id == scheduleData.id ? { ...s, ...scheduleData } : s);
@@ -853,6 +968,7 @@
                 schedule.push(scheduleData);
             }
             scheduleModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -873,6 +989,7 @@
                 complementaryHours.push(hoursData);
             }
             hoursModal.hide();
+            saveToLocalStorage();
             renderAll();
         });
 
@@ -882,7 +999,19 @@
             academicGoals.totalHours = parseInt(document.getElementById('totalHours').value);
             academicGoals.requiredAvg = parseFloat(document.getElementById('requiredAvg').value);
             alert('Metas salvas com sucesso!');
+            saveToLocalStorage();
             renderAll();
+        });
+        
+        // Lógica para preencher o professor automaticamente
+        document.getElementById('scheduleSubject').addEventListener('change', (e) => {
+            const selectedSubjectName = e.target.value;
+            const foundSubject = subjects.find(s => s.name === selectedSubjectName);
+            if (foundSubject) {
+                document.getElementById('scheduleProfessor').value = foundSubject.professor;
+            } else {
+                document.getElementById('scheduleProfessor').value = '';
+            }
         });
 
         // Lógica de Edição e Exclusão genérica para todas as tabelas
@@ -893,12 +1022,20 @@
                 const dataType = deleteBtn.getAttribute('data-type');
                 if (confirm('Tem certeza que deseja excluir este item?')) {
                     if (dataType === 'task') tasks = tasks.filter(item => item.id != idToDelete);
-                    if (dataType === 'subject') subjects = subjects.filter(item => item.id != idToDelete);
+                    if (dataType === 'subject') {
+                        const item = subjects.find(s => s.id == idToDelete);
+                        subjects = subjects.filter(s => s.id != idToDelete);
+                        tasks = tasks.filter(t => t.subject !== item.name);
+                        assignments = assignments.filter(a => a.subject !== item.name);
+                        exams = exams.filter(e => e.subject !== item.name);
+                        schedule = schedule.filter(s => s.subject !== item.name);
+                    }
                     if (dataType === 'assignment') assignments = assignments.filter(item => item.id != idToDelete);
                     if (dataType === 'exam') exams = exams.filter(item => item.id != idToDelete);
                     if (dataType === 'event') events = events.filter(item => item.id != idToDelete);
                     if (dataType === 'schedule') schedule = schedule.filter(item => item.id != idToDelete);
                     if (dataType === 'hours') complementaryHours = complementaryHours.filter(item => item.id != idToDelete);
+                    saveToLocalStorage();
                     renderAll();
                 }
             }
@@ -961,7 +1098,8 @@
                 document.getElementById('scheduleSubject').value = item.subject;
                 document.getElementById('scheduleProfessor').value = item.professor;
                 document.getElementById('scheduleDay').value = item.day;
-                document.getElementById('scheduleTime').value = item.time;
+                document.getElementById('scheduleStartTime').value = item.startTime;
+                document.getElementById('scheduleEndTime').value = item.endTime;
             } else if (type === 'hours') {
                 document.getElementById('hoursModalLabel').textContent = 'Editar Atividade Complementar';
                 document.getElementById('hoursId').value = item.id;
