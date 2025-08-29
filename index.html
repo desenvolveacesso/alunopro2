@@ -449,6 +449,33 @@
             font-size: 0.9rem;
         }
 
+        .shift-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .shift-toggle-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .shift-toggle-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .hidden-shift {
+            display: none;
+        }
+
         /* Responsividade */
         @media (max-width: 992px) {
             .app-container {
@@ -498,6 +525,10 @@
             .schedule-grid {
                 grid-template-columns: 40px repeat(5, 1fr);
                 font-size: 0.8rem;
+            }
+            
+            .shift-toggle {
+                flex-direction: column;
             }
         }
 
@@ -604,6 +635,26 @@
             padding: 20px;
             text-align: center;
             color: var(--text-light);
+        }
+
+        .calendar-event-popup {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 15px;
+            z-index: 1000;
+            min-width: 250px;
+            max-width: 300px;
+        }
+        
+        .calendar-event-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .calendar-event-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
@@ -903,6 +954,7 @@
                                     <tr>
                                         <th>Nome</th>
                                         <th>Professor</th>
+                                        <th>Créditos</th>
                                         <th>Média</th>
                                         <th>Ações</th>
                                     </tr>
@@ -1043,13 +1095,28 @@
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal"><i class="fas fa-plus me-1"></i> Nova Aula</button>
                     </div>
                 </div>
+                
+                <div class="shift-toggle">
+                    <div class="shift-toggle-btn active" data-shift="morning">Manhã</div>
+                    <div class="shift-toggle-btn" data-shift="afternoon">Tarde</div>
+                    <div class="shift-toggle-btn" data-shift="night">Noite</div>
+                </div>
+                
                 <div class="card card-dashboard">
                     <div class="card-body">
-                        <div class="schedule-grid" id="scheduleGrid"></div>
+                        <div class="schedule-grid" id="morningSchedule">
+                            <!-- Grade de horários da manhã -->
+                        </div>
+                        <div class="schedule-grid hidden-shift" id="afternoonSchedule">
+                            <!-- Grade de horários da tarde -->
+                        </div>
+                        <div class="schedule-grid hidden-shift" id="nightSchedule">
+                            <!-- Grade de horários da noite -->
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Horas Complementares -->
             <div id="horas" class="content-panel">
                 <div class="content-header">
@@ -1059,6 +1126,30 @@
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hoursModal"><i class="fas fa-plus me-1"></i> Nova Atividade</button>
                     </div>
                 </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card card-dashboard">
+                            <div class="card-body text-center">
+                                <h5>Horas Cumpridas</h5>
+                                <div class="avg-grade-badge bg-primary text-white my-3" id="completedHours">0h</div>
+                                <p class="text-muted">de um total necessário de <span id="requiredHours">0h</span></p>
+                                <div class="progress">
+                                    <div class="progress-bar" id="hoursProgress" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <h5 class="mb-3">Distribuição de Horas</h5>
+                                <canvas id="hoursChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="card card-dashboard">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -1066,8 +1157,9 @@
                                 <thead>
                                     <tr>
                                         <th>Atividade</th>
-                                        <th>Horas</th>
                                         <th>Data</th>
+                                        <th>Horas</th>
+                                        <th>Categoria</th>
                                         <th>Status</th>
                                         <th>Ações</th>
                                     </tr>
@@ -1087,33 +1179,63 @@
                         <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
                     </div>
                 </div>
-                <div class="card card-dashboard mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Metas Acadêmicas</h5>
-                        <form id="goalForm">
-                            <div class="mb-3">
-                                <label for="totalHours" class="form-label">Total de Horas Complementares Necessárias</label>
-                                <input type="number" class="form-control" id="totalHours" value="200" required>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">Preferências</h5>
                             </div>
-                            <div class="mb-3">
-                                <label for="requiredAvg" class="form-label">Média Geral Mínima</label>
-                                <input type="number" step="0.1" class="form-control" id="requiredAvg" value="7.0" required>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Semestre Atual</label>
+                                    <select class="form-select" id="currentSemester">
+                                        <option value="1">1º Semestre</option>
+                                        <option value="2">2º Semestre</option>
+                                        <option value="3">3º Semestre</option>
+                                        <option value="4">4º Semestre</option>
+                                        <option value="5">5º Semestre</option>
+                                        <option value="6">6º Semestre</option>
+                                        <option value="7">7º Semestre</option>
+                                        <option value="8">8º Semestre</option>
+                                        <option value="9">9º Semestre</option>
+                                        <option value="10">10º Semestre</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Horas Complementares Necessárias</label>
+                                    <input type="number" class="form-control" id="requiredHoursInput" value="200">
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="notificationsSwitch" checked>
+                                    <label class="form-check-label" for="notificationsSwitch">Notificações</label>
+                                </div>
+                                <button class="btn btn-primary" id="savePreferences">Salvar Preferências</button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Salvar Metas</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card card-dashboard">
-                    <div class="card-body">
-                        <h5 class="card-title">Backup de Dados</h5>
-                        <p class="text-muted">Salve seus dados em um arquivo local ou carregue um backup existente.</p>
-                        <div class="d-grid gap-2 d-md-block mb-3">
-                            <button id="backupBtn" class="btn btn-success"><i class="fas fa-download me-1"></i> Fazer Backup</button>
                         </div>
-                        <div class="input-group">
-                            <input type="file" class="form-control" id="restoreFile" accept=".json">
-                            <button id="restoreBtn" class="btn btn-warning"><i class="fas fa-upload me-1"></i> Carregar Backup</button>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card card-dashboard">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">Backup de Dados</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h6>Exportar Dados</h6>
+                                    <p class="text-muted">Faça backup de todos os seus dados acadêmicos.</p>
+                                    <button class="btn btn-success" id="exportData"><i class="fas fa-download me-1"></i> Exportar Backup</button>
+                                </div>
+                                
+                                <div>
+                                    <h6>Importar Dados</h6>
+                                    <p class="text-muted">Restaurar dados a partir de um backup anterior.</p>
+                                    <div class="mb-3">
+                                        <input type="file" class="form-control" id="importFile" accept=".json">
+                                    </div>
+                                    <button class="btn btn-primary" id="importData"><i class="fas fa-upload me-1"></i> Importar Backup</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1126,60 +1248,13 @@
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Modais -->
-    <div class="modal fade" id="taskModal" tabindex="-1">
+    <!-- Modal para Disciplina -->
+    <div class="modal fade" id="subjectModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="taskModalLabel">Nova Tarefa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="taskForm">
-                        <input type="hidden" id="taskId">
-                        <div class="mb-3">
-                            <label for="taskName" class="form-label">Nome da Atividade</label>
-                            <input type="text" class="form-control" id="taskName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="taskSubject" class="form-label">Disciplina</label>
-                            <select class="form-select" id="taskSubject" required>
-                                <option value="">Selecione a disciplina</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="taskDate" class="form-label">Data</label>
-                            <input type="date" class="form-control" id="taskDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="taskPriority" class="form-label">Prioridade</label>
-                            <select class="form-select" id="taskPriority" required>
-                                <option value="low">Baixa</option>
-                                <option value="medium">Média</option>
-                                <option value="high">Alta</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="taskType" class="form-label">Tipo</label>
-                            <select class="form-select" id="taskType" required>
-                                <option value="assignment">Trabalho</option>
-                                <option value="exam">Prova</option>
-                                <option value="other">Outro</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="subjectModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="subjectModalLabel">Nova Disciplina</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">Nova Disciplina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="subjectForm">
@@ -1190,132 +1265,122 @@
                         </div>
                         <div class="mb-3">
                             <label for="subjectProfessor" class="form-label">Professor</label>
-                            <input type="text" class="form-control" id="subjectProfessor" required>
+                            <input type="text" class="form-control" id="subjectProfessor">
                         </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <div class="mb-3">
+                            <label for="subjectCredits" class="form-label">Créditos</label>
+                            <input type="number" class="form-control" id="subjectCredits" min="1" max="10" value="4">
+                        </div>
+                        <div class="mb-3">
+                            <label for="subjectGrade" class="form-label">Nota Atual</label>
+                            <input type="number" class="form-control" id="subjectGrade" min="0" max="10" step="0.1">
+                        </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveSubject">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="assignmentModal" tabindex="-1">
+    <!-- Modal para Trabalho -->
+    <div class="modal fade" id="assignmentModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="assignmentModalLabel">Novo Trabalho</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">Novo Trabalho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="assignmentForm">
                         <input type="hidden" id="assignmentId">
                         <div class="mb-3">
-                            <label for="assignmentName" class="form-label">Nome do Trabalho</label>
-                            <input type="text" class="form-control" id="assignmentName" required>
+                            <label for="assignmentTitle" class="form-label">Título do Trabalho</label>
+                            <input type="text" class="form-control" id="assignmentTitle" required>
                         </div>
                         <div class="mb-3">
                             <label for="assignmentSubject" class="form-label">Disciplina</label>
-                            <select class="form-select" id="assignmentSubject" required>
-                                <option value="">Selecione a disciplina</option>
-                            </select>
+                            <select class="form-select" id="assignmentSubject" required></select>
                         </div>
                         <div class="mb-3">
                             <label for="assignmentDueDate" class="form-label">Data de Entrega</label>
                             <input type="date" class="form-control" id="assignmentDueDate" required>
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="assignmentDone">
-                                <label class="form-check-label" for="assignmentDone">Concluído</label>
-                            </div>
-                        </div>
-                        <div class="mb-3" id="assignmentGradeContainer">
                             <label for="assignmentGrade" class="form-label">Nota</label>
-                            <input type="number" step="0.1" class="form-control" id="assignmentGrade" min="0" max="10">
+                            <input type="number" class="form-control" id="assignmentGrade" min="0" max="10" step="0.1">
                         </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <div class="mb-3">
+                            <label for="assignmentStatus" class="form-label">Status</label>
+                            <select class="form-select" id="assignmentStatus">
+                                <option value="pending">Pendente</option>
+                                <option value="completed">Concluído</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignmentDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="assignmentDescription" rows="3"></textarea>
+                        </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveAssignment">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="examModal" tabindex="-1">
+    <!-- Modal para Prova -->
+    <div class="modal fade" id="examModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="examModalLabel">Nova Prova</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">Nova Prova</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="examForm">
                         <input type="hidden" id="examId">
                         <div class="mb-3">
-                            <label for="examName" class="form-label">Nome da Prova</label>
-                            <input type="text" class="form-control" id="examName" required>
+                            <label for="examTitle" class="form-label">Título da Prova</label>
+                            <input type="text" class="form-control" id="examTitle" required>
                         </div>
                         <div class="mb-3">
                             <label for="examSubject" class="form-label">Disciplina</label>
-                            <select class="form-select" id="examSubject" required>
-                                <option value="">Selecione a disciplina</option>
-                            </select>
+                            <select class="form-select" id="examSubject" required></select>
                         </div>
                         <div class="mb-3">
                             <label for="examDate" class="form-label">Data da Prova</label>
                             <input type="date" class="form-control" id="examDate" required>
                         </div>
-                        <div class="mb-3" id="examGradeContainer">
+                        <div class="mb-3">
                             <label for="examGrade" class="form-label">Nota</label>
-                            <input type="number" step="0.1" class="form-control" id="examGrade" min="0" max="10">
+                            <input type="number" class="form-control" id="examGrade" min="0" max="10" step="0.1">
                         </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <div class="mb-3">
+                            <label for="examDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="examDescription" rows="3"></textarea>
+                        </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveExam">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="hoursModal" tabindex="-1">
+    <!-- Modal para Evento -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="hoursModalLabel">Nova Atividade Complementar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="hoursForm">
-                        <input type="hidden" id="hoursId">
-                        <div class="mb-3">
-                            <label for="hoursActivity" class="form-label">Atividade</label>
-                            <input type="text" class="form-control" id="hoursActivity" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="hoursAmount" class="form-label">Horas</label>
-                            <input type="number" class="form-control" id="hoursAmount" required min="1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="hoursDate" class="form-label">Data</label>
-                            <input type="date" class="form-control" id="hoursDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="hoursApproved">
-                                <label class="form-check-label" for="hoursApproved">Aprovada</label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="eventModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalLabel">Novo Evento na Agenda</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">Novo Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="eventForm">
@@ -1325,47 +1390,106 @@
                             <input type="text" class="form-control" id="eventTitle" required>
                         </div>
                         <div class="mb-3">
-                            <label for="eventDateTime" class="form-label">Data e Hora</label>
-                            <input type="datetime-local" class="form-control" id="eventDateTime" required>
+                            <label for="eventDate" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="eventDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventTime" class="form-label">Hora</label>
+                            <input type="time" class="form-control" id="eventTime">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventPriority" class="form-label">Prioridade</label>
+                            <select class="form-select" id="eventPriority">
+                                <option value="high">Alta</option>
+                                <option value="medium">Média</option>
+                                <option value="low">Baixa</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="eventDescription" class="form-label">Descrição</label>
                             <textarea class="form-control" id="eventDescription" rows="3"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="eventPriority" class="form-label">Prioridade</label>
-                            <select class="form-select" id="eventPriority" required>
-                                <option value="low">Baixa</option>
-                                <option value="medium">Média</option>
-                                <option value="high">Alta</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveEvent">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleModal" tabindex="-1">
+    <!-- Modal para Horas Complementares -->
+    <div class="modal fade" id="hoursModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="scheduleModalLabel">Nova Aula</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">Nova Atividade de Horas Complementares</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="hoursForm">
+                        <input type="hidden" id="hoursId">
+                        <div class="mb-3">
+                            <label for="hoursTitle" class="form-label">Título da Atividade</label>
+                            <input type="text" class="form-control" id="hoursTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursDate" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="hoursDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursAmount" class="form-label">Quantidade de Horas</label>
+                            <input type="number" class="form-control" id="hoursAmount" min="1" max="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursCategory" class="form-label">Categoria</label>
+                            <select class="form-select" id="hoursCategory" required>
+                                <option value="courses">Cursos</option>
+                                <option value="events">Eventos</option>
+                                <option value="lectures">Palestras</option>
+                                <option value="research">Pesquisa</option>
+                                <option value="extension">Extensão</option>
+                                <option value="internship">Estágio</option>
+                                <option value="other">Outros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursStatus" class="form-label">Status</label>
+                            <select class="form-select" id="hoursStatus">
+                                <option value="pending">Pendente</option>
+                                <option value="approved">Aprovado</option>
+                                <option value="rejected">Rejeitado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoursDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="hoursDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveHours">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Aula no Horário -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nova Aula</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="scheduleForm">
                         <input type="hidden" id="scheduleId">
                         <div class="mb-3">
                             <label for="scheduleSubject" class="form-label">Disciplina</label>
-                            <select class="form-select" id="scheduleSubject" required>
-                                <option value="">Selecione a disciplina</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="scheduleProfessor" class="form-label">Professor</label>
-                            <input type="text" class="form-control" id="scheduleProfessor">
+                            <select class="form-select" id="scheduleSubject" required></select>
                         </div>
                         <div class="mb-3">
                             <label for="scheduleDay" class="form-label">Dia da Semana</label>
@@ -1375,1214 +1499,1517 @@
                                 <option value="3">Quarta-feira</option>
                                 <option value="4">Quinta-feira</option>
                                 <option value="5">Sexta-feira</option>
+                                <option value="6">Sábado</option>
                             </select>
                         </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label for="scheduleStartTime" class="form-label">Hora de Início</label>
-                                <input type="time" class="form-control" id="scheduleStartTime" required>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="scheduleEndTime" class="form-label">Hora de Fim</label>
-                                <input type="time" class="form-control" id="scheduleEndTime" required>
-                            </div>
+                        <div class="mb-3">
+                            <label for="scheduleTime" class="form-label">Horário</label>
+                            <select class="form-select" id="scheduleTime" required>
+                                <option value="1">07:00 - 08:00</option>
+                                <option value="2">08:00 - 09:00</option>
+                                <option value="3">09:00 - 10:00</option>
+                                <option value="4">10:00 - 11:00</option>
+                                <option value="5">11:00 - 12:00</option>
+                                <option value="6">13:00 - 14:00</option>
+                                <option value="7">14:00 - 15:00</option>
+                                <option value="8">15:00 - 16:00</option>
+                                <option value="9">16:00 - 17:00</option>
+                                <option value="10">17:00 - 18:00</option>
+                                <option value="11">18:00 - 19:00</option>
+                                <option value="12">19:00 - 20:00</option>
+                                <option value="13">20:00 - 21:00</option>
+                                <option value="14">21:00 - 22:00</option>
+                            </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <div class="mb-3">
+                            <label for="scheduleShift" class="form-label">Turno</label>
+                            <select class="form-select" id="scheduleShift" required>
+                                <option value="morning">Manhã</option>
+                                <option value="afternoon">Tarde</option>
+                                <option value="night">Noite</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleRoom" class="form-label">Sala</label>
+                            <input type="text" class="form-control" id="scheduleRoom">
+                        </div>
                     </form>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para visualização de eventos do dia -->
-    <div class="modal fade" id="dayEventsModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dayEventsModalTitle">Eventos do Dia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="dayEventsModalBody">
-                    <!-- Conteúdo gerado dinamicamente -->
-                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para detalhes do evento -->
-    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content event-details-modal">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventDetailsModalTitle">Detalhes do Evento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="eventDetailsModalBody">
-                    <!-- Conteúdo gerado dinamicamente -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" id="editEventBtn">Editar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveSchedule">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // =====================================================================
-        // Estruturas de dados (simulam um banco de dados)
-        // =====================================================================
-        let tasks = [];
-        let subjects = [];
-        let assignments = [];
-        let exams = [];
-        let events = [];
-        let schedule = [];
-        let complementaryHours = [];
-        let academicGoals = {
-            totalHours: 200,
-            requiredAvg: 7.0
-        };
-
-        // =====================================================================
-        // Lógica de persistência de dados - CORRIGIDA
-        // =====================================================================
-        const saveToLocalStorage = () => {
-            const dataToSave = { 
-                tasks, subjects, assignments, exams, events, 
-                schedule, complementaryHours, academicGoals 
-            };
-            localStorage.setItem('academicData', JSON.stringify(dataToSave));
-        };
-
-        const loadFromLocalStorage = () => {
-            const storedData = localStorage.getItem('academicData');
-            if (storedData) {
-                try {
-                    const data = JSON.parse(storedData);
-                    tasks = data.tasks || [];
-                    subjects = data.subjects || [];
-                    assignments = data.assignments || [];
-                    exams = data.exams || [];
-                    events = data.events || [];
-                    schedule = data.schedule || [];
-                    complementaryHours = data.complementaryHours || [];
-                    academicGoals = data.academicGoals || { totalHours: 200, requiredAvg: 7.0 };
-                } catch (e) {
-                    console.error("Erro ao carregar dados:", e);
-                    // Inicializa com valores padrão se houver erro na leitura
-                    initializeDefaultData();
-                }
-            } else {
-                initializeDefaultData();
+        // Inicialização de dados
+        const initializeData = () => {
+            if (!localStorage.getItem('academicData')) {
+                const initialData = {
+                    subjects: [],
+                    assignments: [],
+                    exams: [],
+                    events: [],
+                    schedule: [],
+                    hours: [],
+                    settings: {
+                        currentSemester: 1,
+                        requiredHours: 200,
+                        notifications: true
+                    }
+                };
+                localStorage.setItem('academicData', JSON.stringify(initialData));
             }
+            return JSON.parse(localStorage.getItem('academicData'));
         };
 
-        const initializeDefaultData = () => {
-            // Dados iniciais para demonstração
-            subjects = [
-                { id: 1, name: "Direito Civil I", professor: "Dr. Silva" },
-                { id: 2, name: "Direito Penal", professor: "Dra. Costa" },
-                { id: 3, name: "Direito Constitucional", professor: "Dr. Oliveira" }
-            ];
-            
-            tasks = [
-                { id: 1, name: "Resumo Capítulo 3", subject: "Direito Civil I", date: new Date().toISOString().split('T')[0], priority: "medium", type: "assignment" },
-                { id: 2, name: "Estudo Caso Penal", subject: "Direito Penal", date: new Date(Date.now() + 86400000).toISOString().split('T')[0], priority: "high", type: "exam" }
-            ];
-            
-            assignments = [
-                { id: 1, name: "Trabalho sobre Contratos", subject: "Direito Civil I", grade: 8.5, dueDate: new Date().toISOString().split('T')[0], done: true },
-                { id: 2, name: "Análise de Caso", subject: "Direito Penal", grade: null, dueDate: new Date(Date.now() + 86400000 * 7).toISOString().split('T')[0], done: false }
-            ];
-            
-            exams = [
-                { id: 1, name: "Prova Bimestral", subject: "Direito Civil I", grade: 7.5, date: new Date(Date.now() + 86400000 * 14).toISOString().split('T')[0] },
-                { id: 2, name: "Avaliação Parcial", subject: "Direito Penal", grade: null, date: new Date(Date.now() + 86400000 * 21).toISOString().split('T')[0] }
-            ];
-            
-            saveToLocalStorage();
+        // Salvar dados
+        const saveData = (data) => {
+            localStorage.setItem('academicData', JSON.stringify(data));
         };
 
-        // Carrega os dados ao iniciar a aplicação
-        loadFromLocalStorage();
-
-        // =====================================================================
-        // Lógica de Navegação entre Painéis - CORRIGIDA
-        // =====================================================================
-        const navLinks = document.querySelectorAll('.nav-link, .card-link');
-        const contentPanels = document.querySelectorAll('.content-panel');
-        const backButtons = document.querySelectorAll('.back-btn');
-        const homePanel = document.getElementById('home-links');
-
-        // Função para mostrar um painel e esconder os outros
-        const showPanel = (targetId) => {
-            contentPanels.forEach(panel => {
-                panel.classList.remove('active');
-            });
-            
-            // Atualiza a navegação ativa
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-target') === targetId) {
-                    link.classList.add('active');
-                }
-            });
-            
-            const targetPanel = document.getElementById(targetId);
-            if (targetPanel) {
-                targetPanel.classList.add('active');
-            }
-            
-            // Renderiza o conteúdo do painel
-            renderAll();
+        // Obter dados atuais
+        const getData = () => {
+            return JSON.parse(localStorage.getItem('academicData'));
         };
 
-        // Lógica para mostrar o painel selecionado
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+        // Navegação
+        document.querySelectorAll('.nav-link, .card-link').forEach(item => {
+            item.addEventListener('click', function(e) {
                 e.preventDefault();
-                const targetId = link.getAttribute('data-target');
-                showPanel(targetId);
+                const target = this.getAttribute('data-target');
+                
+                // Esconder todos os painéis
+                document.querySelectorAll('.content-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                
+                // Mostrar o painel alvo
+                document.getElementById(target).classList.add('active');
+                
+                // Atualizar navegação ativa
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                if (this.classList.contains('nav-link')) {
+                    this.classList.add('active');
+                } else {
+                    // Encontrar o link de navegação correspondente
+                    const navLink = document.querySelector(`.nav-link[data-target="${target}"]`);
+                    if (navLink) {
+                        navLink.classList.add('active');
+                    }
+                }
+                
+                // Atualizar dados específicos do painel
+                if (target === 'dashboard') {
+                    updateDashboard();
+                } else if (target === 'disciplinas') {
+                    loadSubjects();
+                } else if (target === 'trabalhos') {
+                    loadAssignments();
+                } else if (target === 'provas') {
+                    loadExams();
+                } else if (target === 'agenda') {
+                    loadEvents();
+                } else if (target === 'relatorio') {
+                    generateReport();
+                } else if (target === 'quadro-horarios') {
+                    loadSchedule();
+                } else if (target === 'horas') {
+                    loadHours();
+                } else if (target === 'config') {
+                    loadSettings();
+                }
             });
         });
 
-        // Lógica para voltar para o menu principal
-        backButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                showPanel('home-links');
+        // Botões de voltar
+        document.querySelectorAll('.back-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.content-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.getElementById('home-links').classList.add('active');
+                
+                // Resetar navegação ativa
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector('.nav-link[data-target="home-links"]').classList.add('active');
             });
         });
 
-        // Toggle da sidebar em mobile
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
+        // Toggle sidebar em mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('open');
         });
 
-        // Fecha a sidebar ao clicar em un link (em mobile)
-        if (window.innerWidth <= 992) {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    document.getElementById('sidebar').classList.remove('open');
-                });
-            });
-        }
-
-        // =====================================================================
-        // Funções de Renderização e Atualização do Dashboard
-        // =====================================================================
-        const tasksTableBody = document.getElementById('tasksTableBody');
-        const tasksModal = new bootstrap.Modal(document.getElementById('taskModal'));
-        const taskForm = document.getElementById('taskForm');
-        const calendarMonthYear = document.getElementById('calendarMonthYear');
-        const calendarDays = document.getElementById('calendarDays');
+        // Inicializar calendário
         let currentDate = new Date();
-
-        const subjectsTableBody = document.getElementById('subjectsTableBody');
-        const subjectModal = new bootstrap.Modal(document.getElementById('subjectModal'));
-        const subjectForm = document.getElementById('subjectForm');
-
-        const assignmentsTableBody = document.getElementById('assignmentsTableBody');
-        const assignmentModal = new bootstrap.Modal(document.getElementById('assignmentModal'));
-        const assignmentForm = document.getElementById('assignmentForm');
-        const assignmentGradeContainer = document.getElementById('assignmentGradeContainer');
-        const assignmentDueDateInput = document.getElementById('assignmentDueDate');
-
-        const examsTableBody = document.getElementById('examsTableBody');
-        const examModal = new bootstrap.Modal(document.getElementById('examModal'));
-        const examForm = document.getElementById('examForm');
-        const examGradeContainer = document.getElementById('examGradeContainer');
-        const examDateInput = document.getElementById('examDate');
-        
-        const eventsTableBody = document.getElementById('eventsTableBody');
-        const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
-        const eventForm = document.getElementById('eventForm');
-        
-        const scheduleGrid = document.getElementById('scheduleGrid');
-        const scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'));
-        const scheduleForm = document.getElementById('scheduleForm');
-
-        const hoursTableBody = document.getElementById('hoursTableBody');
-        const hoursModal = new bootstrap.Modal(document.getElementById('hoursModal'));
-        const hoursForm = document.getElementById('hoursForm');
-
-        const goalForm = document.getElementById('goalForm');
-        
-        const backupBtn = document.getElementById('backupBtn');
-        const restoreFile = document.getElementById('restoreFile');
-        const restoreBtn = document.getElementById('restoreBtn');
-        
-        const dayEventsModal = new bootstrap.Modal(document.getElementById('dayEventsModal'));
-        const dayEventsModalTitle = document.getElementById('dayEventsModalTitle');
-        const dayEventsModalBody = document.getElementById('dayEventsModalBody');
-        
-        const eventDetailsModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
-        const eventDetailsModalTitle = document.getElementById('eventDetailsModalTitle');
-        const eventDetailsModalBody = document.getElementById('eventDetailsModalBody');
-        
-        const editEventBtn = document.getElementById('editEventBtn');
-        
-        const pendingAssignmentsReport = document.getElementById('pendingAssignmentsReport');
-        const pendingExamsReport = document.getElementById('pendingExamsReport');
-        const pendingEventsReport = document.getElementById('pendingEventsReport');
-        
-        const printReportBtn = document.getElementById('printReport');
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
 
         const renderCalendar = () => {
-            currentDate.setDate(1);
-            const month = currentDate.getMonth();
-            const year = currentDate.getFullYear();
-            calendarMonthYear.textContent = `${currentDate.toLocaleString('pt-BR', { month: 'long' })} ${year}`;
+            const monthYearElement = document.getElementById('calendarMonthYear');
+            const calendarDaysElement = document.getElementById('calendarDays');
             
-            const firstDayIndex = currentDate.getDay();
-            const lastDay = new Date(year, month + 1, 0).getDate();
-            const prevLastDay = new Date(year, month, 0).getDate();
-            const lastDayIndex = new Date(year, month, lastDay).getDay();
-            const nextDays = 7 - lastDayIndex - 1;
-
-            const today = new Date().setHours(0,0,0,0);
-            let daysHtml = '';
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             
-            // Dias do mês anterior
-            for (let x = firstDayIndex; x > 0; x--) { 
-                daysHtml += `<div class="col p-1"><div class="calendar-day empty">${prevLastDay - x + 1}</div></div>`; 
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                               "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            
+            monthYearElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            calendarDaysElement.innerHTML = '';
+            
+            // Dias vazios no início
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'col calendar-day empty';
+                calendarDaysElement.appendChild(emptyDay);
             }
             
-            // Dias do mês atual
-            for (let i = 1; i <= lastDay; i++) {
-                const dayDate = new Date(year, month, i).setHours(0,0,0,0);
-                let classes = 'calendar-day';
-                if (dayDate === today) classes += ' current';
+            // Dias do mês
+            const today = new Date();
+            const data = getData();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'col calendar-day';
                 
-                // Verifica se há eventos neste dia
-                const dayEvents = getEventsForDate(new Date(year, month, i));
-                if (dayEvents.length > 0) {
-                    classes += ' has-event';
+                // Verificar se é o dia atual
+                if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+                    dayElement.classList.add('current');
                 }
                 
-                daysHtml += `<div class="col p-1" data-day="${i}" data-month="${month}" data-year="${year}">
-                    <div class="${classes}">${i}`;
+                dayElement.textContent = day;
                 
-                // Adiciona indicadores de tipo de evento
+                // Verificar se há eventos neste dia
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = data.events.filter(event => event.date === dateStr);
+                
                 if (dayEvents.length > 0) {
-                    daysHtml += `<div class="event-indicator">`;
+                    dayElement.classList.add('has-event');
                     
-                    // Verifica tipos de eventos para mostrar os indicadores corretos
-                    const eventTypes = new Set(dayEvents.map(event => {
-                        if (event.type === 'assignment' || (event.dueDate && !event.date)) return 'assignment';
-                        if (event.type === 'exam' || event.date) return 'exam';
-                        return 'other';
-                    }));
+                    // Adicionar indicadores de eventos
+                    const eventIndicator = document.createElement('div');
+                    eventIndicator.className = 'event-indicator';
                     
-                    eventTypes.forEach(type => {
-                        daysHtml += `<span class="event-dot ${type}"></span>`;
+                    dayEvents.forEach(event => {
+                        const eventDot = document.createElement('span');
+                        eventDot.className = 'event-dot';
+                        
+                        if (event.priority === 'high') {
+                            eventDot.classList.add('exam');
+                        } else if (event.priority === 'medium') {
+                            eventDot.classList.add('assignment');
+                        } else {
+                            eventDot.classList.add('other');
+                        }
+                        
+                        eventIndicator.appendChild(eventDot);
                     });
                     
-                    daysHtml += `</div>`;
+                    dayElement.appendChild(eventIndicator);
+                    
+                    // Adicionar popup de eventos ao clicar
+                    dayElement.addEventListener('click', function() {
+                        showDayEvents(dateStr, dayEvents, this);
+                    });
                 }
                 
-                daysHtml += `</div></div>`;
+                calendarDaysElement.appendChild(dayElement);
             }
-            
-            // Dias do próximo mês
-            for (let j = 1; j <= nextDays; j++) { 
-                daysHtml += `<div class="col p-1"><div class="calendar-day empty">${j}</div></div>`; 
-            }
-            
-            calendarDays.innerHTML = daysHtml;
         };
-        
-        // Função para obter eventos de uma data específica
-        const getEventsForDate = (date) => {
-            const dateString = date.toISOString().split('T')[0];
-            const eventsForDate = [];
-            
-            // Verifica tarefas
-            tasks.forEach(task => {
-                const taskDate = new Date(task.date).toISOString().split('T')[0];
-                if (taskDate === dateString) {
-                    eventsForDate.push({...task, eventType: 'task'});
-                }
-            });
-            
-            // Verifica trabalhos
-            assignments.forEach(assignment => {
-                const assignmentDate = new Date(assignment.dueDate).toISOString().split('T')[0];
-                if (assignmentDate === dateString) {
-                    eventsForDate.push({...assignment, eventType: 'assignment'});
-                }
-            });
-            
-            // Verifica provas
-            exams.forEach(exam => {
-                const examDate = new Date(exam.date).toISOString().split('T')[0];
-                if (examDate === dateString) {
-                    eventsForDate.push({...exam, eventType: 'exam'});
-                }
-            });
-            
-            // Verifica eventos da agenda
-            events.forEach(event => {
-                const eventDate = new Date(event.dateTime).toISOString().split('T')[0];
-                if (eventDate === dateString) {
-                    eventsForDate.push({...event, eventType: 'event'});
-                }
-            });
-            
-            return eventsForDate;
-        };
-        
-        // Event listener para clicar em dias do calendário
-        calendarDays.addEventListener('click', (e) => {
-            const dayElement = e.target.closest('.calendar-day:not(.empty)');
-            if (dayElement) {
-                const day = dayElement.textContent.match(/\d+/)[0]; // Extrai apenas o número do dia
-                const month = dayElement.parentElement.dataset.month;
-                const year = dayElement.parentElement.dataset.year;
-                
-                const clickedDate = new Date(year, month, day);
-                const eventsForDate = getEventsForDate(clickedDate);
-                
-                if (eventsForDate.length > 0) {
-                    showDayEvents(clickedDate, eventsForDate);
-                }
+
+        // Mostrar eventos do dia
+        const showDayEvents = (dateStr, events, element) => {
+            // Remover popup existente
+            const existingPopup = document.querySelector('.calendar-event-popup');
+            if (existingPopup) {
+                existingPopup.remove();
             }
-        });
-        
-        // Função para mostrar eventos de um dia
-        const showDayEvents = (date, events) => {
-            const formattedDate = date.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            dayEventsModalTitle.textContent = `Eventos para ${formattedDate}`;
             
-            let eventsHtml = '';
+            const popup = document.createElement('div');
+            popup.className = 'calendar-event-popup';
+            
+            const formattedDate = new Date(dateStr).toLocaleDateString('pt-BR');
+            popup.innerHTML = `<h6 class="mb-3">Eventos em ${formattedDate}</h6>`;
             
             if (events.length === 0) {
-                eventsHtml = '<p class="text-center">Nenhum evento para esta data.</p>';
+                popup.innerHTML += '<p class="text-muted">Nenhum evento para este dia.</p>';
             } else {
                 events.forEach(event => {
-                    let typeBadge = '';
-                    let timeInfo = '';
+                    const priorityClass = event.priority === 'high' ? 'priority-high' : 
+                                        event.priority === 'medium' ? 'priority-medium' : 'priority-low';
+                    const priorityText = event.priority === 'high' ? 'Alta' : 
+                                        event.priority === 'medium' ? 'Média' : 'Baixa';
                     
-                    if (event.eventType === 'assignment') {
-                        typeBadge = '<span class="badge bg-info">Trabalho</span>';
-                        timeInfo = `Entrega: ${new Date(event.dueDate).toLocaleDateString('pt-BR')}`;
-                    } else if (event.eventType === 'exam') {
-                        typeBadge = '<span class="badge bg-danger">Prova</span>';
-                        timeInfo = `Data: ${new Date(event.date).toLocaleDateString('pt-BR')}`;
-                    } else if (event.eventType === 'event') {
-                        typeBadge = '<span class="badge bg-warning">Evento</span>';
-                        timeInfo = `Horário: ${new Date(event.dateTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-                    } else {
-                        typeBadge = '<span class="badge bg-secondary">Tarefa</span>';
-                        timeInfo = `Data: ${new Date(event.date).toLocaleDateString('pt-BR')}`;
-                    }
-                    
-                    eventsHtml += `
-                        <div class="event-item ${event.eventType} ${event.done ? 'completed' : ''}" data-id="${event.id}" data-type="${event.eventType}">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6>${event.name || event.title}</h6>
-                                    <p class="mb-1">${event.subject || ''}</p>
-                                    <small class="text-muted">${timeInfo}</small>
-                                </div>
-                                <div>${typeBadge}</div>
-                            </div>
+                    const eventItem = document.createElement('div');
+                    eventItem.className = 'calendar-event-item';
+                    eventItem.innerHTML = `
+                        <strong>${event.title}</strong>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small>${event.time || ''}</small>
+                            <span class="badge ${priorityClass}">${priorityText}</span>
                         </div>
                     `;
+                    popup.appendChild(eventItem);
                 });
             }
             
-            dayEventsModalBody.innerHTML = eventsHtml;
-            dayEventsModal.show();
+            document.body.appendChild(popup);
             
-            // Adiciona event listeners para os itens de evento
-            document.querySelectorAll('.event-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const eventId = item.getAttribute('data-id');
-                    const eventType = item.getAttribute('data-type');
-                    showEventDetails(eventId, eventType);
+            // Posicionar o popup próximo ao elemento clicado
+            const rect = element.getBoundingClientRect();
+            popup.style.top = `${rect.bottom + window.scrollY + 5}px`;
+            popup.style.left = `${rect.left + window.scrollX}px`;
+            
+            // Fechar o popup ao clicar fora
+            setTimeout(() => {
+                document.addEventListener('click', function closePopup(e) {
+                    if (!popup.contains(e.target) && e.target !== element) {
+                        popup.remove();
+                        document.removeEventListener('click', closePopup);
+                    }
+                });
+            }, 100);
+        };
+
+        // Navegação do calendário
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        // Alternar turnos no quadro de horários
+        document.querySelectorAll('.shift-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const shift = this.getAttribute('data-shift');
+                
+                // Ativar botão clicado
+                document.querySelectorAll('.shift-toggle-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Mostrar grade correspondente
+                document.querySelectorAll('.schedule-grid').forEach(grid => {
+                    grid.classList.add('hidden-shift');
+                });
+                document.getElementById(`${shift}Schedule`).classList.remove('hidden-shift');
+            });
+        });
+
+        // Carregar disciplinas
+        const loadSubjects = () => {
+            const data = getData();
+            const tableBody = document.getElementById('subjectsTableBody');
+            tableBody.innerHTML = '';
+            
+            if (data.subjects.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma disciplina cadastrada.</td></tr>';
+                return;
+            }
+            
+            data.subjects.forEach(subject => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subject.name}</td>
+                    <td>${subject.professor || '-'}</td>
+                    <td>${subject.credits}</td>
+                    <td>${subject.grade ? subject.grade.toFixed(1) : '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-subject" data-id="${subject.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-subject" data-id="${subject.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.edit-subject').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const subjectId = this.getAttribute('data-id');
+                    editSubject(subjectId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-subject').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const subjectId = this.getAttribute('data-id');
+                    deleteSubject(subjectId);
                 });
             });
         };
-        
-        // Função para mostrar detalhes de um evento
-        const showEventDetails = (id, type) => {
-            let event = null;
-            let modalTitle = '';
+
+        // Carregar trabalhos
+        const loadAssignments = () => {
+            const data = getData();
+            const tableBody = document.getElementById('assignmentsTableBody');
+            tableBody.innerHTML = '';
             
-            if (type === 'assignment') {
-                event = assignments.find(a => a.id == id);
-                modalTitle = 'Detalhes do Trabalho';
-            } else if (type === 'exam') {
-                event = exams.find(e => e.id == id);
-                modalTitle = 'Detalhes da Prova';
-            } else if (type === 'event') {
-                event = events.find(ev => ev.id == id);
-                modalTitle = 'Detalhes do Evento';
-            } else if (type === 'task') {
-                event = tasks.find(t => t.id == id);
-                modalTitle = 'Detalhes da Tarefa';
+            if (data.assignments.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum trabalho cadastrado.</td></tr>';
+                return;
             }
             
-            if (!event) return;
-            
-            eventDetailsModalTitle.textContent = modalTitle;
-            
-            let eventHtml = '';
-            
-            if (type === 'assignment') {
-                eventHtml = `
-                    <div class="event-info">
-                        <h5>${event.name}</h5>
-                    </div>
-                    <div class="event-info">
-                        <strong>Disciplina:</strong> ${event.subject}
-                    </div>
-                    <div class="event-info">
-                        <strong>Data de Entrega:</strong> ${new Date(event.dueDate).toLocaleDateString('pt-BR')}
-                    </div>
-                    <div class="event-info">
-                        <strong>Status:</strong> ${event.done ? '<span class="badge bg-success">Concluído</span>' : '<span class="badge bg-warning">Pendente</span>'}
-                    </div>
-                    <div class="event-info">
-                        <strong>Nota:</strong> ${event.grade !== null ? event.grade.toFixed(1) : 'N/A'}
-                    </div>
-                `;
-            } else if (type === 'exam') {
-                eventHtml = `
-                    <div class="event-info">
-                        <h5>${event.name}</h5>
-                    </div>
-                    <div class="event-info">
-                        <strong>Disciplina:</strong> ${event.subject}
-                    </div>
-                    <div class="event-info">
-                        <strong>Data da Prova:</strong> ${new Date(event.date).toLocaleDateString('pt-BR')}
-                    </div>
-                    <div class="event-info">
-                        <strong>Nota:</strong> ${event.grade !== null ? event.grade.toFixed(1) : 'N/A'}
-                    </div>
-                `;
-            } else if (type === 'event') {
-                eventHtml = `
-                    <div class="event-info">
-                        <h5>${event.title}</h5>
-                    </div>
-                    <div class="event-info">
-                        <strong>Data e Hora:</strong> ${new Date(event.dateTime).toLocaleString('pt-BR')}
-                    </div>
-                    <div class="event-info">
-                        <strong>Descrição:</strong> ${event.description || 'Nenhuma descrição'}
-                    </div>
-                    <div class="event-info">
-                        <strong>Prioridade:</strong> <span class="badge-priority priority-${event.priority}">${event.priority === 'high' ? 'Alta' : event.priority === 'medium' ? 'Média' : 'Baixa'}</span>
-                    </div>
-                `;
-            } else if (type === 'task') {
-                eventHtml = `
-                    <div class="event-info">
-                        <h5>${event.name}</h5>
-                    </div>
-                    <div class="event-info">
-                        <strong>Disciplina:</strong> ${event.subject}
-                    </div>
-                    <div class="event-info">
-                        <strong>Data:</strong> ${new Date(event.date).toLocaleDateString('pt-BR')}
-                    </div>
-                    <div class="event-info">
-                        <strong>Tipo:</strong> ${event.type === 'assignment' ? 'Trabalho' : event.type === 'exam' ? 'Prova' : 'Outro'}
-                    </div>
-                    <div class="event-info">
-                        <strong>Prioridade:</strong> <span class="badge-priority priority-${event.priority}">${event.priority === 'high' ? 'Alta' : event.priority === 'medium' ? 'Média' : 'Baixa'}</span>
-                    </div>
-                `;
-            }
-            
-            eventDetailsModalBody.innerHTML = eventHtml;
-            
-            // Configura o botão de edição
-            editEventBtn.onclick = () => {
-                eventDetailsModal.hide();
+            data.assignments.forEach(assignment => {
+                const dueDate = new Date(assignment.dueDate).toLocaleDateString('pt-BR');
+                const statusClass = assignment.status === 'completed' ? 'badge bg-success' : 'badge bg-warning';
+                const statusText = assignment.status === 'completed' ? 'Concluído' : 'Pendente';
                 
-                if (type === 'assignment') {
-                    populateForm('assignment', event);
-                    assignmentModal.show();
-                } else if (type === 'exam') {
-                    populateForm('exam', event);
-                    examModal.show();
-                } else if (type === 'event') {
-                    populateForm('event', event);
-                    eventModal.show();
-                } else if (type === 'task') {
-                    populateForm('task', event);
-                    tasksModal.show();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${assignment.title}</td>
+                    <td>${assignment.subject}</td>
+                    <td>${assignment.grade ? assignment.grade.toFixed(1) : '-'}</td>
+                    <td>${dueDate}</td>
+                    <td><span class="${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-assignment" data-id="${assignment.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-assignment" data-id="${assignment.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.edit-assignment').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const assignmentId = this.getAttribute('data-id');
+                    editAssignment(assignmentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-assignment').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const assignmentId = this.getAttribute('data-id');
+                    deleteAssignment(assignmentId);
+                });
+            });
+        };
+
+        // Carregar provas
+        const loadExams = () => {
+            const data = getData();
+            const tableBody = document.getElementById('examsTableBody');
+            tableBody.innerHTML = '';
+            
+            if (data.exams.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma prova cadastrada.</td></tr>';
+                return;
+            }
+            
+            data.exams.forEach(exam => {
+                const examDate = new Date(exam.date).toLocaleDateString('pt-BR');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${exam.title}</td>
+                    <td>${exam.subject}</td>
+                    <td>${exam.grade ? exam.grade.toFixed(1) : '-'}</td>
+                    <td>${examDate}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-exam" data-id="${exam.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-exam" data-id="${exam.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.edit-exam').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const examId = this.getAttribute('data-id');
+                    editExam(examId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-exam').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const examId = this.getAttribute('data-id');
+                    deleteExam(examId);
+                });
+            });
+        };
+
+        // Carregar eventos
+        const loadEvents = () => {
+            const data = getData();
+            const tableBody = document.getElementById('eventsTableBody');
+            tableBody.innerHTML = '';
+            
+            if (data.events.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum evento cadastrado.</td></tr>';
+                return;
+            }
+            
+            data.events.forEach(event => {
+                const eventDate = new Date(event.date).toLocaleDateString('pt-BR');
+                const priorityClass = event.priority === 'high' ? 'badge bg-danger' : 
+                                    event.priority === 'medium' ? 'badge bg-warning' : 'badge bg-info';
+                const priorityText = event.priority === 'high' ? 'Alta' : 
+                                    event.priority === 'medium' ? 'Média' : 'Baixa';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${event.title}</td>
+                    <td>${eventDate} ${event.time ? `às ${event.time}` : ''}</td>
+                    <td>${event.description || '-'}</td>
+                    <td><span class="${priorityClass}">${priorityText}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-event" data-id="${event.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-event" data-id="${event.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.edit-event').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const eventId = this.getAttribute('data-id');
+                    editEvent(eventId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-event').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const eventId = this.getAttribute('data-id');
+                    deleteEvent(eventId);
+                });
+            });
+        };
+
+        // Carregar horários
+        const loadSchedule = () => {
+            const data = getData();
+            
+            // Inicializar grades de horários
+            const shifts = ['morning', 'afternoon', 'night'];
+            shifts.forEach(shift => {
+                const scheduleGrid = document.getElementById(`${shift}Schedule`);
+                scheduleGrid.innerHTML = '';
+                
+                // Cabeçalho com dias da semana
+                const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                
+                // Adicionar célula vazia no canto superior esquerdo
+                const emptyHeader = document.createElement('div');
+                emptyHeader.className = 'schedule-header';
+                scheduleGrid.appendChild(emptyHeader);
+                
+                // Adicionar cabeçalhos dos dias
+                days.forEach(day => {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'schedule-header';
+                    dayHeader.textContent = day;
+                    scheduleGrid.appendChild(dayHeader);
+                });
+                
+                // Definir horários baseados no turno
+                let timeSlots = [];
+                if (shift === 'morning') {
+                    timeSlots = [
+                        { id: 1, time: '07:00 - 08:00' },
+                        { id: 2, time: '08:00 - 09:00' },
+                        { id: 3, time: '09:00 - 10:00' },
+                        { id: 4, time: '10:00 - 11:00' },
+                        { id: 5, time: '11:00 - 12:00' }
+                    ];
+                } else if (shift === 'afternoon') {
+                    timeSlots = [
+                        { id: 6, time: '13:00 - 14:00' },
+                        { id: 7, time: '14:00 - 15:00' },
+                        { id: 8, time: '15:00 - 16:00' },
+                        { id: 9, time: '16:00 - 17:00' },
+                        { id: 10, time: '17:00 - 18:00' }
+                    ];
+                } else {
+                    timeSlots = [
+                        { id: 11, time: '18:00 - 19:00' },
+                        { id: 12, time: '19:00 - 20:00' },
+                        { id: 13, time: '20:00 - 21:00' },
+                        { id: 14, time: '21:00 - 22:00' }
+                    ];
                 }
+                
+                // Adicionar células de horário
+                timeSlots.forEach(timeSlot => {
+                    // Célula de horário
+                    const timeCell = document.createElement('div');
+                    timeCell.className = 'schedule-time';
+                    timeCell.textContent = timeSlot.time;
+                    scheduleGrid.appendChild(timeCell);
+                    
+                    // Células para cada dia da semana
+                    for (let i = 1; i <= 6; i++) {
+                        const classCell = document.createElement('div');
+                        classCell.className = 'schedule-cell';
+                        
+                        // Verificar se há aula neste horário e dia
+                        const classData = data.schedule.find(s => 
+                            s.day === i && s.timeSlot === timeSlot.id && s.shift === shift
+                        );
+                        
+                        if (classData) {
+                            classCell.classList.add('has-class');
+                            classCell.innerHTML = `
+                                <div class="schedule-class-details">
+                                    <strong>${classData.subject}</strong>
+                                    ${classData.room ? `<br><small>Sala: ${classData.room}</small>` : ''}
+                                </div>
+                            `;
+                            
+                            classCell.addEventListener('click', function() {
+                                editSchedule(classData.id);
+                            });
+                        }
+                        
+                        scheduleGrid.appendChild(classCell);
+                    }
+                });
+            });
+        };
+
+        // Carregar horas complementares
+        const loadHours = () => {
+            const data = getData();
+            const tableBody = document.getElementById('hoursTableBody');
+            tableBody.innerHTML = '';
+            
+            // Atualizar estatísticas
+            const completedHours = data.hours
+                .filter(h => h.status === 'approved')
+                .reduce((sum, h) => sum + parseInt(h.hours), 0);
+            
+            const requiredHours = data.settings.requiredHours || 200;
+            const progressPercentage = Math.min(100, (completedHours / requiredHours) * 100);
+            
+            document.getElementById('completedHours').textContent = `${completedHours}h`;
+            document.getElementById('requiredHours').textContent = `${requiredHours}h`;
+            document.getElementById('hoursProgress').style.width = `${progressPercentage}%`;
+            
+            if (data.hours.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma atividade de horas complementares cadastrada.</td></tr>';
+                return;
+            }
+            
+            data.hours.forEach(activity => {
+                const activityDate = new Date(activity.date).toLocaleDateString('pt-BR');
+                const statusClass = activity.status === 'approved' ? 'badge bg-success' : 
+                                  activity.status === 'rejected' ? 'badge bg-danger' : 'badge bg-warning';
+                const statusText = activity.status === 'approved' ? 'Aprovado' : 
+                                  activity.status === 'rejected' ? 'Rejeitado' : 'Pendente';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.title}</td>
+                    <td>${activityDate}</td>
+                    <td>${activity.hours}h</td>
+                    <td>${activity.category}</td>
+                    <td><span class="${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-hours" data-id="${activity.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-hours" data-id="${activity.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.edit-hours').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const hoursId = this.getAttribute('data-id');
+                    editHours(hoursId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-hours').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const hoursId = this.getAttribute('data-id');
+                    deleteHours(hoursId);
+                });
+            });
+            
+            // Atualizar gráfico de distribuição
+            updateHoursChart(data.hours);
+        };
+
+        // Atualizar gráfico de horas complementares
+        const updateHoursChart = (hoursData) => {
+            const ctx = document.getElementById('hoursChart').getContext('2d');
+            
+            // Agrupar horas por categoria
+            const categories = {
+                courses: 0,
+                events: 0,
+                lectures: 0,
+                research: 0,
+                extension: 0,
+                internship: 0,
+                other: 0
             };
             
-            eventDetailsModal.show();
+            hoursData.filter(h => h.status === 'approved').forEach(activity => {
+                if (categories.hasOwnProperty(activity.category)) {
+                    categories[activity.category] += parseInt(activity.hours);
+                }
+            });
+            
+            // Criar gráfico
+            if (window.hoursChartInstance) {
+                window.hoursChartInstance.destroy();
+            }
+            
+            window.hoursChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Cursos', 'Eventos', 'Palestras', 'Pesquisa', 'Extensão', 'Estágio', 'Outros'],
+                    datasets: [{
+                        data: [
+                            categories.courses,
+                            categories.events,
+                            categories.lectures,
+                            categories.research,
+                            categories.extension,
+                            categories.internship,
+                            categories.other
+                        ],
+                        backgroundColor: [
+                            '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'
+                        ]
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
         };
-        
-        // Função para gerar relatório de pendências
-        const generateReports = () => {
-            // Relatório de trabalhos pendentes
-            const pendingAssignments = assignments.filter(a => !a.done);
+
+        // Carregar configurações
+        const loadSettings = () => {
+            const data = getData();
+            document.getElementById('currentSemester').value = data.settings.currentSemester || 1;
+            document.getElementById('requiredHoursInput').value = data.settings.requiredHours || 200;
+            document.getElementById('notificationsSwitch').checked = data.settings.notifications !== false;
+        };
+
+        // Atualizar dashboard
+        const updateDashboard = () => {
+            const data = getData();
+            
+            // Atualizar estatísticas
+            const pendingAssignments = data.assignments.filter(a => a.status !== 'completed').length;
+            const upcomingExams = data.exams.filter(e => !e.grade && new Date(e.date) >= new Date()).length;
+            
+            const completedHours = data.hours
+                .filter(h => h.status === 'approved')
+                .reduce((sum, h) => sum + parseInt(h.hours), 0);
+            
+            const requiredHours = data.settings.requiredHours || 200;
+            const progressPercentage = Math.min(100, (completedHours / requiredHours) * 100);
+            
+            // Calcular média geral
+            const gradedSubjects = data.subjects.filter(s => s.grade);
+            const averageGrade = gradedSubjects.length > 0 ? 
+                (gradedSubjects.reduce((sum, s) => sum + s.grade, 0) / gradedSubjects.length).toFixed(1) : 'N/A';
+            
+            document.getElementById('pendingAssignments').textContent = pendingAssignments;
+            document.getElementById('upcomingExams').textContent = upcomingExams;
+            document.getElementById('complementaryHours').textContent = `${completedHours}/${requiredHours}h`;
+            document.getElementById('hoursProgressBar').style.width = `${progressPercentage}%`;
+            document.getElementById('generalAverage').textContent = averageGrade;
+            
+            // Atualizar tabela de próximas atividades
+            const tasksTableBody = document.getElementById('tasksTableBody');
+            tasksTableBody.innerHTML = '';
+            
+            // Combinar trabalhos e provas
+            const allTasks = [
+                ...data.assignments.filter(a => a.status !== 'completed').map(a => ({
+                    type: 'assignment',
+                    title: a.title,
+                    subject: a.subject,
+                    date: a.dueDate,
+                    priority: a.priority || 'medium',
+                    id: a.id
+                })),
+                ...data.exams.filter(e => !e.grade).map(e => ({
+                    type: 'exam',
+                    title: e.title,
+                    subject: e.subject,
+                    date: e.date,
+                    priority: 'high',
+                    id: e.id
+                })),
+                ...data.events.map(e => ({
+                    type: 'event',
+                    title: e.title,
+                    subject: '-',
+                    date: e.date,
+                    priority: e.priority,
+                    id: e.id
+                }))
+            ];
+            
+            // Ordenar por data
+            allTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Mostrar apenas as 5 próximas
+            const upcomingTasks = allTasks.slice(0, 5);
+            
+            if (upcomingTasks.length === 0) {
+                tasksTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma atividade próxima.</td></tr>';
+                return;
+            }
+            
+            upcomingTasks.forEach(task => {
+                const taskDate = new Date(task.date).toLocaleDateString('pt-BR');
+                const priorityClass = task.priority === 'high' ? 'badge bg-danger' : 
+                                    task.priority === 'medium' ? 'badge bg-warning' : 'badge bg-info';
+                const priorityText = task.priority === 'high' ? 'Alta' : 
+                                    task.priority === 'medium' ? 'Média' : 'Baixa';
+                
+                const typeIcon = task.type === 'assignment' ? 'fa-tasks' : 
+                                task.type === 'exam' ? 'fa-file-alt' : 'fa-calendar';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><i class="fas ${typeIcon} me-2"></i> ${task.title}</td>
+                    <td>${task.subject}</td>
+                    <td>${taskDate}</td>
+                    <td><span class="${priorityClass}">${priorityText}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary view-task" data-type="${task.type}" data-id="${task.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tasksTableBody.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de visualizar
+            document.querySelectorAll('.view-task').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const taskType = this.getAttribute('data-type');
+                    const taskId = this.getAttribute('data-id');
+                    
+                    if (taskType === 'assignment') {
+                        editAssignment(taskId);
+                    } else if (taskType === 'exam') {
+                        editExam(taskId);
+                    } else {
+                        editEvent(taskId);
+                    }
+                });
+            });
+            
+            // Atualizar calendário
+            renderCalendar();
+        };
+
+        // Gerar relatório
+        const generateReport = () => {
+            const data = getData();
+            
+            // Trabalhos pendentes
+            const pendingAssignmentsReport = document.getElementById('pendingAssignmentsReport');
+            const pendingAssignments = data.assignments.filter(a => a.status !== 'completed');
+            
             if (pendingAssignments.length === 0) {
-                pendingAssignmentsReport.innerHTML = '<div class="empty-report">Nenhum trabalho pendente</div>';
+                pendingAssignmentsReport.innerHTML = '<div class="empty-report">Nenhum trabalho pendente.</div>';
             } else {
                 pendingAssignmentsReport.innerHTML = '';
                 pendingAssignments.forEach(assignment => {
-                    const daysUntilDue = Math.ceil((new Date(assignment.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
-                    const urgencyClass = daysUntilDue <= 3 ? 'bg-danger' : daysUntilDue <= 7 ? 'bg-warning' : 'bg-info';
-                    
-                    const item = document.createElement('div');
-                    item.className = 'report-item';
-                    item.innerHTML = `
+                    const dueDate = new Date(assignment.dueDate).toLocaleDateString('pt-BR');
+                    const reportItem = document.createElement('div');
+                    reportItem.className = 'report-item';
+                    reportItem.innerHTML = `
                         <div>
-                            <strong>${assignment.name}</strong>
-                            <div>${assignment.subject} - Entrega: ${new Date(assignment.dueDate).toLocaleDateString('pt-BR')}</div>
+                            <strong>${assignment.title}</strong>
+                            <div class="text-muted">${assignment.subject} - Entrega: ${dueDate}</div>
                         </div>
-                        <span class="badge ${urgencyClass}">${daysUntilDue} dias</span>
+                        <span class="badge bg-warning">Pendente</span>
                     `;
-                    pendingAssignmentsReport.appendChild(item);
+                    pendingAssignmentsReport.appendChild(reportItem);
                 });
             }
             
-            // Relatório de provas pendentes
-            const pendingExams = exams.filter(e => e.grade === null);
+            // Provas pendentes
+            const pendingExamsReport = document.getElementById('pendingExamsReport');
+            const pendingExams = data.exams.filter(e => !e.grade);
+            
             if (pendingExams.length === 0) {
-                pendingExamsReport.innerHTML = '<div class="empty-report">Nenhuma prova pendente</div>';
+                pendingExamsReport.innerHTML = '<div class="empty-report">Nenhuma prova pendente.</div>';
             } else {
                 pendingExamsReport.innerHTML = '';
                 pendingExams.forEach(exam => {
-                    const daysUntilExam = Math.ceil((new Date(exam.date) - new Date()) / (1000 * 60 * 60 * 24));
-                    const urgencyClass = daysUntilExam <= 3 ? 'bg-danger' : daysUntilExam <= 7 ? 'bg-warning' : 'bg-info';
-                    
-                    const item = document.createElement('div');
-                    item.className = 'report-item';
-                    item.innerHTML = `
+                    const examDate = new Date(exam.date).toLocaleDateString('pt-BR');
+                    const reportItem = document.createElement('div');
+                    reportItem.className = 'report-item';
+                    reportItem.innerHTML = `
                         <div>
-                            <strong>${exam.name}</strong>
-                            <div>${exam.subject} - Data: ${new Date(exam.date).toLocaleDateString('pt-BR')}</div>
+                            <strong>${exam.title}</strong>
+                            <div class="text-muted">${exam.subject} - Data: ${examDate}</div>
                         </div>
-                        <span class="badge ${urgencyClass}">${daysUntilExam} dias</span>
+                        <span class="badge bg-warning">Pendente</span>
                     `;
-                    pendingExamsReport.appendChild(item);
+                    pendingExamsReport.appendChild(reportItem);
                 });
             }
             
-            // Relatório de eventos pendentes (tarefas)
-            const pendingTasks = tasks.filter(t => new Date(t.date) >= new Date());
-            if (pendingTasks.length === 0) {
-                pendingEventsReport.innerHTML = '<div class="empty-report">Nenhum evento pendente</div>';
+            // Eventos pendentes
+            const pendingEventsReport = document.getElementById('pendingEventsReport');
+            const today = new Date().toISOString().split('T')[0];
+            const pendingEvents = data.events.filter(e => e.date >= today);
+            
+            if (pendingEvents.length === 0) {
+                pendingEventsReport.innerHTML = '<div class="empty-report">Nenhum evento pendente.</div>';
             } else {
                 pendingEventsReport.innerHTML = '';
-                pendingTasks.forEach(task => {
-                    const daysUntilTask = Math.ceil((new Date(task.date) - new Date()) / (1000 * 60 * 60 * 24));
-                    const urgencyClass = daysUntilTask <= 3 ? 'bg-danger' : daysUntilTask <= 7 ? 'bg-warning' : 'bg-info';
+                pendingEvents.forEach(event => {
+                    const eventDate = new Date(event.date).toLocaleDateString('pt-BR');
+                    const priorityClass = event.priority === 'high' ? 'bg-danger' : 
+                                        event.priority === 'medium' ? 'bg-warning' : 'bg-info';
+                    const priorityText = event.priority === 'high' ? 'Alta' : 
+                                        event.priority === 'medium' ? 'Média' : 'Baixa';
                     
-                    const item = document.createElement('div');
-                    item.className = 'report-item';
-                    item.innerHTML = `
+                    const reportItem = document.createElement('div');
+                    reportItem.className = 'report-item';
+                    reportItem.innerHTML = `
                         <div>
-                            <strong>${task.name}</strong>
-                            <div>${task.subject} - Data: ${new Date(task.date).toLocaleDateString('pt-BR')}</div>
-                            <small>${task.type === 'assignment' ? 'Trabalho' : task.type === 'exam' ? 'Prova' : 'Outro'} - Prioridade: ${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</small>
+                            <strong>${event.title}</strong>
+                            <div class="text-muted">Data: ${eventDate} ${event.time ? `- ${event.time}` : ''}</div>
                         </div>
-                        <span class="badge ${urgencyClass}">${daysUntilTask} dias</span>
+                        <span class="badge ${priorityClass}">${priorityText}</span>
                     `;
-                    pendingEventsReport.appendChild(item);
+                    pendingEventsReport.appendChild(reportItem);
                 });
             }
         };
-        
-        // Event listener para o botão de imprimir relatório
-        printReportBtn.addEventListener('click', () => {
-            window.print();
-        });
 
-        const updateDashboardCards = () => {
-            const pendingAssignmentsCount = assignments.filter(a => !a.done && new Date(a.dueDate) > new Date()).length;
-            const upcomingExamsCount = exams.filter(e => new Date(e.date) > new Date()).length;
-            const approvedHours = complementaryHours.filter(h => h.approved).reduce((sum, h) => sum + h.hours, 0);
-            
-            const allGrades = [...exams.map(e => e.grade).filter(g => g !== null), ...assignments.map(a => a.grade).filter(g => g !== null)];
-            const generalAverage = allGrades.length > 0 ? (allGrades.reduce((sum, g) => sum + g, 0) / allGrades.length).toFixed(1) : 'N/A';
-            const progressPercentage = (approvedHours / academicGoals.totalHours) * 100;
-
-            document.getElementById('pendingAssignments').textContent = pendingAssignmentsCount;
-            document.getElementById('upcomingExams').textContent = upcomingExamsCount;
-            document.getElementById('complementaryHours').textContent = `${approvedHours}/${academicGoals.totalHours}h`;
-            document.getElementById('hoursProgressBar').style.width = `${Math.min(progressPercentage, 100)}%`;
-            document.getElementById('hoursProgressBar').className = `progress-bar ${progressPercentage >= 100 ? 'bg-success' : 'bg-warning'}`;
-            document.getElementById('generalAverage').textContent = generalAverage;
-            document.getElementById('generalAverage').className = `mb-0 avg-grade-badge ${generalAverage >= academicGoals.requiredAvg ? 'bg-success' : 'bg-danger'}`;
-        };
-
-        const renderTasks = () => {
-            const priorityMap = { high: { text: 'Alta', class: 'priority-high' }, medium: { text: 'Média', class: 'priority-medium' }, low: { text: 'Baixa', class: 'priority-low' } };
-            tasksTableBody.innerHTML = '';
-            const pendingTasks = tasks.filter(t => new Date(t.date) > new Date());
-            if (pendingTasks.length === 0) {
-                tasksTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma atividade pendente.</td></tr>';
-            }
-            pendingTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
-            pendingTasks.forEach(task => {
-                const priority = priorityMap[task.priority];
-                const formattedDate = new Date(task.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${task.name}</td><td>${task.subject}</td><td>${formattedDate}</td><td><span class="badge-priority ${priority.class}">${priority.text}</span></td><td><button class="btn btn-sm btn-outline-primary edit-btn" data-id="${task.id}" data-type="task"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${task.id}" data-type="task"><i class="fas fa-trash"></i></button></td>`;
-                tasksTableBody.appendChild(row);
-            });
-            renderCalendar();
-            updateDashboardCards();
-        };
-
-        const renderSubjects = () => {
-            subjectsTableBody.innerHTML = '';
-            if (subjects.length === 0) {
-                subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhuma disciplina cadastrada.</td></tr>';
-            }
-            subjects.forEach(subject => {
-                const examsGrades = exams.filter(e => e.subject === subject.name && e.grade !== null).map(e => e.grade);
-                const assignmentsGrades = assignments.filter(a => a.subject === subject.name && a.grade !== null).map(a => a.grade);
-                const allGrades = [...examsGrades, ...assignmentsGrades];
-                const avg = allGrades.length > 0 ? (allGrades.reduce((sum, g) => sum + g, 0) / allGrades.length).toFixed(1) : 'N/A';
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${subject.name}</td><td>${subject.professor}</td><td><span class="badge ${avg >= academicGoals.requiredAvg ? 'bg-success' : 'bg-danger'}">${avg}</span></td><td><button class="btn btn-sm btn-outline-primary edit-btn" data-id="${subject.id}" data-type="subject"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${subject.id}" data-type="subject"><i class="fas fa-trash"></i></button></td>`;
-                subjectsTableBody.appendChild(row);
-            });
-        };
-
-        const renderAssignments = () => {
-            assignmentsTableBody.innerHTML = '';
-            if (assignments.length === 0) {
-                assignmentsTableBody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum trabalho cadastrado.</td></tr>';
-            }
-            assignments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-            assignments.forEach(assignment => {
-                const status = assignment.done ? `<span class="badge bg-success">Concluído</span>` : `<span class="badge bg-warning text-dark">Pendente</span>`;
-                const grade = assignment.grade !== null ? assignment.grade.toFixed(1) : 'N/A';
-                const formattedDate = new Date(assignment.dueDate).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${assignment.name}</td><td>${assignment.subject}</td><td>${grade}</td><td>${formattedDate}</td><td>${status}</td><td><button class="btn btn-sm btn-outline-primary edit-btn" data-id="${assignment.id}" data-type="assignment"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${assignment.id}" data-type="assignment"><i class="fas fa-trash"></i></button></td>`;
-                assignmentsTableBody.appendChild(row);
-            });
-        };
-
-        const renderExams = () => {
-            examsTableBody.innerHTML = '';
-            if (exams.length === 0) {
-                examsTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma prova cadastrada.</td></tr>';
-            }
-            exams.sort((a, b) => new Date(a.date) - new Date(b.date));
-            exams.forEach(exam => {
-                const grade = exam.grade !== null ? exam.grade.toFixed(1) : 'N/A';
-                const formattedDate = new Date(exam.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${exam.name}</td><td>${exam.subject}</td><td>${grade}</td><td>${formattedDate}</td><td><button class="btn btn-sm btn-outline-primary edit-btn" data-id="${exam.id}" data-type="exam"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${exam.id}" data-type="exam"><i class="fas fa-trash"></i></button></td>`;
-                examsTableBody.appendChild(row);
-            });
-        };
-
-        const renderEvents = () => {
-            const priorityMap = { high: { text: 'Alta', class: 'priority-high' }, medium: { text: 'Média', class: 'priority-medium' }, low: { text: 'Baixa', class: 'priority-low' } };
-            eventsTableBody.innerHTML = '';
-            if (events.length === 0) {
-                eventsTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum evento na agenda.</td></tr>';
-            }
-            events.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
-            events.forEach(event => {
-                const priority = priorityMap[event.priority];
-                const formattedDate = new Date(event.dateTime).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${event.title}</td><td>${formattedDate}</td><td>${event.description}</td><td><span class="badge-priority ${priority.class}">${priority.text}</span></td><td><button class="btn btn-sm btn-outline-primary edit-btn" data-id="${event.id}" data-type="event"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${event.id}" data-type="event"><i class="fas fa-trash"></i></button></td>`;
-                eventsTableBody.appendChild(row);
-            });
-        };
-
-        const renderSchedule = () => {
-            const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-            const times = Array.from({length: 15}, (_, i) => {
-                const hour = 8 + i;
-                const paddedHour = hour.toString().padStart(2, '0');
-                return `${paddedHour}:00`;
-            });
-            
-            scheduleGrid.innerHTML = `
-                <div class="schedule-header"></div>
-                <div class="schedule-header">Segunda</div>
-                <div class="schedule-header">Terça</div>
-                <div class="schedule-header">Quarta</div>
-                <div class="schedule-header">Quinta</div>
-                <div class="schedule-header">Sexta</div>
-            `;
-
-            times.forEach(time => {
-                const timeCell = document.createElement('div');
-                timeCell.className = 'schedule-time';
-                timeCell.textContent = time;
-                scheduleGrid.appendChild(timeCell);
-
-                for (let i = 1; i <= 5; i++) { // 1=Segunda a 5=Sexta
-                    const cell = document.createElement('div');
-                    cell.className = 'schedule-cell';
-                    cell.dataset.day = i;
-                    cell.dataset.time = time;
-                    
-                    const classItems = schedule.filter(c => {
-                        const cellTimeHour = time.substring(0, 2);
-                        const startHour = c.startTime.substring(0, 2);
-                        const endHour = c.endTime.substring(0, 2);
-                        
-                        return c.day == i && (
-                            (startHour <= cellTimeHour && endHour > cellTimeHour) ||
-                            (startHour === cellTimeHour && c.startTime.substring(3, 5) > '00')
-                        );
-                    });
-                    
-                    if (classItems.length > 0) {
-                        cell.classList.add('has-class');
-                        const details = classItems.map(c => `
-                            <div class="schedule-class-details" data-id="${c.id}">
-                                <strong>${c.subject}</strong><br>
-                                <small>${c.startTime} - ${c.endTime}</small>
-                            </div>
-                        `).join('');
-                        cell.innerHTML = details;
-                    }
-                    scheduleGrid.appendChild(cell);
-                }
-            });
-        };
-
-        const renderHours = () => {
-            hoursTableBody.innerHTML = '';
-            if (complementaryHours.length === 0) {
-                hoursTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma atividade complementar cadastrada.</td></div>';
-            }
-            complementaryHours.sort((a, b) => new Date(a.date) - new Date(b.date));
-            complementaryHours.forEach(hour => {
-                const status = hour.approved ? `<span class="badge bg-success">Aprovada</span>` : `<span class="badge bg-warning text-dark">Pendente</span>`;
-                const formattedDate = new Date(hour.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${hour.activity}</td><td>${hour.hours}h</td><td>${formattedDate}</td><td>${status}</td><td><button class="btn btn-sm btn-outline-primary edit-btn" data-id="${hour.id}" data-type="hours"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${hour.id}" data-type="hours"><i class="fas fa-trash"></i></button></td>`;
-                hoursTableBody.appendChild(row);
-            });
-        };
-
-        const renderConfig = () => {
-            document.getElementById('totalHours').value = academicGoals.totalHours;
-            document.getElementById('requiredAvg').value = academicGoals.requiredAvg;
-        };
-
-        const updateSubjectSelects = () => {
-            const selectFields = [
-                document.getElementById('taskSubject'),
+        // Preencher selects com disciplinas
+        const populateSubjectSelects = () => {
+            const data = getData();
+            const subjectSelects = [
                 document.getElementById('assignmentSubject'),
                 document.getElementById('examSubject'),
                 document.getElementById('scheduleSubject')
             ];
-
-            selectFields.forEach(select => {
-                const currentValue = select.value;
-                select.innerHTML = '<option value="">Selecione a disciplina</option>';
-                subjects.forEach(subject => {
-                    const option = document.createElement('option');
-                    option.value = subject.name;
-                    option.textContent = subject.name;
-                    select.appendChild(option);
-                });
-                 // Mantém o valor selecionado após a atualização
-                 if (currentValue) {
-                    select.value = currentValue;
+            
+            subjectSelects.forEach(select => {
+                if (select) {
+                    select.innerHTML = '';
+                    
+                    if (data.subjects.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'Nenhuma disciplina cadastrada';
+                        select.appendChild(option);
+                    } else {
+                        data.subjects.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.name;
+                            option.textContent = subject.name;
+                            select.appendChild(option);
+                        });
+                    }
                 }
             });
         };
 
-        const renderAll = () => {
-            updateSubjectSelects();
-            renderTasks();
-            renderSubjects();
-            renderAssignments();
-            renderExams();
-            renderEvents();
-            renderSchedule();
-            renderHours();
-            renderConfig();
-            updateDashboardCards();
-            generateReports();
+        // Funções para editar itens
+        const editSubject = (id) => {
+            const data = getData();
+            const subject = data.subjects.find(s => s.id === id);
+            
+            if (subject) {
+                document.getElementById('subjectId').value = subject.id;
+                document.getElementById('subjectName').value = subject.name;
+                document.getElementById('subjectProfessor').value = subject.professor || '';
+                document.getElementById('subjectCredits').value = subject.credits || 4;
+                document.getElementById('subjectGrade').value = subject.grade || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('subjectModal'));
+                modal.show();
+            }
         };
 
-        // =====================================================================
-        // Lógica de Backup
-        // =====================================================================
-        backupBtn.addEventListener('click', () => {
-            const dataToSave = {
-                tasks, subjects, assignments, exams, events, schedule, complementaryHours, academicGoals
-            };
-            const jsonData = JSON.stringify(dataToSave, null, 2);
-            const blob = new Blob([jsonData], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup_academico_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+        const editAssignment = (id) => {
+            const data = getData();
+            const assignment = data.assignments.find(a => a.id === id);
+            
+            if (assignment) {
+                document.getElementById('assignmentId').value = assignment.id;
+                document.getElementById('assignmentTitle').value = assignment.title;
+                document.getElementById('assignmentDueDate').value = assignment.dueDate;
+                document.getElementById('assignmentGrade').value = assignment.grade || '';
+                document.getElementById('assignmentStatus').value = assignment.status || 'pending';
+                document.getElementById('assignmentDescription').value = assignment.description || '';
+                
+                populateSubjectSelects();
+                document.getElementById('assignmentSubject').value = assignment.subject;
+                
+                const modal = new bootstrap.Modal(document.getElementById('assignmentModal'));
+                modal.show();
+            }
+        };
 
-        restoreBtn.addEventListener('click', () => {
-            const file = restoreFile.files[0];
-            if (!file) {
-                alert('Por favor, selecione um arquivo de backup para restaurar.');
+        const editExam = (id) => {
+            const data = getData();
+            const exam = data.exams.find(e => e.id === id);
+            
+            if (exam) {
+                document.getElementById('examId').value = exam.id;
+                document.getElementById('examTitle').value = exam.title;
+                document.getElementById('examDate').value = exam.date;
+                document.getElementById('examGrade').value = exam.grade || '';
+                document.getElementById('examDescription').value = exam.description || '';
+                
+                populateSubjectSelects();
+                document.getElementById('examSubject').value = exam.subject;
+                
+                const modal = new bootstrap.Modal(document.getElementById('examModal'));
+                modal.show();
+            }
+        };
+
+        const editEvent = (id) => {
+            const data = getData();
+            const event = data.events.find(e => e.id === id);
+            
+            if (event) {
+                document.getElementById('eventId').value = event.id;
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventDate').value = event.date;
+                document.getElementById('eventTime').value = event.time || '';
+                document.getElementById('eventPriority').value = event.priority || 'medium';
+                document.getElementById('eventDescription').value = event.description || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                modal.show();
+            }
+        };
+
+        const editHours = (id) => {
+            const data = getData();
+            const hours = data.hours.find(h => h.id === id);
+            
+            if (hours) {
+                document.getElementById('hoursId').value = hours.id;
+                document.getElementById('hoursTitle').value = hours.title;
+                document.getElementById('hoursDate').value = hours.date;
+                document.getElementById('hoursAmount').value = hours.hours;
+                document.getElementById('hoursCategory').value = hours.category;
+                document.getElementById('hoursStatus').value = hours.status;
+                document.getElementById('hoursDescription').value = hours.description || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('hoursModal'));
+                modal.show();
+            }
+        };
+
+        const editSchedule = (id) => {
+            const data = getData();
+            const schedule = data.schedule.find(s => s.id === id);
+            
+            if (schedule) {
+                document.getElementById('scheduleId').value = schedule.id;
+                document.getElementById('scheduleDay').value = schedule.day;
+                document.getElementById('scheduleTime').value = schedule.timeSlot;
+                document.getElementById('scheduleShift').value = schedule.shift;
+                document.getElementById('scheduleRoom').value = schedule.room || '';
+                
+                populateSubjectSelects();
+                document.getElementById('scheduleSubject').value = schedule.subject;
+                
+                const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+                modal.show();
+            }
+        };
+
+        // Funções para excluir itens
+        const deleteSubject = (id) => {
+            if (confirm('Tem certeza que deseja excluir esta disciplina?')) {
+                const data = getData();
+                data.subjects = data.subjects.filter(s => s.id !== id);
+                saveData(data);
+                loadSubjects();
+                updateDashboard();
+            }
+        };
+
+        const deleteAssignment = (id) => {
+            if (confirm('Tem certeza que deseja excluir este trabalho?')) {
+                const data = getData();
+                data.assignments = data.assignments.filter(a => a.id !== id);
+                saveData(data);
+                loadAssignments();
+                updateDashboard();
+            }
+        };
+
+        const deleteExam = (id) => {
+            if (confirm('Tem certeza que deseja excluir esta prova?')) {
+                const data = getData();
+                data.exams = data.exams.filter(e => e.id !== id);
+                saveData(data);
+                loadExams();
+                updateDashboard();
+            }
+        };
+
+        const deleteEvent = (id) => {
+            if (confirm('Tem certeza que deseja excluir este evento?')) {
+                const data = getData();
+                data.events = data.events.filter(e => e.id !== id);
+                saveData(data);
+                loadEvents();
+                updateDashboard();
+            }
+        };
+
+        const deleteHours = (id) => {
+            if (confirm('Tem certeza que deseja excluir esta atividade de horas complementares?')) {
+                const data = getData();
+                data.hours = data.hours.filter(h => h.id !== id);
+                saveData(data);
+                loadHours();
+                updateDashboard();
+            }
+        };
+
+        // Salvar disciplinas
+        document.getElementById('saveSubject').addEventListener('click', function() {
+            const data = getData();
+            const subjectId = document.getElementById('subjectId').value;
+            const subjectName = document.getElementById('subjectName').value;
+            const subjectProfessor = document.getElementById('subjectProfessor').value;
+            const subjectCredits = document.getElementById('subjectCredits').value;
+            const subjectGrade = document.getElementById('subjectGrade').value;
+            
+            if (!subjectName) {
+                alert('Por favor, informe o nome da disciplina.');
                 return;
             }
+            
+            if (subjectId) {
+                // Editar disciplina existente
+                const index = data.subjects.findIndex(s => s.id === subjectId);
+                if (index !== -1) {
+                    data.subjects[index] = {
+                        ...data.subjects[index],
+                        name: subjectName,
+                        professor: subjectProfessor,
+                        credits: parseInt(subjectCredits),
+                        grade: subjectGrade ? parseFloat(subjectGrade) : null
+                    };
+                }
+            } else {
+                // Nova disciplina
+                const newSubject = {
+                    id: Date.now().toString(),
+                    name: subjectName,
+                    professor: subjectProfessor,
+                    credits: parseInt(subjectCredits),
+                    grade: subjectGrade ? parseFloat(subjectGrade) : null
+                };
+                data.subjects.push(newSubject);
+            }
+            
+            saveData(data);
+            bootstrap.Modal.getInstance(document.getElementById('subjectModal')).hide();
+            loadSubjects();
+            updateDashboard();
+        });
+
+        // Salvar trabalhos
+        document.getElementById('saveAssignment').addEventListener('click', function() {
+            const data = getData();
+            const assignmentId = document.getElementById('assignmentId').value;
+            const assignmentTitle = document.getElementById('assignmentTitle').value;
+            const assignmentSubject = document.getElementById('assignmentSubject').value;
+            const assignmentDueDate = document.getElementById('assignmentDueDate').value;
+            const assignmentGrade = document.getElementById('assignmentGrade').value;
+            const assignmentStatus = document.getElementById('assignmentStatus').value;
+            const assignmentDescription = document.getElementById('assignmentDescription').value;
+            
+            if (!assignmentTitle || !assignmentSubject || !assignmentDueDate) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            if (assignmentId) {
+                // Editar trabalho existente
+                const index = data.assignments.findIndex(a => a.id === assignmentId);
+                if (index !== -1) {
+                    data.assignments[index] = {
+                        ...data.assignments[index],
+                        title: assignmentTitle,
+                        subject: assignmentSubject,
+                        dueDate: assignmentDueDate,
+                        grade: assignmentGrade ? parseFloat(assignmentGrade) : null,
+                        status: assignmentStatus,
+                        description: assignmentDescription
+                    };
+                }
+            } else {
+                // Novo trabalho
+                const newAssignment = {
+                    id: Date.now().toString(),
+                    title: assignmentTitle,
+                    subject: assignmentSubject,
+                    dueDate: assignmentDueDate,
+                    grade: assignmentGrade ? parseFloat(assignmentGrade) : null,
+                    status: assignmentStatus,
+                    description: assignmentDescription
+                };
+                data.assignments.push(newAssignment);
+            }
+            
+            saveData(data);
+            bootstrap.Modal.getInstance(document.getElementById('assignmentModal')).hide();
+            loadAssignments();
+            updateDashboard();
+        });
+
+        // Salvar provas
+        document.getElementById('saveExam').addEventListener('click', function() {
+            const data = getData();
+            const examId = document.getElementById('examId').value;
+            const examTitle = document.getElementById('examTitle').value;
+            const examSubject = document.getElementById('examSubject').value;
+            const examDate = document.getElementById('examDate').value;
+            const examGrade = document.getElementById('examGrade').value;
+            const examDescription = document.getElementById('examDescription').value;
+            
+            if (!examTitle || !examSubject || !examDate) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            if (examId) {
+                // Editar prova existente
+                const index = data.exams.findIndex(e => e.id === examId);
+                if (index !== -1) {
+                    data.exams[index] = {
+                        ...data.exams[index],
+                        title: examTitle,
+                        subject: examSubject,
+                        date: examDate,
+                        grade: examGrade ? parseFloat(examGrade) : null,
+                        description: examDescription
+                    };
+                }
+            } else {
+                // Nova prova
+                const newExam = {
+                    id: Date.now().toString(),
+                    title: examTitle,
+                    subject: examSubject,
+                    date: examDate,
+                    grade: examGrade ? parseFloat(examGrade) : null,
+                    description: examDescription
+                };
+                data.exams.push(newExam);
+            }
+            
+            saveData(data);
+            bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
+            loadExams();
+            updateDashboard();
+        });
+
+        // Salvar eventos
+        document.getElementById('saveEvent').addEventListener('click', function() {
+            const data = getData();
+            const eventId = document.getElementById('eventId').value;
+            const eventTitle = document.getElementById('eventTitle').value;
+            const eventDate = document.getElementById('eventDate').value;
+            const eventTime = document.getElementById('eventTime').value;
+            const eventPriority = document.getElementById('eventPriority').value;
+            const eventDescription = document.getElementById('eventDescription').value;
+            
+            if (!eventTitle || !eventDate) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            if (eventId) {
+                // Editar evento existente
+                const index = data.events.findIndex(e => e.id === eventId);
+                if (index !== -1) {
+                    data.events[index] = {
+                        ...data.events[index],
+                        title: eventTitle,
+                        date: eventDate,
+                        time: eventTime,
+                        priority: eventPriority,
+                        description: eventDescription
+                    };
+                }
+            } else {
+                // Novo evento
+                const newEvent = {
+                    id: Date.now().toString(),
+                    title: eventTitle,
+                    date: eventDate,
+                    time: eventTime,
+                    priority: eventPriority,
+                    description: eventDescription
+                };
+                data.events.push(newEvent);
+            }
+            
+            saveData(data);
+            bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+            loadEvents();
+            updateDashboard();
+        });
+
+        // Salvar horas complementares
+        document.getElementById('saveHours').addEventListener('click', function() {
+            const data = getData();
+            const hoursId = document.getElementById('hoursId').value;
+            const hoursTitle = document.getElementById('hoursTitle').value;
+            const hoursDate = document.getElementById('hoursDate').value;
+            const hoursAmount = document.getElementById('hoursAmount').value;
+            const hoursCategory = document.getElementById('hoursCategory').value;
+            const hoursStatus = document.getElementById('hoursStatus').value;
+            const hoursDescription = document.getElementById('hoursDescription').value;
+            
+            if (!hoursTitle || !hoursDate || !hoursAmount || !hoursCategory) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            if (hoursId) {
+                // Editar atividade existente
+                const index = data.hours.findIndex(h => h.id === hoursId);
+                if (index !== -1) {
+                    data.hours[index] = {
+                        ...data.hours[index],
+                        title: hoursTitle,
+                        date: hoursDate,
+                        hours: hoursAmount,
+                        category: hoursCategory,
+                        status: hoursStatus,
+                        description: hoursDescription
+                    };
+                }
+            } else {
+                // Nova atividade
+                const newHours = {
+                    id: Date.now().toString(),
+                    title: hoursTitle,
+                    date: hoursDate,
+                    hours: hoursAmount,
+                    category: hoursCategory,
+                    status: hoursStatus,
+                    description: hoursDescription
+                };
+                data.hours.push(newHours);
+            }
+            
+            saveData(data);
+            bootstrap.Modal.getInstance(document.getElementById('hoursModal')).hide();
+            loadHours();
+            updateDashboard();
+        });
+
+        // Salvar horários
+        document.getElementById('saveSchedule').addEventListener('click', function() {
+            const data = getData();
+            const scheduleId = document.getElementById('scheduleId').value;
+            const scheduleSubject = document.getElementById('scheduleSubject').value;
+            const scheduleDay = document.getElementById('scheduleDay').value;
+            const scheduleTime = document.getElementById('scheduleTime').value;
+            const scheduleShift = document.getElementById('scheduleShift').value;
+            const scheduleRoom = document.getElementById('scheduleRoom').value;
+            
+            if (!scheduleSubject || !scheduleDay || !scheduleTime || !scheduleShift) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            if (scheduleId) {
+                // Editar horário existente
+                const index = data.schedule.findIndex(s => s.id === scheduleId);
+                if (index !== -1) {
+                    data.schedule[index] = {
+                        ...data.schedule[index],
+                        subject: scheduleSubject,
+                        day: parseInt(scheduleDay),
+                        timeSlot: parseInt(scheduleTime),
+                        shift: scheduleShift,
+                        room: scheduleRoom
+                    };
+                }
+            } else {
+                // Novo horário
+                const newSchedule = {
+                    id: Date.now().toString(),
+                    subject: scheduleSubject,
+                    day: parseInt(scheduleDay),
+                    timeSlot: parseInt(scheduleTime),
+                    shift: scheduleShift,
+                    room: scheduleRoom
+                };
+                data.schedule.push(newSchedule);
+            }
+            
+            saveData(data);
+            bootstrap.Modal.getInstance(document.getElementById('scheduleModal')).hide();
+            loadSchedule();
+        });
+
+        // Salvar preferências
+        document.getElementById('savePreferences').addEventListener('click', function() {
+            const data = getData();
+            data.settings.currentSemester = parseInt(document.getElementById('currentSemester').value);
+            data.settings.requiredHours = parseInt(document.getElementById('requiredHoursInput').value);
+            data.settings.notifications = document.getElementById('notificationsSwitch').checked;
+            
+            saveData(data);
+            alert('Preferências salvas com sucesso!');
+        });
+
+        // Exportar dados
+        document.getElementById('exportData').addEventListener('click', function() {
+            const data = getData();
+            const dataStr = JSON.stringify(data);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `backup-academico-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        });
+
+        // Importar dados
+        document.getElementById('importData').addEventListener('click', function() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo para importar.');
+                return;
+            }
+            
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = function(e) {
                 try {
-                    const loadedData = JSON.parse(e.target.result);
-                    if (loadedData.tasks && loadedData.subjects) {
-                        if (confirm('Atenção! Isso irá substituir todos os seus dados atuais. Deseja continuar?')) {
-                            tasks = loadedData.tasks;
-                            subjects = loadedData.subjects;
-                            assignments = loadedData.assignments;
-                            exams = loadedData.exams;
-                            events = loadedData.events;
-                            schedule = loadedData.schedule;
-                            complementaryHours = loadedData.complementaryHours;
-                            academicGoals = loadedData.academicGoals;
-                            
-                            saveToLocalStorage();
-                            alert('Dados restaurados com sucesso!');
-                            renderAll();
-                        }
-                    } else {
-                        alert('O arquivo de backup selecionado é inválido.');
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validar estrutura básica dos dados
+                    if (!importedData.subjects || !importedData.assignments || !importedData.exams || 
+                        !importedData.events || !importedData.schedule || !importedData.hours || !importedData.settings) {
+                        throw new Error('Estrutura de dados inválida.');
+                    }
+                    
+                    if (confirm('Tem certeza que deseja importar estes dados? Todos os dados atuais serão substituídos.')) {
+                        localStorage.setItem('academicData', JSON.stringify(importedData));
+                        alert('Dados importados com sucesso!');
+                        location.reload();
                     }
                 } catch (error) {
-                    alert('Erro ao carregar o arquivo. Verifique se ele é um arquivo de backup válido.');
-                    console.error('Erro ao restaurar o backup:', error);
+                    alert('Erro ao importar dados: arquivo inválido ou corrompido.');
+                    console.error(error);
                 }
             };
             reader.readAsText(file);
         });
 
-        // =====================================================================
-        // Event Listeners para Formulários e Botões
-        // =====================================================================
-        
-        // Lógica para mostrar/esconder o campo de nota nos modais
-        const handleGradeFieldVisibility = (dateInput, gradeContainer) => {
-            const today = new Date().toISOString().split('T')[0];
-            const updateVisibility = () => {
-                if (dateInput.value > today) {
-                    gradeContainer.style.display = 'none';
-                    gradeContainer.querySelector('input').removeAttribute('required');
-                } else {
-                    gradeContainer.style.display = 'block';
-                    gradeContainer.querySelector('input').setAttribute('required', 'required');
-                }
-            };
-            dateInput.addEventListener('change', updateVisibility);
-            // Chama a função uma vez ao abrir o modal para o estado inicial
-            updateVisibility();
-        };
-
-        // Aplica a lógica aos modais de Trabalho e Prova
-        assignmentDueDateInput.addEventListener('change', () => handleGradeFieldVisibility(assignmentDueDateInput, assignmentGradeContainer));
-        examDateInput.addEventListener('change', () => handleGradeFieldVisibility(examDateInput, examGradeContainer));
-        
-        document.getElementById('assignmentModal').addEventListener('show.bs.modal', () => handleGradeFieldVisibility(assignmentDueDateInput, assignmentGradeContainer));
-        document.getElementById('examModal').addEventListener('show.bs.modal', () => handleGradeFieldVisibility(examDateInput, examGradeContainer));
-
-        // Dashboard (Tarefas)
-        taskForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const taskData = {
-                id: document.getElementById('taskId').value || new Date().getTime(),
-                name: document.getElementById('taskName').value,
-                subject: document.getElementById('taskSubject').value,
-                date: document.getElementById('taskDate').value,
-                priority: document.getElementById('taskPriority').value,
-                type: document.getElementById('taskType').value
-            };
-            if (document.getElementById('taskId').value) {
-                tasks = tasks.map(t => t.id == taskData.id ? { ...t, ...taskData } : t);
-            } else {
-                tasks.push(taskData);
-            }
-            tasksModal.hide();
-            saveToLocalStorage();
-            renderAll();
+        // Imprimir relatório
+        document.getElementById('printReport').addEventListener('click', function() {
+            window.print();
         });
 
-        // Disciplinas
-        subjectForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const subjectData = {
-                id: document.getElementById('subjectId').value || new Date().getTime(),
-                name: document.getElementById('subjectName').value,
-                professor: document.getElementById('subjectProfessor').value
-            };
-            if (document.getElementById('subjectId').value) {
-                subjects = subjects.map(s => s.id == subjectData.id ? { ...s, ...subjectData } : s);
-            } else {
-                subjects.push(subjectData);
-            }
-            subjectModal.hide();
-            saveToLocalStorage();
-            renderAll();
-        });
-
-        // Trabalhos
-        assignmentForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const assignmentData = {
-                id: document.getElementById('assignmentId').value || new Date().getTime(),
-                name: document.getElementById('assignmentName').value,
-                subject: document.getElementById('assignmentSubject').value,
-                grade: document.getElementById('assignmentGrade').value ? parseFloat(document.getElementById('assignmentGrade').value) : null,
-                dueDate: document.getElementById('assignmentDueDate').value,
-                done: document.getElementById('assignmentDone').checked
-            };
-            if (document.getElementById('assignmentId').value) {
-                assignments = assignments.map(a => a.id == assignmentData.id ? { ...a, ...assignmentData } : a);
-            } else {
-                assignments.push(assignmentData);
-            }
-            assignmentModal.hide();
-            saveToLocalStorage();
-            renderAll();
-        });
-
-        // Provas
-        examForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const examData = {
-                id: document.getElementById('examId').value || new Date().getTime(),
-                name: document.getElementById('examName').value,
-                subject: document.getElementById('examSubject').value,
-                grade: document.getElementById('examGrade').value ? parseFloat(document.getElementById('examGrade').value) : null,
-                date: document.getElementById('examDate').value
-            };
-            if (document.getElementById('examId').value) {
-                exams = exams.map(ex => ex.id == examData.id ? { ...ex, ...examData } : ex);
-            } else {
-                exams.push(examData);
-            }
-            examModal.hide();
-            saveToLocalStorage();
-            renderAll();
-        });
-
-        // Eventos (Agenda)
-        eventForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const eventData = {
-                id: document.getElementById('eventId').value || new Date().getTime(),
-                title: document.getElementById('eventTitle').value,
-                dateTime: document.getElementById('eventDateTime').value,
-                description: document.getElementById('eventDescription').value,
-                priority: document.getElementById('eventPriority').value
-            };
-            if (document.getElementById('eventId').value) {
-                events = events.map(ev => ev.id == eventData.id ? { ...ev, ...eventData } : ev);
-            } else {
-                events.push(eventData);
-            }
-            eventModal.hide();
-            saveToLocalStorage();
-            renderAll();
-        });
-
-        // Quadro de Horários
-        scheduleForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const scheduleData = {
-                id: document.getElementById('scheduleId').value || new Date().getTime(),
-                subject: document.getElementById('scheduleSubject').value,
-                professor: document.getElementById('scheduleProfessor').value,
-                day: document.getElementById('scheduleDay').value,
-                startTime: document.getElementById('scheduleStartTime').value,
-                endTime: document.getElementById('scheduleEndTime').value
-            };
-            if (document.getElementById('scheduleId').value) {
-                schedule = schedule.map(s => s.id == scheduleData.id ? { ...s, ...scheduleData } : s);
-            } else {
-                schedule.push(scheduleData);
-            }
-            scheduleModal.hide();
-            saveToLocalStorage();
-            renderAll();
-        });
-
-        // Horas Complementares
-        hoursForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const hoursData = {
-                id: document.getElementById('hoursId').value || new Date().getTime(),
-                activity: document.getElementById('hoursActivity').value,
-                hours: parseInt(document.getElementById('hoursAmount').value),
-                date: document.getElementById('hoursDate').value,
-                approved: document.getElementById('hoursApproved').checked
-            };
-            if (document.getElementById('hoursId').value) {
-                complementaryHours = complementaryHours.map(h => h.id == hoursData.id ? { ...h, ...hoursData } : h);
-            } else {
-                complementaryHours.push(hoursData);
-            }
-            hoursModal.hide();
-            saveToLocalStorage();
-            renderAll();
-        });
-
-        // Configurações
-        goalForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            academicGoals.totalHours = parseInt(document.getElementById('totalHours').value);
-            academicGoals.requiredAvg = parseFloat(document.getElementById('requiredAvg').value);
-            alert('Metas salvas com sucesso!');
-            saveToLocalStorage();
-            renderAll();
-        });
-        
-        // Lógica para preencher o professor automaticamente
-        document.getElementById('scheduleSubject').addEventListener('change', (e) => {
-            const selectedSubjectName = e.target.value;
-            const foundSubject = subjects.find(s => s.name === selectedSubjectName);
-            if (foundSubject) {
-                document.getElementById('scheduleProfessor').value = foundSubject.professor;
-            } else {
-                document.getElementById('scheduleProfessor').value = '';
-            }
-        });
-
-        // Lógica de Edição e Exclusão genérica para todas as tabelas
-        document.body.addEventListener('click', (e) => {
-            const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) {
-                const idToDelete = deleteBtn.getAttribute('data-id');
-                const dataType = deleteBtn.getAttribute('data-type');
-                if (confirm('Tem certeza que deseja excluir este item?')) {
-                    if (dataType === 'task') tasks = tasks.filter(item => item.id != idToDelete);
-                    if (dataType === 'subject') {
-                        const item = subjects.find(s => s.id == idToDelete);
-                        subjects = subjects.filter(s => s.id != idToDelete);
-                        tasks = tasks.filter(t => t.subject !== item.name);
-                        assignments = assignments.filter(a => a.subject !== item.name);
-                        exams = exams.filter(e => e.subject !== item.name);
-                        schedule = schedule.filter(s => s.subject !== item.name);
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar dados
+            initializeData();
+            
+            // Preencher selects de disciplinas
+            populateSubjectSelects();
+            
+            // Carregar dados iniciais
+            updateDashboard();
+            
+            // Inicializar calendário
+            renderCalendar();
+            
+            // Adicionar event listeners para modais
+            document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-bs-target');
+                    
+                    if (target === '#subjectModal' || target === '#assignmentModal' || 
+                        target === '#examModal' || target === '#scheduleModal') {
+                        populateSubjectSelects();
                     }
-                    if (dataType === 'assignment') assignments = assignments.filter(item => item.id != idToDelete);
-                    if (dataType === 'exam') exams = exams.filter(item => item.id != idToDelete);
-                    if (dataType === 'event') events = events.filter(item => item.id != idToDelete);
-                    if (dataType === 'schedule') schedule = schedule.filter(item => item.id != idToDelete);
-                    if (dataType === 'hours') complementaryHours = complementaryHours.filter(item => item.id != idToDelete);
-                    saveToLocalStorage();
-                    renderAll();
-                }
-            }
-
-            const editBtn = e.target.closest('.edit-btn');
-            if (editBtn) {
-                const idToEdit = editBtn.getAttribute('data-id');
-                const dataType = editBtn.getAttribute('data-type');
-                
-                let item;
-                if (dataType === 'task') { item = tasks.find(t => t.id == idToEdit); populateForm('task', item); tasksModal.show(); }
-                if (dataType === 'subject') { item = subjects.find(s => s.id == idToEdit); populateForm('subject', item); subjectModal.show(); }
-                if (dataType === 'assignment') { item = assignments.find(a => a.id == idToEdit); populateForm('assignment', item); assignmentModal.show(); }
-                if (dataType === 'exam') { item = exams.find(e => e.id == idToEdit); populateForm('exam', item); examModal.show(); }
-                if (dataType === 'event') { item = events.find(ev => ev.id == idToEdit); populateForm('event', item); eventModal.show(); }
-                if (dataType === 'schedule') { item = schedule.find(s => s.id == idToEdit); populateForm('schedule', item); scheduleModal.show(); }
-                if (dataType === 'hours') { item = complementaryHours.find(h => h.id == idToEdit); populateForm('hours', item); hoursModal.show(); }
-            }
+                    
+                    // Limpar formulários ao abrir modais para novo item
+                    if (this.getAttribute('id') !== 'savePreferences') {
+                        const form = document.querySelector(`${target} form`);
+                        if (form) {
+                            form.reset();
+                            form.querySelector('input[type="hidden"]').value = '';
+                        }
+                    }
+                });
+            });
         });
-        
-        function populateForm(type, item) {
-            if (type === 'task') {
-                document.getElementById('taskModalLabel').textContent = 'Editar Tarefa';
-                document.getElementById('taskId').value = item.id;
-                document.getElementById('taskName').value = item.name;
-                document.getElementById('taskSubject').value = item.subject;
-                document.getElementById('taskDate').value = item.date;
-                document.getElementById('taskPriority').value = item.priority;
-                document.getElementById('taskType').value = item.type;
-            } else if (type === 'subject') {
-                document.getElementById('subjectModalLabel').textContent = 'Editar Disciplina';
-                document.getElementById('subjectId').value = item.id;
-                document.getElementById('subjectName').value = item.name;
-                document.getElementById('subjectProfessor').value = item.professor;
-            } else if (type === 'assignment') {
-                document.getElementById('assignmentModalLabel').textContent = 'Editar Trabalho';
-                document.getElementById('assignmentId').value = item.id;
-                document.getElementById('assignmentName').value = item.name;
-                document.getElementById('assignmentSubject').value = item.subject;
-                document.getElementById('assignmentGrade').value = item.grade;
-                document.getElementById('assignmentDueDate').value = item.dueDate;
-                document.getElementById('assignmentDone').checked = item.done;
-                // Dispara o evento de 'change' para ocultar/exibir a nota
-                assignmentDueDateInput.dispatchEvent(new Event('change'));
-            } else if (type === 'exam') {
-                document.getElementById('examModalLabel').textContent = 'Editar Prova';
-                document.getElementById('examId').value = item.id;
-                document.getElementById('examName').value = item.name;
-                document.getElementById('examSubject').value = item.subject;
-                document.getElementById('examGrade').value = item.grade;
-                document.getElementById('examDate').value = item.date;
-                // Dispara o evento de 'change' para ocultar/exibir a nota
-                examDateInput.dispatchEvent(new Event('change'));
-            } else if (type === 'event') {
-                document.getElementById('eventModalLabel').textContent = 'Editar Evento';
-                document.getElementById('eventId').value = item.id;
-                document.getElementById('eventTitle').value = item.title;
-                document.getElementById('eventDateTime').value = item.dateTime;
-                document.getElementById('eventDescription').value = item.description;
-                document.getElementById('eventPriority').value = item.priority;
-            } else if (type === 'schedule') {
-                document.getElementById('scheduleModalLabel').textContent = 'Editar Aula';
-                document.getElementById('scheduleId').value = item.id;
-                document.getElementById('scheduleSubject').value = item.subject;
-                document.getElementById('scheduleProfessor').value = item.professor;
-                document.getElementById('scheduleDay').value = item.day;
-                document.getElementById('scheduleStartTime').value = item.startTime;
-                document.getElementById('scheduleEndTime').value = item.endTime;
-            } else if (type === 'hours') {
-                document.getElementById('hoursModalLabel').textContent = 'Editar Atividade Complementar';
-                document.getElementById('hoursId').value = item.id;
-                document.getElementById('hoursActivity').value = item.activity;
-                document.getElementById('hoursAmount').value = item.hours;
-                document.getElementById('hoursDate').value = item.date;
-                document.getElementById('hoursApproved').checked = item.approved;
-            }
-        }
-        
-        // Reseta os modais ao fechar
-        document.getElementById('taskModal').addEventListener('hidden.bs.modal', () => taskForm.reset());
-        document.getElementById('subjectModal').addEventListener('hidden.bs.modal', () => subjectForm.reset());
-        document.getElementById('assignmentModal').addEventListener('hidden.bs.modal', () => assignmentForm.reset());
-        document.getElementById('examModal').addEventListener('hidden.bs.modal', () => examForm.reset());
-        document.getElementById('eventModal').addEventListener('hidden.bs.modal', () => eventForm.reset());
-        document.getElementById('scheduleModal').addEventListener('hidden.bs.modal', () => scheduleForm.reset());
-        document.getElementById('hoursModal').addEventListener('hidden.bs.modal', () => hoursForm.reset());
-        
-        // Calendário
-        document.getElementById('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
-        document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
-
-        // Inicializa a aplicação
-        showPanel('home-links');
-        renderAll();
-    });
     </script>
 </body>
 </html>
