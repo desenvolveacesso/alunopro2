@@ -210,6 +210,7 @@
             border-radius: 8px; 
             cursor: pointer; 
             transition: background-color 0.2s; 
+            position: relative;
         }
         
         .calendar-day:not(.empty):hover { 
@@ -225,6 +226,35 @@
         .calendar-day.current { 
             background-color: var(--primary); 
             color: white; 
+        }
+        
+        .event-indicator {
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+        
+        .event-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .event-dot.assignment {
+            background-color: var(--info);
+        }
+        
+        .event-dot.exam {
+            background-color: var(--danger);
+        }
+        
+        .event-dot.other {
+            background-color: var(--warning);
         }
         
         .badge-priority { 
@@ -365,6 +395,59 @@
             color: var(--text-light);
             font-size: 0.9rem;
         }
+        
+        .event-item {
+            border-left: 4px solid var(--primary);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .event-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .event-item.assignment {
+            border-left-color: var(--info);
+        }
+        
+        .event-item.exam {
+            border-left-color: var(--danger);
+        }
+        
+        .event-item.other {
+            border-left-color: var(--warning);
+        }
+        
+        .event-item.completed {
+            opacity: 0.7;
+            border-left-color: var(--success);
+        }
+        
+        .event-details-modal .event-info {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .event-details-modal .event-info:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .event-date-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
 
         /* Responsividade */
         @media (max-width: 992px) {
@@ -481,6 +564,47 @@
                 transform: translateY(0);
             }
         }
+        
+        .report-section {
+            margin-bottom: 30px;
+        }
+        
+        .report-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .report-body {
+            padding: 15px;
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .report-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .report-item:last-child {
+            border-bottom: none;
+        }
+        
+        .report-item .badge {
+            font-size: 0.8rem;
+        }
+        
+        .empty-report {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
@@ -527,6 +651,12 @@
                         <a class="nav-link" href="#" data-target="agenda">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Agenda</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="#" data-target="relatorio">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Relatório</span>
                         </a>
                     </div>
                     <div class="nav-item">
@@ -601,6 +731,14 @@
                             <div class="card-body">
                                 <div class="icon-wrapper bg-danger"><i class="fas fa-calendar-alt fa-2x"></i></div>
                                 <h5>Agenda</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card card-link" data-target="relatorio">
+                            <div class="card-body">
+                                <div class="icon-wrapper bg-dark"><i class="fas fa-clipboard-list fa-2x"></i></div>
+                                <h5>Relatório</h5>
                             </div>
                         </div>
                     </div>
@@ -860,6 +998,38 @@
                                 <tbody id="eventsTableBody"></tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Relatório -->
+            <div id="relatorio" class="content-panel">
+                <div class="content-header">
+                    <h2>Relatório de Pendências</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Voltar</button>
+                        <button class="btn btn-primary" id="printReport"><i class="fas fa-print me-1"></i> Imprimir</button>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h4 class="report-header">Trabalhos Pendentes</h4>
+                    <div class="report-body" id="pendingAssignmentsReport">
+                        <!-- Conteúdo gerado dinamicamente -->
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h4 class="report-header">Provas Pendentes</h4>
+                    <div class="report-body" id="pendingExamsReport">
+                        <!-- Conteúdo gerado dinamicamente -->
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h4 class="report-header">Eventos Pendentes</h4>
+                    <div class="report-body" id="pendingEventsReport">
+                        <!-- Conteúdo gerado dinamicamente -->
                     </div>
                 </div>
             </div>
@@ -1223,6 +1393,43 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal para visualização de eventos do dia -->
+    <div class="modal fade" id="dayEventsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dayEventsModalTitle">Eventos do Dia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="dayEventsModalBody">
+                    <!-- Conteúdo gerado dinamicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para detalhes do evento -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content event-details-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventDetailsModalTitle">Detalhes do Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="eventDetailsModalBody">
+                    <!-- Conteúdo gerado dinamicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="editEventBtn">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -1295,6 +1502,11 @@
                 { id: 2, name: "Análise de Caso", subject: "Direito Penal", grade: null, dueDate: new Date(Date.now() + 86400000 * 7).toISOString().split('T')[0], done: false }
             ];
             
+            exams = [
+                { id: 1, name: "Prova Bimestral", subject: "Direito Civil I", grade: 7.5, date: new Date(Date.now() + 86400000 * 14).toISOString().split('T')[0] },
+                { id: 2, name: "Avaliação Parcial", subject: "Direito Penal", grade: null, date: new Date(Date.now() + 86400000 * 21).toISOString().split('T')[0] }
+            ];
+            
             saveToLocalStorage();
         };
 
@@ -1354,7 +1566,7 @@
             document.getElementById('sidebar').classList.toggle('open');
         });
 
-        // Fecha a sidebar ao clicar em um link (em mobile)
+        // Fecha a sidebar ao clicar em un link (em mobile)
         if (window.innerWidth <= 992) {
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
@@ -1406,6 +1618,22 @@
         const backupBtn = document.getElementById('backupBtn');
         const restoreFile = document.getElementById('restoreFile');
         const restoreBtn = document.getElementById('restoreBtn');
+        
+        const dayEventsModal = new bootstrap.Modal(document.getElementById('dayEventsModal'));
+        const dayEventsModalTitle = document.getElementById('dayEventsModalTitle');
+        const dayEventsModalBody = document.getElementById('dayEventsModalBody');
+        
+        const eventDetailsModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+        const eventDetailsModalTitle = document.getElementById('eventDetailsModalTitle');
+        const eventDetailsModalBody = document.getElementById('eventDetailsModalBody');
+        
+        const editEventBtn = document.getElementById('editEventBtn');
+        
+        const pendingAssignmentsReport = document.getElementById('pendingAssignmentsReport');
+        const pendingExamsReport = document.getElementById('pendingExamsReport');
+        const pendingEventsReport = document.getElementById('pendingEventsReport');
+        
+        const printReportBtn = document.getElementById('printReport');
 
         const renderCalendar = () => {
             currentDate.setDate(1);
@@ -1419,54 +1647,364 @@
             const lastDayIndex = new Date(year, month, lastDay).getDay();
             const nextDays = 7 - lastDayIndex - 1;
 
-            const allEventDates = [
-                ...tasks.map(t => new Date(t.date).setHours(24,0,0,0)),
-                ...events.map(e => new Date(e.dateTime.split('T')[0]).setHours(24,0,0,0))
-            ];
-            const uniqueEventDates = new Set(allEventDates);
-
             const today = new Date().setHours(0,0,0,0);
             let daysHtml = '';
-            for (let x = firstDayIndex; x > 0; x--) { daysHtml += `<div class="col p-1"><div class="calendar-day empty">${prevLastDay - x + 1}</div></div>`; }
             
-            for (let i = 1; i <= lastDay; i++) {
-                let dayDate = new Date(year, month, i).setHours(24,0,0,0);
-                let classes = 'calendar-day';
-                if (new Date(year, month, i).setHours(0,0,0,0) === today) classes += ' current';
-                if (uniqueEventDates.has(dayDate)) classes += ' has-event';
-                daysHtml += `<div class="col p-1" data-day="${i}" data-month="${month}" data-year="${year}"><div class="${classes}">${i}</div></div>`;
+            // Dias do mês anterior
+            for (let x = firstDayIndex; x > 0; x--) { 
+                daysHtml += `<div class="col p-1"><div class="calendar-day empty">${prevLastDay - x + 1}</div></div>`; 
             }
-            for (let j = 1; j <= nextDays; j++) { daysHtml += `<div class="col p-1"><div class="calendar-day empty">${j}</div></div>`; }
+            
+            // Dias do mês atual
+            for (let i = 1; i <= lastDay; i++) {
+                const dayDate = new Date(year, month, i).setHours(0,0,0,0);
+                let classes = 'calendar-day';
+                if (dayDate === today) classes += ' current';
+                
+                // Verifica se há eventos neste dia
+                const dayEvents = getEventsForDate(new Date(year, month, i));
+                if (dayEvents.length > 0) {
+                    classes += ' has-event';
+                }
+                
+                daysHtml += `<div class="col p-1" data-day="${i}" data-month="${month}" data-year="${year}">
+                    <div class="${classes}">${i}`;
+                
+                // Adiciona indicadores de tipo de evento
+                if (dayEvents.length > 0) {
+                    daysHtml += `<div class="event-indicator">`;
+                    
+                    // Verifica tipos de eventos para mostrar os indicadores corretos
+                    const eventTypes = new Set(dayEvents.map(event => {
+                        if (event.type === 'assignment' || (event.dueDate && !event.date)) return 'assignment';
+                        if (event.type === 'exam' || event.date) return 'exam';
+                        return 'other';
+                    }));
+                    
+                    eventTypes.forEach(type => {
+                        daysHtml += `<span class="event-dot ${type}"></span>`;
+                    });
+                    
+                    daysHtml += `</div>`;
+                }
+                
+                daysHtml += `</div></div>`;
+            }
+            
+            // Dias do próximo mês
+            for (let j = 1; j <= nextDays; j++) { 
+                daysHtml += `<div class="col p-1"><div class="calendar-day empty">${j}</div></div>`; 
+            }
+            
             calendarDays.innerHTML = daysHtml;
         };
         
+        // Função para obter eventos de uma data específica
+        const getEventsForDate = (date) => {
+            const dateString = date.toISOString().split('T')[0];
+            const eventsForDate = [];
+            
+            // Verifica tarefas
+            tasks.forEach(task => {
+                const taskDate = new Date(task.date).toISOString().split('T')[0];
+                if (taskDate === dateString) {
+                    eventsForDate.push({...task, eventType: 'task'});
+                }
+            });
+            
+            // Verifica trabalhos
+            assignments.forEach(assignment => {
+                const assignmentDate = new Date(assignment.dueDate).toISOString().split('T')[0];
+                if (assignmentDate === dateString) {
+                    eventsForDate.push({...assignment, eventType: 'assignment'});
+                }
+            });
+            
+            // Verifica provas
+            exams.forEach(exam => {
+                const examDate = new Date(exam.date).toISOString().split('T')[0];
+                if (examDate === dateString) {
+                    eventsForDate.push({...exam, eventType: 'exam'});
+                }
+            });
+            
+            // Verifica eventos da agenda
+            events.forEach(event => {
+                const eventDate = new Date(event.dateTime).toISOString().split('T')[0];
+                if (eventDate === dateString) {
+                    eventsForDate.push({...event, eventType: 'event'});
+                }
+            });
+            
+            return eventsForDate;
+        };
+        
+        // Event listener para clicar em dias do calendário
         calendarDays.addEventListener('click', (e) => {
             const dayElement = e.target.closest('.calendar-day:not(.empty)');
-            if (dayElement && dayElement.classList.contains('has-event')) {
-                const day = dayElement.textContent;
+            if (dayElement) {
+                const day = dayElement.textContent.match(/\d+/)[0]; // Extrai apenas o número do dia
                 const month = dayElement.parentElement.dataset.month;
                 const year = dayElement.parentElement.dataset.year;
                 
-                const clickedDate = new Date(year, month, day).setHours(0,0,0,0);
+                const clickedDate = new Date(year, month, day);
+                const eventsForDate = getEventsForDate(clickedDate);
                 
-                let dayEvents = [];
-
-                tasks.forEach(task => {
-                    if (new Date(task.date).setHours(0,0,0,0) === clickedDate) {
-                        dayEvents.push(`- Tarefa: ${task.name} (${task.subject}) - Data: ${new Date(task.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`);
-                    }
-                });
-
-                events.forEach(event => {
-                    if (new Date(event.dateTime.split('T')[0]).setHours(0,0,0,0) === clickedDate) {
-                        dayEvents.push(`- Evento: ${event.title} - Data: ${new Date(event.dateTime).toLocaleString('pt-BR')}`);
-                    }
-                });
-                
-                if (dayEvents.length > 0) {
-                    alert(`Eventos para o dia ${day}/${parseInt(month) + 1}/${year}:\n\n${dayEvents.join('\n')}`);
+                if (eventsForDate.length > 0) {
+                    showDayEvents(clickedDate, eventsForDate);
                 }
             }
+        });
+        
+        // Função para mostrar eventos de um dia
+        const showDayEvents = (date, events) => {
+            const formattedDate = date.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            dayEventsModalTitle.textContent = `Eventos para ${formattedDate}`;
+            
+            let eventsHtml = '';
+            
+            if (events.length === 0) {
+                eventsHtml = '<p class="text-center">Nenhum evento para esta data.</p>';
+            } else {
+                events.forEach(event => {
+                    let typeBadge = '';
+                    let timeInfo = '';
+                    
+                    if (event.eventType === 'assignment') {
+                        typeBadge = '<span class="badge bg-info">Trabalho</span>';
+                        timeInfo = `Entrega: ${new Date(event.dueDate).toLocaleDateString('pt-BR')}`;
+                    } else if (event.eventType === 'exam') {
+                        typeBadge = '<span class="badge bg-danger">Prova</span>';
+                        timeInfo = `Data: ${new Date(event.date).toLocaleDateString('pt-BR')}`;
+                    } else if (event.eventType === 'event') {
+                        typeBadge = '<span class="badge bg-warning">Evento</span>';
+                        timeInfo = `Horário: ${new Date(event.dateTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                    } else {
+                        typeBadge = '<span class="badge bg-secondary">Tarefa</span>';
+                        timeInfo = `Data: ${new Date(event.date).toLocaleDateString('pt-BR')}`;
+                    }
+                    
+                    eventsHtml += `
+                        <div class="event-item ${event.eventType} ${event.done ? 'completed' : ''}" data-id="${event.id}" data-type="${event.eventType}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>${event.name || event.title}</h6>
+                                    <p class="mb-1">${event.subject || ''}</p>
+                                    <small class="text-muted">${timeInfo}</small>
+                                </div>
+                                <div>${typeBadge}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            dayEventsModalBody.innerHTML = eventsHtml;
+            dayEventsModal.show();
+            
+            // Adiciona event listeners para os itens de evento
+            document.querySelectorAll('.event-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const eventId = item.getAttribute('data-id');
+                    const eventType = item.getAttribute('data-type');
+                    showEventDetails(eventId, eventType);
+                });
+            });
+        };
+        
+        // Função para mostrar detalhes de um evento
+        const showEventDetails = (id, type) => {
+            let event = null;
+            let modalTitle = '';
+            
+            if (type === 'assignment') {
+                event = assignments.find(a => a.id == id);
+                modalTitle = 'Detalhes do Trabalho';
+            } else if (type === 'exam') {
+                event = exams.find(e => e.id == id);
+                modalTitle = 'Detalhes da Prova';
+            } else if (type === 'event') {
+                event = events.find(ev => ev.id == id);
+                modalTitle = 'Detalhes do Evento';
+            } else if (type === 'task') {
+                event = tasks.find(t => t.id == id);
+                modalTitle = 'Detalhes da Tarefa';
+            }
+            
+            if (!event) return;
+            
+            eventDetailsModalTitle.textContent = modalTitle;
+            
+            let eventHtml = '';
+            
+            if (type === 'assignment') {
+                eventHtml = `
+                    <div class="event-info">
+                        <h5>${event.name}</h5>
+                    </div>
+                    <div class="event-info">
+                        <strong>Disciplina:</strong> ${event.subject}
+                    </div>
+                    <div class="event-info">
+                        <strong>Data de Entrega:</strong> ${new Date(event.dueDate).toLocaleDateString('pt-BR')}
+                    </div>
+                    <div class="event-info">
+                        <strong>Status:</strong> ${event.done ? '<span class="badge bg-success">Concluído</span>' : '<span class="badge bg-warning">Pendente</span>'}
+                    </div>
+                    <div class="event-info">
+                        <strong>Nota:</strong> ${event.grade !== null ? event.grade.toFixed(1) : 'N/A'}
+                    </div>
+                `;
+            } else if (type === 'exam') {
+                eventHtml = `
+                    <div class="event-info">
+                        <h5>${event.name}</h5>
+                    </div>
+                    <div class="event-info">
+                        <strong>Disciplina:</strong> ${event.subject}
+                    </div>
+                    <div class="event-info">
+                        <strong>Data da Prova:</strong> ${new Date(event.date).toLocaleDateString('pt-BR')}
+                    </div>
+                    <div class="event-info">
+                        <strong>Nota:</strong> ${event.grade !== null ? event.grade.toFixed(1) : 'N/A'}
+                    </div>
+                `;
+            } else if (type === 'event') {
+                eventHtml = `
+                    <div class="event-info">
+                        <h5>${event.title}</h5>
+                    </div>
+                    <div class="event-info">
+                        <strong>Data e Hora:</strong> ${new Date(event.dateTime).toLocaleString('pt-BR')}
+                    </div>
+                    <div class="event-info">
+                        <strong>Descrição:</strong> ${event.description || 'Nenhuma descrição'}
+                    </div>
+                    <div class="event-info">
+                        <strong>Prioridade:</strong> <span class="badge-priority priority-${event.priority}">${event.priority === 'high' ? 'Alta' : event.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+                    </div>
+                `;
+            } else if (type === 'task') {
+                eventHtml = `
+                    <div class="event-info">
+                        <h5>${event.name}</h5>
+                    </div>
+                    <div class="event-info">
+                        <strong>Disciplina:</strong> ${event.subject}
+                    </div>
+                    <div class="event-info">
+                        <strong>Data:</strong> ${new Date(event.date).toLocaleDateString('pt-BR')}
+                    </div>
+                    <div class="event-info">
+                        <strong>Tipo:</strong> ${event.type === 'assignment' ? 'Trabalho' : event.type === 'exam' ? 'Prova' : 'Outro'}
+                    </div>
+                    <div class="event-info">
+                        <strong>Prioridade:</strong> <span class="badge-priority priority-${event.priority}">${event.priority === 'high' ? 'Alta' : event.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+                    </div>
+                `;
+            }
+            
+            eventDetailsModalBody.innerHTML = eventHtml;
+            
+            // Configura o botão de edição
+            editEventBtn.onclick = () => {
+                eventDetailsModal.hide();
+                
+                if (type === 'assignment') {
+                    populateForm('assignment', event);
+                    assignmentModal.show();
+                } else if (type === 'exam') {
+                    populateForm('exam', event);
+                    examModal.show();
+                } else if (type === 'event') {
+                    populateForm('event', event);
+                    eventModal.show();
+                } else if (type === 'task') {
+                    populateForm('task', event);
+                    tasksModal.show();
+                }
+            };
+            
+            eventDetailsModal.show();
+        };
+        
+        // Função para gerar relatório de pendências
+        const generateReports = () => {
+            // Relatório de trabalhos pendentes
+            const pendingAssignments = assignments.filter(a => !a.done);
+            if (pendingAssignments.length === 0) {
+                pendingAssignmentsReport.innerHTML = '<div class="empty-report">Nenhum trabalho pendente</div>';
+            } else {
+                pendingAssignmentsReport.innerHTML = '';
+                pendingAssignments.forEach(assignment => {
+                    const daysUntilDue = Math.ceil((new Date(assignment.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
+                    const urgencyClass = daysUntilDue <= 3 ? 'bg-danger' : daysUntilDue <= 7 ? 'bg-warning' : 'bg-info';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${assignment.name}</strong>
+                            <div>${assignment.subject} - Entrega: ${new Date(assignment.dueDate).toLocaleDateString('pt-BR')}</div>
+                        </div>
+                        <span class="badge ${urgencyClass}">${daysUntilDue} dias</span>
+                    `;
+                    pendingAssignmentsReport.appendChild(item);
+                });
+            }
+            
+            // Relatório de provas pendentes
+            const pendingExams = exams.filter(e => e.grade === null);
+            if (pendingExams.length === 0) {
+                pendingExamsReport.innerHTML = '<div class="empty-report">Nenhuma prova pendente</div>';
+            } else {
+                pendingExamsReport.innerHTML = '';
+                pendingExams.forEach(exam => {
+                    const daysUntilExam = Math.ceil((new Date(exam.date) - new Date()) / (1000 * 60 * 60 * 24));
+                    const urgencyClass = daysUntilExam <= 3 ? 'bg-danger' : daysUntilExam <= 7 ? 'bg-warning' : 'bg-info';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${exam.name}</strong>
+                            <div>${exam.subject} - Data: ${new Date(exam.date).toLocaleDateString('pt-BR')}</div>
+                        </div>
+                        <span class="badge ${urgencyClass}">${daysUntilExam} dias</span>
+                    `;
+                    pendingExamsReport.appendChild(item);
+                });
+            }
+            
+            // Relatório de eventos pendentes (tarefas)
+            const pendingTasks = tasks.filter(t => new Date(t.date) >= new Date());
+            if (pendingTasks.length === 0) {
+                pendingEventsReport.innerHTML = '<div class="empty-report">Nenhum evento pendente</div>';
+            } else {
+                pendingEventsReport.innerHTML = '';
+                pendingTasks.forEach(task => {
+                    const daysUntilTask = Math.ceil((new Date(task.date) - new Date()) / (1000 * 60 * 60 * 24));
+                    const urgencyClass = daysUntilTask <= 3 ? 'bg-danger' : daysUntilTask <= 7 ? 'bg-warning' : 'bg-info';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${task.name}</strong>
+                            <div>${task.subject} - Data: ${new Date(task.date).toLocaleDateString('pt-BR')}</div>
+                            <small>${task.type === 'assignment' ? 'Trabalho' : task.type === 'exam' ? 'Prova' : 'Outro'} - Prioridade: ${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</small>
+                        </div>
+                        <span class="badge ${urgencyClass}">${daysUntilTask} dias</span>
+                    `;
+                    pendingEventsReport.appendChild(item);
+                });
+            }
+        };
+        
+        // Event listener para o botão de imprimir relatório
+        printReportBtn.addEventListener('click', () => {
+            window.print();
         });
 
         const updateDashboardCards = () => {
@@ -1628,7 +2166,7 @@
         const renderHours = () => {
             hoursTableBody.innerHTML = '';
             if (complementaryHours.length === 0) {
-                hoursTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma atividade complementar cadastrada.</td></tr>';
+                hoursTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma atividade complementar cadastrada.</td></div>';
             }
             complementaryHours.sort((a, b) => new Date(a.date) - new Date(b.date));
             complementaryHours.forEach(hour => {
@@ -1680,6 +2218,7 @@
             renderHours();
             renderConfig();
             updateDashboardCards();
+            generateReports();
         };
 
         // =====================================================================
