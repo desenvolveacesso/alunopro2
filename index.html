@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle Acadêmico Universitário - Direito</title>
+  <title>Acadêmico Pro - Controle Universitário</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,12 +55,14 @@
       z-index: 1000;
       transition: var(--transition);
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
-
+    
     .sidebar-header {
       padding: 0 20px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .sidebar-logo {
@@ -72,6 +74,55 @@
     .sidebar-subtitle {
       font-size: 0.9rem;
       opacity: 0.8;
+    }
+    
+    .profile-switcher {
+        padding: 10px 20px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-switcher .dropdown-toggle {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        width: 100%;
+        text-align: left;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .profile-switcher .dropdown-toggle::after {
+        margin-left: auto;
+    }
+
+    .profile-switcher .dropdown-menu {
+        width: 100%;
+        background-color: var(--secondary);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .profile-switcher .dropdown-item {
+        color: white;
+        font-size: 0.9rem;
+    }
+    .profile-switcher .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .profile-switcher .dropdown-item i {
+        margin-right: 8px;
+    }
+    #current-profile-name {
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    .nav-menu-wrapper {
+        flex-grow: 1;
+        overflow-y: auto;
     }
 
     .nav-item {
@@ -170,7 +221,6 @@
       color: var(--primary);
     }
     
-    /* ESTILOS PARA CARDS COLORIDOS */
     .card-link[style*="background-color"] {
         color: white;
     }
@@ -452,7 +502,6 @@
       color: var(--text-light);
     }
     
-    /* ESTILOS QUADRO DE HORÁRIOS */
     .schedule-grid-wrapper {
         overflow-x: auto;
         background: white;
@@ -516,7 +565,6 @@
         opacity: 0.9;
     }
 
-    /* Responsividade */
     @media (max-width: 992px) {
       .app-container {
         flex-direction: column;
@@ -529,15 +577,25 @@
         bottom: 0;
         z-index: 1000;
         padding: 10px 0;
+        flex-direction: row;
       }
 
       .sidebar-header {
         display: none;
       }
+      
+      .profile-switcher {
+          display: none;
+      }
+      
+      .nav-menu-wrapper {
+          overflow-x: auto;
+          display: flex;
+      }
 
       .nav-menu {
         display: flex;
-        overflow-x: auto;
+        flex-shrink: 0;
         padding: 0 10px;
       }
 
@@ -633,85 +691,94 @@
       <div class="sidebar-logo">Acadêmico Pro</div>
       <div class="sidebar-subtitle">Controle Estudantil</div>
     </div>
-    <nav>
-      <div class="nav-menu">
-        <div class="nav-item">
-          <a class="nav-link active" href="#" data-target="home-links">
-            <i class="fas fa-home"></i>
-            <span>Início</span>
-          </a>
+    
+    <div class="profile-switcher">
+        <div class="dropdown">
+            <button class="btn dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <span id="current-profile-name">Carregando...</span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="profileDropdown" id="profile-dropdown-menu">
+            </ul>
         </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="dashboard">
-            <i class="fas fa-chart-line"></i>
-            <span>Dashboard</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="disciplinas">
-            <i class="fas fa-book"></i>
-            <span>Disciplinas</span>
-          </a>
-        </div>
-        <div class="nav-item">
-            <a class="nav-link" href="#" data-target="horarios">
-                <i class="fas fa-table-cells"></i>
-                <span>Horários</span>
+    </div>
+    
+    <div class="nav-menu-wrapper">
+        <nav class="nav-menu">
+            <div class="nav-item">
+            <a class="nav-link active" href="#" data-target="home-links">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
             </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="trabalhos">
-            <i class="fas fa-tasks"></i>
-            <span>Trabalhos</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="provas">
-            <i class="fas fa-file-alt"></i>
-            <span>Provas</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="agenda">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Agenda</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="financeiro">
-            <i class="fas fa-dollar-sign"></i>
-            <span>Financeiro</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="#" data-target="relatorios">
-            <i class="fas fa-chart-pie"></i>
-            <span>Relatórios</span>
-          </a>
-        </div>
-         <div class="nav-item">
-          <a class="nav-link" href="#" data-target="configuracoes">
-            <i class="fas fa-cog"></i>
-            <span>Configurações</span>
-          </a>
-        </div>
-      </div>
-    </nav>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="disciplinas">
+                <i class="fas fa-book"></i>
+                <span>Disciplinas</span>
+            </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" data-target="horarios">
+                    <i class="fas fa-table-cells"></i>
+                    <span>Horários</span>
+                </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="trabalhos">
+                <i class="fas fa-tasks"></i>
+                <span>Trabalhos</span>
+            </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="provas">
+                <i class="fas fa-file-alt"></i>
+                <span>Provas</span>
+            </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="agenda">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Agenda</span>
+            </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="financeiro">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Financeiro</span>
+            </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="relatorios">
+                <i class="fas fa-chart-pie"></i>
+                <span>Relatórios</span>
+            </a>
+            </div>
+            <div class="nav-item">
+            <a class="nav-link" href="#" data-target="configuracoes">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </a>
+            </div>
+        </nav>
+    </div>
   </aside>
 
   <main class="main-content">
     <button class="sidebar-toggle" id="sidebarToggle">
       <i class="fas fa-bars"></i>
     </button>
-
     <div class="content-panel active" id="home-links">
       <div class="content-header">
         <h2>Início Rápido</h2>
       </div>
       <div class="row g-4">
-        </div>
+      </div>
     </div>
-
     <div class="content-panel" id="dashboard">
         <div class="content-header">
             <h2>Dashboard</h2>
@@ -776,9 +843,6 @@
                     <div class="card-body">
                         <h4 class="card-title mb-4">Desempenho por Disciplina</h4>
                         <div id="dashboard-desempenho-disciplinas">
-                            <div class="empty-state">
-                                <p>Nenhuma disciplina cadastrada.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -788,9 +852,6 @@
                     <div class="card-body">
                         <h4 class="card-title mb-4">Próximos Eventos</h4>
                         <div id="dashboard-proximos-eventos">
-                            <div class="empty-state">
-                                <p>Nenhum evento próximo.</p>
-                            </div>
                         </div>
                         <a href="#" class="btn btn-outline-primary btn-sm mt-3" data-target="agenda">Ver Agenda Completa</a>
                     </div>
@@ -798,7 +859,6 @@
             </div>
         </div>
     </div>
-
     <div class="content-panel" id="disciplinas">
       <div class="content-header">
         <h2>Disciplinas</h2>
@@ -811,7 +871,6 @@
       <div class="row g-4" id="disciplinas-lista">
         </div>
     </div>
-
     <div class="content-panel" id="horarios">
         <div class="content-header">
             <h2>Quadro de Horários</h2>
@@ -826,7 +885,6 @@
                 </div>
         </div>
     </div>
-
     <div class="content-panel" id="trabalhos">
       <div class="content-header">
         <h2>Trabalhos</h2>
@@ -856,7 +914,6 @@
         </div>
       </div>
     </div>
-
     <div class="content-panel" id="provas">
         <div class="content-header">
             <h2>Provas</h2>
@@ -887,7 +944,6 @@
             </div>
         </div>
     </div>
-
     <div class="content-panel" id="agenda">
         <div class="content-header">
             <h2>Agenda</h2>
@@ -920,14 +976,11 @@
             <div class="col-lg-4">
                 <div class="card card-dashboard">
                     <div class="card-body" id="agenda-eventos-dia">
-                        <h4 class="card-title mb-4">Eventos do Dia</h4>
-                        <p class="text-muted text-center">Selecione um dia no calendário</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="content-panel" id="financeiro">
         <div class="content-header">
             <h2>Controle Financeiro</h2>
@@ -987,7 +1040,6 @@
             </div>
         </div>
     </div>
-
     <div class="content-panel" id="relatorios">
         <div class="content-header">
             <h2>Relatórios</h2>
@@ -1019,7 +1071,6 @@
             </div>
         </div>
     </div>
-      
     <div class="content-panel" id="configuracoes">
         <div class="content-header">
             <h2>Configurações</h2>
@@ -1027,7 +1078,7 @@
         <div class="card card-dashboard">
             <div class="card-body">
                 <h4 class="card-title">Backup e Restauração de Dados</h4>
-                <p class="text-muted">Salve seus dados em um arquivo para segurança ou para transferir para outro dispositivo.</p>
+                <p class="text-muted">Salve todos os seus perfis e dados em um arquivo para segurança ou para transferir para outro dispositivo.</p>
                 <div class="mt-4">
                     <button class="btn btn-primary" id="backup-btn">
                         <i class="fas fa-download"></i> Criar Backup (Exportar)
@@ -1038,7 +1089,7 @@
                     <input type="file" id="restore-input" class="d-none" accept=".json">
                 </div>
                 <div class="alert alert-warning mt-4">
-                    <strong>Atenção:</strong> Restaurar um backup substituirá todos os dados atuais. Esta ação não pode ser desfeita.
+                    <strong>Atenção:</strong> Restaurar um backup substituirá TODOS os perfis e dados atuais. Esta ação não pode ser desfeita.
                 </div>
             </div>
         </div>
@@ -1047,6 +1098,31 @@
   </main>
 </div>
 
+<div class="modal fade" id="profileManagementModal" tabindex="-1" aria-labelledby="profileManagementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileManagementModalLabel">Gerenciar Perfis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Selecione um perfil para ativar ou gerencie seus perfis existentes.</p>
+                <ul class="list-group" id="profile-management-list">
+                </ul>
+                <hr>
+                <form id="profileForm">
+                    <input type="hidden" id="profileId">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="profileName" placeholder="Nome do novo perfil (Ex: Direito - UFAL)" required>
+                        <button class="btn btn-primary" type="submit" id="saveProfileBtn">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="horarioModal" tabindex="-1" aria-labelledby="horarioModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1096,7 +1172,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="disciplinaModal" tabindex="-1" aria-labelledby="disciplinaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1128,7 +1203,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="trabalhoModal" tabindex="-1" aria-labelledby="trabalhoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1179,7 +1253,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="provaModal" tabindex="-1" aria-labelledby="provaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1226,7 +1299,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1287,7 +1359,6 @@
     </div>
   </div>
 </div>
-
 <div class="modal fade" id="financeiroModal" tabindex="-1" aria-labelledby="financeiroModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1344,7 +1415,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="recurringActionModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -1363,73 +1433,116 @@
   </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// SCRIPT COMPLETO DA APLICAÇÃO
 document.addEventListener('DOMContentLoaded', function() {
     
-    //-----------------------------------------------------
-    // 1. INICIALIZAÇÃO E GERENCIAMENTO DE DADOS (localStorage)
-    //-----------------------------------------------------
     let db;
     let currentCalendarDate = new Date();
+    const DB_KEY = 'lexAcademicaDB_v2';
 
-    const initialData = {
-        disciplinas: [
-            { id: 1, nome: "Direito Civil", professor: "Prof. Dr. Carlos Albuquerque", frequencia: 85 },
-            { id: 2, nome: "Direito Constitucional", professor: "Prof. Dra. Maria Santos", frequencia: 92 },
-            { id: 3, nome: "Direito Penal", professor: "Prof. Dr. Roberto Ferreira", frequencia: 88 },
-            { id: 4, nome: "Direito Trabalhista", professor: "Prof. Dra. Ana Costa", frequencia: 75 }
-        ],
-        horarios: [
-            { id: 1, disciplinaId: 1, diaSemana: 1, inicio: "08:00", fim: "10:00", local: "Sala 101" },
-            { id: 2, disciplinaId: 3, diaSemana: 1, inicio: "10:00", fim: "12:00", local: "Sala 102" },
-            { id: 3, disciplinaId: 2, diaSemana: 3, inicio: "08:00", fim: "12:00", local: "Auditório" },
-            { id: 4, disciplinaId: 4, diaSemana: 5, inicio: "14:00", fim: "16:00", local: "Sala 205" }
-        ],
-        trabalhos: [
-            { id: 1, disciplinaId: 1, titulo: "Estudo de Caso - Contratos", entrega: "2025-09-25", status: "Pendente", prioridade: "high", nota: null },
-            { id: 2, disciplinaId: 3, titulo: "Artigo - Teoria do Crime", entrega: "2025-10-10", status: "Pendente", prioridade: "medium", nota: null }
-        ],
-        provas: [
-            { id: 1, disciplinaId: 3, conteudo: "Teoria Geral do Crime", data: "2025-10-15", hora: "14:00", status: "Agendada", nota: null },
-            { id: 2, disciplinaId: 1, conteudo: "Obrigações", data: "2025-10-20", hora: "10:00", status: "Agendada", nota: null }
-        ],
-        eventos: [
-            { id: 1, title: "Seminário Internacional", type: 'other', date: "2025-09-30", time: "09:00", description: "Auditório Central" }
-        ],
-        financeiro: [
-            { id: 1, tipo: "receita", descricao: "Bolsa Auxílio", valor: 500.00, categoria: "Bolsa", data: "2025-09-05" },
-            { id: 2, tipo: "despesa", descricao: "Livro Vade Mecum", valor: 189.90, categoria: "Material de Estudo", data: "2025-09-10" }
-        ]
-    };
+    const createNewProfileData = () => ({
+        disciplinas: [],
+        horarios: [],
+        trabalhos: [],
+        provas: [],
+        eventos: [],
+        financeiro: []
+    });
+
+    function getCurrentProfileData() {
+        if (!db || !db.profiles || !db.currentProfileId) return null;
+        const currentProfile = db.profiles.find(p => p.id === db.currentProfileId);
+        return currentProfile ? currentProfile.data : null;
+    }
 
     function init() {
-        const storedData = localStorage.getItem('lexAcademicaDB');
+        const storedData = localStorage.getItem(DB_KEY);
         if (storedData) {
             db = JSON.parse(storedData);
         } else {
-            db = initialData;
+            db = {
+                profiles: [],
+                currentProfileId: null
+            };
+            migrateOldData();
         }
-        // Garante que novas estruturas de dados sejam adicionadas se não existirem no DB salvo
-        if (!db.horarios) db.horarios = [];
-        if (!db.financeiro) db.financeiro = [];
 
+        if (db.profiles.length === 0) {
+            const initialProfileData = {
+                disciplinas: [
+                    { id: 1, nome: "Direito Civil", professor: "Prof. Dr. Carlos Albuquerque", frequencia: 85 },
+                    { id: 2, nome: "Direito Constitucional", professor: "Prof. Dra. Maria Santos", frequencia: 92 },
+                    { id: 3, nome: "Direito Penal", professor: "Prof. Dr. Roberto Ferreira", frequencia: 88 }
+                ],
+                horarios: [ { id: 1, disciplinaId: 1, diaSemana: 1, inicio: "08:00", fim: "10:00", local: "Sala 101" } ],
+                trabalhos: [ { id: 1, disciplinaId: 1, titulo: "Estudo de Caso - Contratos", entrega: "2025-09-25", status: "Pendente", prioridade: "high", nota: null } ],
+                provas: [ { id: 1, disciplinaId: 3, conteudo: "Teoria Geral do Crime", data: "2025-10-15", hora: "14:00", status: "Agendada", nota: null } ],
+                eventos: [ { id: 1, title: "Seminário Internacional", type: 'other', date: "2025-09-30", time: "09:00", description: "Auditório Central" } ],
+                financeiro: [ { id: 1, tipo: "receita", descricao: "Bolsa Auxílio", valor: 500.00, categoria: "Bolsa", data: "2025-09-05" } ]
+            };
+            const firstProfile = { id: 1, name: "Meu Curso", data: initialProfileData };
+            db.profiles.push(firstProfile);
+            db.currentProfileId = 1;
+        }
+        
+        if (!db.currentProfileId && db.profiles.length > 0) {
+            db.currentProfileId = db.profiles[0].id;
+        }
 
         saveDB();
         generateQuickLinks();
+        renderProfileSwitcher();
         renderAll();
     }
 
-    function saveDB() {
-        localStorage.setItem('lexAcademicaDB', JSON.stringify(db));
+    function migrateOldData() {
+        const oldDB_KEY = 'lexAcademicaDB';
+        const oldData = localStorage.getItem(oldDB_KEY);
+        if (oldData) {
+            try {
+                const parsedOldData = JSON.parse(oldData);
+                if (parsedOldData.disciplinas) {
+                    const migratedProfile = {
+                        id: 1,
+                        name: "Perfil Principal (Migrado)",
+                        data: {
+                            disciplinas: parsedOldData.disciplinas || [],
+                            horarios: parsedOldData.horarios || [],
+                            trabalhos: parsedOldData.trabalhos || [],
+                            provas: parsedOldData.provas || [],
+                            eventos: parsedOldData.eventos || [],
+                            financeiro: parsedOldData.financeiro || []
+                        }
+                    };
+                    db.profiles.push(migratedProfile);
+                    db.currentProfileId = 1;
+                    saveDB();
+                    localStorage.removeItem(oldDB_KEY);
+                    alert("Seus dados foram migrados para o novo sistema de perfis!");
+                }
+            } catch (e) { console.error("Erro ao migrar dados antigos:", e); }
+        }
     }
 
-    //-----------------------------------------------------
-    // 2. FUNÇÕES DE RENDERIZAÇÃO GERAL
-    //-----------------------------------------------------
+    function saveDB() {
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+    }
+    
     function renderAll() {
+        const profileData = getCurrentProfileData();
+        if (!profileData) {
+            document.querySelector('.main-content').innerHTML = `
+                <div class="d-flex flex-column align-items-center justify-content-center" style="height: 80vh;">
+                    <h2>Bem-vindo ao Acadêmico Pro!</h2>
+                    <p class="lead text-muted">Crie seu primeiro perfil para começar a organizar sua vida acadêmica.</p>
+                    <button class="btn btn-primary btn-lg mt-3" data-bs-toggle="modal" data-bs-target="#profileManagementModal">
+                        <i class="fas fa-plus"></i> Criar Perfil
+                    </button>
+                </div>
+            `;
+            return;
+        }
         renderDashboard();
         renderDisciplinas();
         renderHorarios();
@@ -1442,11 +1555,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getDisciplinaById(id) {
-        return db.disciplinas.find(d => d.id === parseInt(id));
+        const profileData = getCurrentProfileData();
+        if (!profileData) return null;
+        return profileData.disciplinas.find(d => d.id === parseInt(id));
     }
 
     function getNewId(dbKey) {
-        return db[dbKey].length > 0 ? Math.max(...db[dbKey].map(item => item.id)) + 1 : 1;
+        const profileData = getCurrentProfileData();
+        if (!profileData || !profileData[dbKey]) return 1;
+        const items = profileData[dbKey];
+        return items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
     }
 
     const disciplinaColors = {};
@@ -1459,15 +1577,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return disciplinaColors[disciplinaId];
     }
     
-    //-----------------------------------------------------
-    // 3. RENDERIZAÇÃO DOS PAINÉIS
-    //-----------------------------------------------------
-
+    // CORREÇÃO APLICADA AQUI
     function generateQuickLinks() {
         const container = document.getElementById('home-links').querySelector('.row');
         container.innerHTML = '';
 
-        // Mapa de cores intuitivas para cada card
         const cardColors = {
             dashboard: 'var(--info)',
             disciplinas: 'var(--primary)',
@@ -1503,34 +1617,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderDashboard() {
-        // Cards de estatísticas
-        const trabalhosPendentes = db.trabalhos.filter(t => t.status === 'Pendente').length;
-        const provasAgendadas = db.provas.filter(p => p.status === 'Agendada').length;
+        const profileData = getCurrentProfileData();
+        if (!profileData) return;
+        
+        const trabalhosPendentes = profileData.trabalhos.filter(t => t.status === 'Pendente').length;
+        const provasAgendadas = profileData.provas.filter(p => p.status === 'Agendada').length;
 
-        document.getElementById('dashboard-disciplinas-count').textContent = db.disciplinas.length;
+        document.getElementById('dashboard-disciplinas-count').textContent = profileData.disciplinas.length;
         document.getElementById('dashboard-trabalhos-pendentes').textContent = trabalhosPendentes;
         document.getElementById('dashboard-provas-agendadas').textContent = provasAgendadas;
         
-        // Média Geral
         let todasNotas = [];
-        db.trabalhos.forEach(t => { if(t.nota !== null) todasNotas.push(parseFloat(t.nota))});
-        db.provas.forEach(p => { if(p.nota !== null) todasNotas.push(parseFloat(p.nota))});
+        profileData.trabalhos.forEach(t => { if(t.nota !== null) todasNotas.push(parseFloat(t.nota))});
+        profileData.provas.forEach(p => { if(p.nota !== null) todasNotas.push(parseFloat(p.nota))});
         const mediaGeral = todasNotas.length > 0 ? (todasNotas.reduce((a, b) => a + b, 0) / todasNotas.length).toFixed(1) : "0.0";
         document.getElementById('dashboard-media-geral').textContent = mediaGeral;
 
-        // Desempenho por disciplina
         const desempenhoContainer = document.getElementById('dashboard-desempenho-disciplinas');
         desempenhoContainer.innerHTML = '';
-        if (db.disciplinas.length === 0) {
+        if (profileData.disciplinas.length === 0) {
             desempenhoContainer.innerHTML = `<div class="empty-state"><p>Nenhuma disciplina cadastrada.</p></div>`;
         } else {
-            db.disciplinas.forEach(d => {
-                const notasTrabalhos = db.trabalhos.filter(t => t.disciplinaId === d.id && t.nota !== null).map(t => parseFloat(t.nota));
-                const notasProvas = db.provas.filter(p => p.disciplinaId === d.id && p.nota !== null).map(p => parseFloat(p.nota));
+            profileData.disciplinas.forEach(d => {
+                const notasTrabalhos = profileData.trabalhos.filter(t => t.disciplinaId === d.id && t.nota !== null).map(t => parseFloat(t.nota));
+                const notasProvas = profileData.provas.filter(p => p.disciplinaId === d.id && p.nota !== null).map(p => parseFloat(p.nota));
                 const notasDisciplina = [...notasTrabalhos, ...notasProvas];
                 const mediaDisciplina = notasDisciplina.length > 0 ? (notasDisciplina.reduce((a, b) => a + b, 0) / notasDisciplina.length).toFixed(1) : "N/A";
                 const progressWidth = mediaDisciplina !== "N/A" ? (mediaDisciplina / 10 * 100) : 0;
-                
                 const barColor = progressWidth >= 70 ? 'bg-success' : progressWidth >= 50 ? 'bg-warning' : 'bg-danger';
 
                 desempenhoContainer.innerHTML += `
@@ -1539,22 +1652,21 @@ document.addEventListener('DOMContentLoaded', function() {
                        <p class="small mb-1">Média: ${mediaDisciplina}</p>
                     </div>
                     <div class="progress mb-3">
-                        <div class="progress-bar ${barColor}" role="progressbar" style="width: ${progressWidth}%" aria-valuenow="${progressWidth}" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar ${barColor}" role="progressbar" style="width: ${progressWidth}%"></div>
                     </div>
                 `;
             });
         }
         
-        // Próximos eventos
         const eventosContainer = document.getElementById('dashboard-proximos-eventos');
         eventosContainer.innerHTML = '';
         const hoje = new Date();
         hoje.setHours(0,0,0,0);
 
         const todosEventos = [
-            ...db.trabalhos.filter(t => t.status === 'Pendente').map(t => ({...t, type: 'assignment', date: t.entrega, title: t.titulo})),
-            ...db.provas.filter(p => p.status === 'Agendada').map(p => ({...p, type: 'exam', date: p.data, title: p.conteudo})),
-            ...db.eventos.map(e => ({...e}))
+            ...profileData.trabalhos.filter(t => t.status === 'Pendente').map(t => ({...t, type: 'assignment', date: t.entrega, title: t.titulo})),
+            ...profileData.provas.filter(p => p.status === 'Agendada').map(p => ({...p, type: 'exam', date: p.data, title: p.conteudo})),
+            ...profileData.eventos.map(e => ({...e}))
         ];
         
         const proximosEventos = todosEventos
@@ -1586,15 +1698,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderDisciplinas() {
+        const profileData = getCurrentProfileData();
         const container = document.getElementById('disciplinas-lista');
         container.innerHTML = '';
-        if (db.disciplinas.length === 0) {
+        if (profileData.disciplinas.length === 0) {
             container.innerHTML = `<div class="col-12"><div class="empty-state card-dashboard p-4"><p>Clique em "Nova Disciplina" para começar.</p></div></div>`;
             return;
         }
-        db.disciplinas.forEach(d => {
-            const notasTrabalhos = db.trabalhos.filter(t => t.disciplinaId === d.id && t.nota !== null).map(t => parseFloat(t.nota));
-            const notasProvas = db.provas.filter(p => p.disciplinaId === d.id && p.nota !== null).map(p => parseFloat(p.nota));
+        profileData.disciplinas.forEach(d => {
+            const notasTrabalhos = profileData.trabalhos.filter(t => t.disciplinaId === d.id && t.nota !== null).map(t => parseFloat(t.nota));
+            const notasProvas = profileData.provas.filter(p => p.disciplinaId === d.id && p.nota !== null).map(p => parseFloat(p.nota));
             const notasDisciplina = [...notasTrabalhos, ...notasProvas];
             const mediaDisciplina = notasDisciplina.length > 0 ? (notasDisciplina.reduce((a, b) => a + b, 0) / notasDisciplina.length).toFixed(1) : "N/A";
             const progressWidth = mediaDisciplina !== "N/A" ? (mediaDisciplina / 10 * 100) : 0;
@@ -1610,9 +1723,7 @@ document.addEventListener('DOMContentLoaded', function() {
                            <p class="text-muted small">${d.professor}</p>
                         </div>
                         <div class="dropdown">
-                          <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
-                          </button>
+                          <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
                           <ul class="dropdown-menu">
                             <li><a class="dropdown-item edit-disciplina" href="#" data-id="${d.id}">Editar</a></li>
                             <li><a class="dropdown-item delete-disciplina" href="#" data-id="${d.id}">Excluir</a></li>
@@ -1623,21 +1734,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>Média</span>
                         <span class="avg-grade-badge ${barColor} text-white">${mediaDisciplina}</span>
                       </div>
-                      <div class="progress mb-3">
-                        <div class="progress-bar ${barColor}" role="progressbar" style="width: ${progressWidth}%"></div>
-                      </div>
-                      
+                      <div class="progress mb-3"><div class="progress-bar ${barColor}" style="width: ${progressWidth}%"></div></div>
                       <div class="d-flex justify-content-between small text-muted mb-2">
                         <span>Frequência</span>
                         <span>${d.frequencia}%</span>
                       </div>
-                      <div class="progress mb-3">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: ${d.frequencia}%"></div>
-                      </div>
-                      
+                      <div class="progress mb-3"><div class="progress-bar bg-primary" style="width: ${d.frequencia}%"></div></div>
                       <div class="d-flex justify-content-between">
-                        <span class="badge bg-info">${db.trabalhos.filter(t => t.disciplinaId === d.id).length} Trabalhos</span>
-                        <span class="badge bg-warning">${db.provas.filter(p => p.disciplinaId === d.id).length} Provas</span>
+                        <span class="badge bg-info">${profileData.trabalhos.filter(t => t.disciplinaId === d.id).length} Trabalhos</span>
+                        <span class="badge bg-warning">${profileData.provas.filter(p => p.disciplinaId === d.id).length} Provas</span>
                       </div>
                     </div>
                   </div>
@@ -1648,46 +1753,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderHorarios() {
+        const profileData = getCurrentProfileData();
         const container = document.getElementById('schedule-grid-container');
         container.innerHTML = '';
         
-        // Define range de horas
-        const horaInicio = 7;
-        const horaFim = 22;
-        const totalRows = (horaFim - horaInicio) * 2 + 1; // 30 min slots
-        container.style.gridTemplateRows = `50px repeat(${totalRows -1}, 40px)`;
+        const horaInicio = 7; const horaFim = 22;
+        container.style.gridTemplateRows = `50px repeat(${(horaFim - horaInicio) * 2}, 40px)`;
         
-        // Cabeçalho
-        container.innerHTML += `<div></div>`; // Canto vazio
-        const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        dias.forEach(dia => container.innerHTML += `<div class="schedule-header">${dia}</div>`);
+        container.innerHTML += `<div></div>`;
+        ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].forEach(dia => container.innerHTML += `<div class="schedule-header">${dia}</div>`);
 
-        // Coluna de horas
         for (let i = horaInicio; i <= horaFim; i++) {
              container.innerHTML += `<div class="schedule-time-slot" style="grid-row: ${ (i - horaInicio) * 2 + 2 } / span 2">${String(i).padStart(2,'0')}:00</div>`;
         }
 
-        // Aulas
-        if (db.horarios.length === 0) {
-            const emptyState = document.createElement('div');
-            emptyState.className = 'empty-state';
-            emptyState.textContent = 'Nenhuma aula cadastrada.';
-            emptyState.style.gridColumn = '2 / span 6';
-            emptyState.style.gridRow = '2 / span 4';
-            container.appendChild(emptyState);
+        if (profileData.horarios.length === 0) {
+            container.innerHTML += `<div class="empty-state" style="grid-column: 2 / 8; grid-row: 2 / 6;">Nenhuma aula cadastrada.</div>`;
         } else {
-            db.horarios.forEach(aula => {
+            profileData.horarios.forEach(aula => {
                 const disciplina = getDisciplinaById(aula.disciplinaId);
                 if (!disciplina) return;
                 
                 const inicioParts = aula.inicio.split(':');
                 const fimParts = aula.fim.split(':');
-                
                 const startRow = (parseInt(inicioParts[0]) - horaInicio) * 2 + (parseInt(inicioParts[1]) / 30) + 2;
                 const endRow = (parseInt(fimParts[0]) - horaInicio) * 2 + (parseInt(fimParts[1]) / 30) + 2;
-                
                 const col = parseInt(aula.diaSemana) + 1;
-
                 const color = getDisciplinaColor(aula.disciplinaId);
 
                 const item = document.createElement('div');
@@ -1696,8 +1787,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.style.gridColumn = col;
                 item.style.gridRow = `${startRow} / ${endRow}`;
                 item.style.backgroundColor = color;
-                item.style.borderColor = color;
-
                 item.innerHTML = `
                     <div class="schedule-class-title">${disciplina.nome}</div>
                     <div class="schedule-class-details">
@@ -1711,19 +1800,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function renderTrabalhos() {
+        const profileData = getCurrentProfileData();
         const tbody = document.getElementById('trabalhos-tabela');
         tbody.innerHTML = '';
-        if (db.trabalhos.length === 0) {
+        if (profileData.trabalhos.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhum trabalho cadastrado.</td></tr>`;
             return;
         }
-        db.trabalhos.sort((a, b) => new Date(a.entrega) - new Date(b.entrega)).forEach(t => {
+        profileData.trabalhos.sort((a, b) => new Date(a.entrega) - new Date(b.entrega)).forEach(t => {
             const disciplina = getDisciplinaById(t.disciplinaId);
             const statusClass = t.status === 'Pendente' ? 'bg-warning text-dark' : 'bg-success';
             const priorityClass = t.prioridade === 'high' ? 'priority-high' : t.prioridade === 'medium' ? 'priority-medium' : 'priority-low';
             const priorityText = t.prioridade === 'high' ? 'Alta' : t.prioridade === 'medium' ? 'Média' : 'Baixa';
 
-            const row = `
+            tbody.innerHTML += `
                 <tr>
                   <td>${disciplina ? disciplina.nome : 'N/A'}</td>
                   <td>${t.titulo}</td>
@@ -1736,27 +1826,26 @@ document.addEventListener('DOMContentLoaded', function() {
                   </td>
                 </tr>
             `;
-            tbody.innerHTML += row;
         });
     }
 
     function renderProvas() {
+        const profileData = getCurrentProfileData();
         const tbody = document.getElementById('provas-tabela');
         tbody.innerHTML = '';
-        if (db.provas.length === 0) {
+        if (profileData.provas.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-center">Nenhuma prova cadastrada.</td></tr>`;
             return;
         }
-        db.provas.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(p => {
+        profileData.provas.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(p => {
             const disciplina = getDisciplinaById(p.disciplinaId);
-            const statusClass = p.status === 'Agendada' ? 'bg-warning text-dark' : 'bg-success';
-            const row = `
+            tbody.innerHTML += `
                 <tr>
                     <td>${disciplina ? disciplina.nome : 'N/A'}</td>
                     <td>${p.conteudo}</td>
                     <td>${new Date(p.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
                     <td>${p.hora || 'N/A'}</td>
-                    <td><span class="badge ${statusClass}">${p.status}</span></td>
+                    <td><span class="badge ${p.status === 'Agendada' ? 'bg-warning text-dark' : 'bg-success'}">${p.status}</span></td>
                     <td>${p.nota !== null ? p.nota.toFixed(1) : '-'}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary edit-prova" data-id="${p.id}"><i class="fas fa-edit"></i></button>
@@ -1764,53 +1853,40 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                 </tr>
             `;
-            tbody.innerHTML += row;
         });
     }
     
     function renderAgenda() {
         const month = currentCalendarDate.getMonth();
         const year = currentCalendarDate.getFullYear();
-        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+        document.getElementById('calendar-month-year').textContent = `${["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"][month]} ${year}`;
 
         const weekdaysContainer = document.getElementById('calendar-weekdays');
         const daysContainer = document.getElementById('calendar-days');
         weekdaysContainer.innerHTML = '';
         daysContainer.innerHTML = '';
 
-        const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-        weekdays.forEach(day => {
-            weekdaysContainer.innerHTML += `<div class="col text-center small"><strong>${day}</strong></div>`;
-        });
+        ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(day => weekdaysContainer.innerHTML += `<div class="col text-center small"><strong>${day}</strong></div>`);
         
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-
         let currentRow = document.createElement('div');
         currentRow.className = 'row mb-2';
 
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            currentRow.innerHTML += `<div class="col calendar-day empty"></div>`;
-        }
+        for (let i = 0; i < firstDayOfMonth; i++) currentRow.innerHTML += `<div class="col calendar-day empty"></div>`;
 
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const dayEvents = getEventsForDate(dateStr);
-            let dayClasses = 'col calendar-day';
             let eventIndicator = '';
-
             if (dayEvents.length > 0) {
-                dayClasses += ' has-event';
-                eventIndicator += '<div class="event-indicator">';
+                eventIndicator = '<div class="event-indicator">';
                 if (dayEvents.some(e => e.type === 'assignment')) eventIndicator += '<span class="event-dot assignment"></span>';
                 if (dayEvents.some(e => e.type === 'exam')) eventIndicator += '<span class="event-dot exam"></span>';
-                if (dayEvents.some(e => e.type === 'other' || e.type === 'class')) eventIndicator += '<span class="event-dot other"></span>';
+                if (dayEvents.some(e => ['other', 'class'].includes(e.type))) eventIndicator += '<span class="event-dot other"></span>';
                 eventIndicator += '</div>';
             }
-            
-            currentRow.innerHTML += `<div class="${dayClasses}" data-date="${dateStr}">${day}${eventIndicator}</div>`;
-
+            currentRow.innerHTML += `<div class="col calendar-day ${dayEvents.length > 0 ? 'has-event' : ''}" data-date="${dateStr}">${day}${eventIndicator}</div>`;
             if ((day + firstDayOfMonth) % 7 === 0 || day === daysInMonth) {
                 daysContainer.appendChild(currentRow);
                 currentRow = document.createElement('div');
@@ -1820,39 +1896,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderFinanceiro() {
+        const profileData = getCurrentProfileData();
         const tbody = document.getElementById('financeiro-tabela');
         tbody.innerHTML = '';
+        let totalReceitas = 0, totalDespesas = 0;
+        const transacoes = [...profileData.financeiro].sort((a,b) => new Date(b.data) - new Date(a.data));
 
-        let totalReceitas = 0;
-        let totalDespesas = 0;
-
-        const transacoesOrdenadas = [...db.financeiro].sort((a,b) => new Date(b.data) - new Date(a.data));
-
-        if (transacoesOrdenadas.length === 0) {
+        if (transacoes.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhuma transação registrada.</td></tr>`;
         } else {
-            transacoesOrdenadas.forEach(t => {
-                const isReceita = t.tipo === 'receita';
-                if (isReceita) {
-                    totalReceitas += t.valor;
-                } else {
-                    totalDespesas += t.valor;
-                }
-
-                const row = `
+            transacoes.forEach(t => {
+                if (t.tipo === 'receita') totalReceitas += t.valor; else totalDespesas += t.valor;
+                tbody.innerHTML += `
                     <tr>
                         <td>${new Date(t.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
                         <td>${t.descricao} ${t.recurringId ? '<i class="fas fa-sync-alt fa-xs text-muted ms-1"></i>' : ''}</td>
                         <td><span class="badge bg-secondary">${t.categoria || 'N/A'}</span></td>
-                        <td><span class="badge ${isReceita ? 'bg-success' : 'bg-danger'}">${isReceita ? 'Receita' : 'Despesa'}</span></td>
-                        <td class="text-end fw-bold ${isReceita ? 'text-success' : 'text-danger'}">${t.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td><span class="badge ${t.tipo === 'receita' ? 'bg-success' : 'bg-danger'}">${t.tipo === 'receita' ? 'Receita' : 'Despesa'}</span></td>
+                        <td class="text-end fw-bold text-${t.tipo === 'receita' ? 'success' : 'danger'}">${t.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                         <td>
                            <button class="btn btn-sm btn-outline-primary edit-financeiro" data-id="${t.id}"><i class="fas fa-edit"></i></button>
                            <button class="btn btn-sm btn-outline-danger delete-financeiro" data-id="${t.id}"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
-                tbody.innerHTML += row;
             });
         }
         
@@ -1864,12 +1931,12 @@ document.addEventListener('DOMContentLoaded', function() {
         saldoEl.className = saldo >= 0 ? 'text-success' : 'text-danger';
     }
 
-
     function renderRelatorios() {
+        const profileData = getCurrentProfileData();
         const relatorioDesempenho = document.getElementById('relatorio-desempenho');
         relatorioDesempenho.innerHTML = '';
-        db.disciplinas.forEach(d => {
-            const notas = [...db.trabalhos.filter(t => t.disciplinaId === d.id && t.nota !== null).map(t => parseFloat(t.nota)), ...db.provas.filter(p => p.disciplinaId === d.id && p.nota !== null).map(p => parseFloat(p.nota))];
+        profileData.disciplinas.forEach(d => {
+            const notas = [...profileData.trabalhos.filter(t => t.disciplinaId === d.id && t.nota !== null).map(t => parseFloat(t.nota)), ...profileData.provas.filter(p => p.disciplinaId === d.id && p.nota !== null).map(p => parseFloat(p.nota))];
             const media = notas.length > 0 ? (notas.reduce((a,b) => a+b, 0) / notas.length).toFixed(1) : "N/A";
             const badgeClass = media === "N/A" ? 'bg-secondary' : media >= 7 ? 'bg-success' : media >= 5 ? 'bg-warning text-dark' : 'bg-danger';
             relatorioDesempenho.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge ${badgeClass}">${media}</span></div>`;
@@ -1877,110 +1944,140 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const relatorioFrequencia = document.getElementById('relatorio-frequencia');
         relatorioFrequencia.innerHTML = '';
-        db.disciplinas.forEach(d => relatorioFrequencia.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge ${d.frequencia >= 75 ? 'bg-success' : 'bg-warning text-dark'}">${d.frequencia}%</span></div>`);
+        profileData.disciplinas.forEach(d => relatorioFrequencia.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge ${d.frequencia >= 75 ? 'bg-success' : 'bg-warning text-dark'}">${d.frequencia}%</span></div>`);
         
         const relatorioTrabalhos = document.getElementById('relatorio-trabalhos');
         relatorioTrabalhos.innerHTML = '';
-        db.disciplinas.forEach(d => relatorioTrabalhos.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge bg-info">${db.trabalhos.filter(t => t.disciplinaId === d.id && t.status === 'Entregue').length}/${db.trabalhos.filter(t => t.disciplinaId === d.id).length}</span></div>`);
+        profileData.disciplinas.forEach(d => relatorioTrabalhos.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge bg-info">${profileData.trabalhos.filter(t => t.disciplinaId === d.id && t.status === 'Entregue').length}/${profileData.trabalhos.filter(t => t.disciplinaId === d.id).length}</span></div>`);
         
         const relatorioProvas = document.getElementById('relatorio-provas');
         relatorioProvas.innerHTML = '';
-        const provasRealizadas = db.provas.filter(p => p.status === 'Realizada');
+        const provasRealizadas = profileData.provas.filter(p => p.status === 'Realizada');
         if (provasRealizadas.length === 0) {
             relatorioProvas.innerHTML = `<div class="empty-state"><p>Nenhuma prova realizada.</p></div>`;
         } else {
             provasRealizadas.forEach(p => {
                  const disciplina = getDisciplinaById(p.disciplinaId);
                  const nota = p.nota !== null ? p.nota.toFixed(1) : "N/A";
-                 const badgeClass = nota === "N/A" ? 'bg-secondary' : nota >= 7 ? 'bg-success' : nota >= 5 ? 'bg-warning text-dark' : 'bg-danger';
-                 relatorioProvas.innerHTML += `<div class="report-item"><span>${disciplina.nome} - ${p.conteudo}</span><span class="badge ${badgeClass}">${nota}</span></div>`;
+                 relatorioProvas.innerHTML += `<div class="report-item"><span>${disciplina.nome} - ${p.conteudo}</span><span class="badge ${nota === "N/A" ? 'bg-secondary' : nota >= 7 ? 'bg-success' : 'bg-danger'}">${nota}</span></div>`;
             });
         }
     }
 
     function getEventsForDate(dateStr) {
+        const profileData = getCurrentProfileData();
         return [
-            ...db.trabalhos.filter(t => t.entrega === dateStr).map(t => ({...t, type: 'assignment', date: t.entrega, title: t.titulo})),
-            ...db.provas.filter(p => p.data === dateStr).map(p => ({...p, type: 'exam', date: p.data, title: p.conteudo})),
-            ...db.eventos.filter(e => e.date === dateStr)
+            ...profileData.trabalhos.filter(t => t.entrega === dateStr).map(t => ({...t, type: 'assignment', date: t.entrega, title: t.titulo})),
+            ...profileData.provas.filter(p => p.data === dateStr).map(p => ({...p, type: 'exam', date: p.data, title: p.conteudo})),
+            ...profileData.eventos.filter(e => e.date === dateStr)
         ].sort((a,b) => (a.time || '23:59').localeCompare(b.time || '23:59'));
     }
-    
-    //-----------------------------------------------------
-    // 4. MANIPULAÇÃO DE EVENTOS E MODAIS
-    //-----------------------------------------------------
-    
-    // Navegação
-    document.body.addEventListener('click', function(e) {
-        const navOrCardLink = e.target.closest('.nav-link, .card-link');
-        if (navOrCardLink) {
-            e.preventDefault();
-            const targetId = navOrCardLink.dataset.target;
-            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(targetId).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(nl => nl.classList.remove('active'));
-            document.querySelector(`.nav-link[data-target="${targetId}"]`).classList.add('active');
-            
-            const sidebar = document.getElementById('sidebar');
-            if(sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-            }
-        }
-    });
 
+    function renderProfileSwitcher() {
+        const currentProfile = db.profiles.find(p => p.id === db.currentProfileId);
+        const dropdownMenu = document.getElementById('profile-dropdown-menu');
+        const managementList = document.getElementById('profile-management-list');
+        
+        document.getElementById('current-profile-name').textContent = currentProfile ? currentProfile.name : 'Nenhum Perfil';
+        dropdownMenu.innerHTML = '';
+        managementList.innerHTML = '';
 
-    document.getElementById('sidebarToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-
-    function populateDisciplinaSelects() {
-        const selects = document.querySelectorAll('#trabalhoDisciplina, #provaDisciplina, #horarioDisciplina');
-        const options = db.disciplinas.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
-        selects.forEach(select => { 
-            if (select) {
-                const currentVal = select.value;
-                select.innerHTML = options; 
-                select.value = currentVal;
-            }
+        db.profiles.forEach(profile => {
+            const isActive = profile.id === db.currentProfileId;
+            dropdownMenu.innerHTML += `<li><a class="dropdown-item switch-profile ${isActive ? 'active' : ''}" href="#" data-id="${profile.id}">${isActive ? '<i class="fas fa-check"></i>' : ''}${profile.name}</a></li>`;
+            managementList.innerHTML += `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-link text-start flex-grow-1 switch-profile ${isActive ? 'fw-bold' : ''}" data-id="${profile.id}">${profile.name}</button>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary edit-profile" data-id="${profile.id}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-danger delete-profile" data-id="${profile.id}" ${db.profiles.length === 1 ? 'disabled' : ''}><i class="fas fa-trash"></i></button>
+                    </div>
+                </li>`;
         });
+
+        dropdownMenu.innerHTML += '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileManagementModal"><i class="fas fa-cog"></i> Gerenciar Perfis</a></li>';
     }
+    
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const profileNameInput = document.getElementById('profileName');
+        const profileIdInput = document.getElementById('profileId');
+        const name = profileNameInput.value.trim();
+        const id = parseInt(profileIdInput.value);
 
-    // Gerenciamento de Horários
-    document.getElementById('saveHorario').addEventListener('click', () => {
-        const id = document.getElementById('horarioId').value;
-        const aula = {
-            disciplinaId: parseInt(document.getElementById('horarioDisciplina').value),
-            diaSemana: document.getElementById('horarioDiaSemana').value,
-            inicio: document.getElementById('horarioInicio').value,
-            fim: document.getElementById('horarioFim').value,
-            local: document.getElementById('horarioLocal').value
-        };
-
-        if (!aula.disciplinaId || !aula.inicio || !aula.fim) { alert('Preencha os campos obrigatórios.'); return; }
+        if (!name) { alert("O nome do perfil é obrigatório."); return; }
 
         if (id) {
-            const index = db.horarios.findIndex(h => h.id == id);
-            db.horarios[index] = { ...db.horarios[index], ...aula };
+            db.profiles.find(p => p.id === id).name = name;
         } else {
-            aula.id = getNewId('horarios');
-            db.horarios.push(aula);
+            const newProfile = {
+                id: db.profiles.length > 0 ? Math.max(...db.profiles.map(p => p.id)) + 1 : 1,
+                name: name,
+                data: createNewProfileData()
+            };
+            db.profiles.push(newProfile);
+            switchProfile(newProfile.id);
         }
+
+        profileNameInput.value = '';
+        profileIdInput.value = '';
+        document.getElementById('saveProfileBtn').innerHTML = '<i class="fas fa-plus"></i> Adicionar';
         
         saveDB();
-        renderAll();
-        bootstrap.Modal.getInstance(document.getElementById('horarioModal')).hide();
+        renderProfileSwitcher();
     });
 
-    document.getElementById('deleteHorario').addEventListener('click', function() {
-        const id = document.getElementById('horarioId').value;
-        if(confirm('Tem certeza que deseja excluir esta aula?')) {
-            db.horarios = db.horarios.filter(h => h.id != id);
-            saveDB();
-            renderAll();
-            bootstrap.Modal.getInstance(document.getElementById('horarioModal')).hide();
+    function switchProfile(profileId) {
+        db.currentProfileId = parseInt(profileId);
+        saveDB();
+        location.reload();
+    }
+
+    document.body.addEventListener('click', function(e) {
+        const target = e.target.closest('.switch-profile, .edit-profile, .delete-profile');
+        if (!target) return;
+        
+        const profileId = parseInt(target.dataset.id);
+
+        if (target.matches('.switch-profile')) {
+            e.preventDefault();
+            if (profileId !== db.currentProfileId) switchProfile(profileId);
+            const modal = bootstrap.Modal.getInstance(document.getElementById('profileManagementModal'));
+            if(modal) modal.hide();
+        } 
+        else if (target.matches('.edit-profile')) {
+            const profile = db.profiles.find(p => p.id === profileId);
+            document.getElementById('profileName').value = profile.name;
+            document.getElementById('profileId').value = profile.id;
+            document.getElementById('saveProfileBtn').innerHTML = 'Salvar Alteração';
+            document.getElementById('profileName').focus();
+        }
+        else if (target.matches('.delete-profile')) {
+            if (confirm("Tem certeza que deseja excluir este perfil? TODOS os dados associados a ele serão perdidos permanentemente.")) {
+                db.profiles = db.profiles.filter(p => p.id !== profileId);
+                if (db.currentProfileId === profileId) {
+                    switchProfile(db.profiles[0].id);
+                } else {
+                    saveDB();
+                    renderProfileSwitcher();
+                }
+            }
         }
     });
 
-    // Gerenciamento de Disciplinas, Trabalhos, Provas
+    function populateDisciplinaSelects() {
+        const profileData = getCurrentProfileData();
+        const selects = document.querySelectorAll('#trabalhoDisciplina, #provaDisciplina, #horarioDisciplina');
+        if (!profileData || profileData.disciplinas.length === 0) {
+            selects.forEach(s => s.innerHTML = '<option value="">Nenhuma disciplina cadastrada</option>');
+            return;
+        }
+        const options = profileData.disciplinas.map(d => `<option value="${d.id}">${d.nome}</option>`).join('');
+        selects.forEach(s => { s.innerHTML = options; });
+    }
+
     document.getElementById('saveDisciplina').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
         const id = document.getElementById('disciplinaId').value;
         const disciplina = {
             nome: document.getElementById('disciplinaNome').value,
@@ -1989,16 +2086,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         if (!disciplina.nome) { alert('O nome da disciplina é obrigatório.'); return; }
         if (id) {
-            const index = db.disciplinas.findIndex(d => d.id == id);
-            db.disciplinas[index] = { ...db.disciplinas[index], ...disciplina };
+            const index = profileData.disciplinas.findIndex(d => d.id == id);
+            profileData.disciplinas[index] = { ...profileData.disciplinas[index], ...disciplina };
         } else {
             disciplina.id = getNewId('disciplinas');
-            db.disciplinas.push(disciplina);
+            profileData.disciplinas.push(disciplina);
         }
         saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('disciplinaModal')).hide();
     });
-    
+
     document.getElementById('saveTrabalho').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
         const id = document.getElementById('trabalhoId').value;
         const trabalho = {
             disciplinaId: parseInt(document.getElementById('trabalhoDisciplina').value),
@@ -2010,16 +2108,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         if (!trabalho.disciplinaId || !trabalho.titulo || !trabalho.entrega) { alert('Preencha os campos obrigatórios.'); return; }
         if (id) {
-            const index = db.trabalhos.findIndex(t => t.id == id);
-            db.trabalhos[index] = { ...db.trabalhos[index], ...trabalho };
+            const index = profileData.trabalhos.findIndex(t => t.id == id);
+            profileData.trabalhos[index] = { ...profileData.trabalhos[index], ...trabalho };
         } else {
             trabalho.id = getNewId('trabalhos');
-            db.trabalhos.push(trabalho);
+            profileData.trabalhos.push(trabalho);
         }
         saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('trabalhoModal')).hide();
     });
-    
+
     document.getElementById('saveProva').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
         const id = document.getElementById('provaId').value;
         const prova = {
             disciplinaId: parseInt(document.getElementById('provaDisciplina').value),
@@ -2031,438 +2130,108 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         if (!prova.disciplinaId || !prova.conteudo || !prova.data) { alert('Preencha os campos obrigatórios.'); return; }
         if (id) {
-            const index = db.provas.findIndex(p => p.id == id);
-            db.provas[index] = { ...db.provas[index], ...prova };
+            const index = profileData.provas.findIndex(p => p.id == id);
+            profileData.provas[index] = { ...profileData.provas[index], ...prova };
         } else {
             prova.id = getNewId('provas');
-            db.provas.push(prova);
+            profileData.provas.push(prova);
         }
         saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('provaModal')).hide();
     });
-    
-    // Gerenciamento de Finanças (com recorrência)
-    document.getElementById('financeiroRecurrence').addEventListener('change', function() {
-        document.getElementById('financeiroRecurrenceEndDateWrapper').classList.toggle('d-none', this.value === 'none');
-    });
 
-    document.getElementById('saveFinanceiro').addEventListener('click', () => {
-        const id = document.getElementById('financeiroId').value;
-        const transacaoOriginal = id ? db.financeiro.find(t => t.id == id) : null;
-        const recurringId = transacaoOriginal ? transacaoOriginal.recurringId : null;
-
-        const handleSave = (scope) => {
-            const baseTransacao = {
-                tipo: document.getElementById('financeiroTipo').value,
-                descricao: document.getElementById('financeiroDescricao').value,
-                valor: parseFloat(document.getElementById('financeiroValor').value),
-                categoria: document.getElementById('financeiroCategoria').value,
-                data: document.getElementById('financeiroData').value
-            };
-            const recurrence = document.getElementById('financeiroRecurrence').value;
-            const recurrenceEndDate = document.getElementById('financeiroRecurrenceEndDate').value;
-
-            if (!baseTransacao.tipo || !baseTransacao.descricao || isNaN(baseTransacao.valor) || !baseTransacao.data) { alert('Preencha todos os campos obrigatórios.'); return; }
-            if (recurrence !== 'none' && !recurrenceEndDate) { alert('Por favor, defina uma data final para a recorrência.'); return; }
-            if (recurrenceEndDate && new Date(recurrenceEndDate) < new Date(baseTransacao.data)) { alert('A data final da recorrência não pode ser anterior à data de início.'); return; }
-            
-            if (id && recurringId && scope === 'all') {
-                db.financeiro = db.financeiro.filter(t => t.recurringId !== recurringId);
-            } else if (id && scope === 'this') {
-                const index = db.financeiro.findIndex(t => t.id == id);
-                db.financeiro[index] = { ...db.financeiro[index], ...baseTransacao, recurringId: null };
-                saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('financeiroModal')).hide();
-                return;
-            }
-
-            if (recurrence === 'none') {
-                if(id && !recurringId) {
-                    const index = db.financeiro.findIndex(t => t.id == id);
-                    db.financeiro[index] = { ...db.financeiro[index], ...baseTransacao };
-                } else {
-                    baseTransacao.id = getNewId('financeiro');
-                    db.financeiro.push(baseTransacao);
-                }
-            } else {
-                const newRecurringId = recurringId && scope === 'all' ? recurringId : Date.now().toString();
-                let currentDate = new Date(baseTransacao.data + "T00:00:00");
-                const endDate = new Date(recurrenceEndDate + "T00:00:00");
-                
-                while(currentDate <= endDate) {
-                    const newTransacao = { ...baseTransacao };
-                    newTransacao.id = getNewId('financeiro');
-                    newTransacao.recurringId = newRecurringId;
-                    newTransacao.data = currentDate.toISOString().slice(0,10);
-                    db.financeiro.push(newTransacao);
-
-                    if (recurrence === 'weekly') currentDate.setDate(currentDate.getDate() + 7);
-                    else if (recurrence === 'monthly') currentDate.setMonth(currentDate.getMonth() + 1);
-                }
-            }
-            saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('financeiroModal')).hide();
+    document.getElementById('saveHorario').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
+        const id = document.getElementById('horarioId').value;
+        const aula = {
+            disciplinaId: parseInt(document.getElementById('horarioDisciplina').value),
+            diaSemana: document.getElementById('horarioDiaSemana').value,
+            inicio: document.getElementById('horarioInicio').value,
+            fim: document.getElementById('horarioFim').value,
+            local: document.getElementById('horarioLocal').value
         };
-        
-        if(id && recurringId){
-            const confirmationModal = new bootstrap.Modal(document.getElementById('recurringActionModal'));
-            document.getElementById('recurringActionModalTitle').textContent = 'Ação em Transação Recorrente';
-            document.getElementById('actionThisEvent').onclick = () => { handleSave('this'); confirmationModal.hide(); };
-            document.getElementById('actionAllEvents').onclick = () => { handleSave('all'); confirmationModal.hide(); };
-            confirmationModal.show();
+        if (!aula.disciplinaId || !aula.inicio || !aula.fim) { alert('Preencha os campos obrigatórios.'); return; }
+        if (id) {
+            const index = profileData.horarios.findIndex(h => h.id == id);
+            profileData.horarios[index] = { ...profileData.horarios[index], ...aula };
         } else {
-            handleSave('all');
+            aula.id = getNewId('horarios');
+            profileData.horarios.push(aula);
         }
-    });
-
-    document.getElementById('deleteFinanceiro').addEventListener('click', function() {
-        const id = document.getElementById('financeiroId').value;
-        const transacao = db.financeiro.find(t => t.id == id);
-        const recurringId = transacao ? transacao.recurringId : null;
-        const financeiroModal = bootstrap.Modal.getInstance(document.getElementById('financeiroModal'));
-
-        const handleDelete = (scope) => {
-             if(scope === 'this') {
-                db.financeiro = db.financeiro.filter(t => t.id != id);
-            } else if (scope === 'all') {
-                db.financeiro = db.financeiro.filter(t => t.recurringId !== recurringId);
-            }
-            saveDB(); renderAll(); financeiroModal.hide();
-        }
-
-        if(recurringId) {
-            const confirmationModal = new bootstrap.Modal(document.getElementById('recurringActionModal'));
-            document.getElementById('recurringActionModalTitle').textContent = 'Excluir Transação Recorrente';
-            document.getElementById('actionThisEvent').onclick = () => { handleDelete('this'); confirmationModal.hide(); };
-            document.getElementById('actionAllEvents').onclick = () => { handleDelete('all'); confirmationModal.hide(); };
-            confirmationModal.show();
-        } else {
-            if(confirm('Tem certeza que deseja excluir esta transação?')) {
-                db.financeiro = db.financeiro.filter(t => t.id != id);
-                saveDB(); renderAll(); financeiroModal.hide();
-            }
-        }
-    });
-
-    // Modal Financeiro - Setup
-    const financeiroModal = document.getElementById('financeiroModal');
-    financeiroModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        if (!button.matches('.edit-financeiro')) { // Apenas para novos eventos
-            const type = button.dataset.type;
-            document.getElementById('financeiroTipo').value = type;
-            document.getElementById('financeiroData').value = new Date().toISOString().slice(0, 10);
-        }
-    });
-
-    // Gerenciamento de Eventos da Agenda (com recorrência)
-    document.getElementById('eventRecurrence').addEventListener('change', function() {
-        document.getElementById('eventRecurrenceEndDateWrapper').classList.toggle('d-none', this.value === 'none');
-    });
-
-    document.getElementById('saveEvent').addEventListener('click', () => {
-        const id = document.getElementById('eventId').value;
-        const recurringId = document.getElementById('eventRecurringId').value;
-
-        const handleSave = (scope) => {
-            const baseEvent = {
-                title: document.getElementById('eventTitle').value,
-                type: document.getElementById('eventType').value,
-                date: document.getElementById('eventDate').value,
-                time: document.getElementById('eventTime').value,
-                description: document.getElementById('eventDescription').value,
-            };
-            const recurrence = document.getElementById('eventRecurrence').value;
-            const recurrenceEndDate = document.getElementById('eventRecurrenceEndDate').value;
-
-            if (!baseEvent.title || !baseEvent.type || !baseEvent.date) { alert('Preencha os campos obrigatórios.'); return; }
-            if (recurrence !== 'none' && !recurrenceEndDate) { alert('Por favor, defina uma data final para a recorrência.'); return; }
-            if (recurrenceEndDate && new Date(recurrenceEndDate) < new Date(baseEvent.date)) { alert('A data final da recorrência não pode ser anterior à data de início.'); return; }
-
-            if (id && recurringId && scope === 'all') { // Editando toda a série
-                db.eventos = db.eventos.filter(e => e.recurringId !== recurringId);
-            } else if (id && scope === 'this') { // Editando apenas este
-                const index = db.eventos.findIndex(e => e.id == id);
-                db.eventos[index] = { ...db.eventos[index], ...baseEvent, recurringId: null };
-                saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
-                return;
-            }
-
-            if (recurrence === 'none') {
-                if(id && !recurringId) { // Editando um evento único (que já era único)
-                    const index = db.eventos.findIndex(e => e.id == id);
-                    db.eventos[index] = { ...db.eventos[index], ...baseEvent };
-                } else { // Criando um novo evento único (ou salvando um recorrente como único)
-                    baseEvent.id = getNewId('eventos');
-                    db.eventos.push(baseEvent);
-                }
-            } else {
-                const newRecurringId = recurringId && scope === 'all' ? recurringId : Date.now().toString();
-                let currentDate = new Date(baseEvent.date + "T00:00:00");
-                const endDate = new Date(recurrenceEndDate + "T00:00:00");
-                
-                while(currentDate <= endDate) {
-                    const newEvent = { ...baseEvent };
-                    newEvent.id = getNewId('eventos');
-                    newEvent.recurringId = newRecurringId;
-                    newEvent.date = currentDate.toISOString().slice(0,10);
-                    db.eventos.push(newEvent);
-
-                    if (recurrence === 'daily') currentDate.setDate(currentDate.getDate() + 1);
-                    else if (recurrence === 'weekly') currentDate.setDate(currentDate.getDate() + 7);
-                    else if (recurrence === 'monthly') currentDate.setMonth(currentDate.getMonth() + 1);
-                }
-            }
-
-            saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
-        };
-        
-        if(id && recurringId){
-            const confirmationModal = new bootstrap.Modal(document.getElementById('recurringActionModal'));
-            document.getElementById('recurringActionModalTitle').textContent = 'Ação em Evento Recorrente';
-            document.getElementById('actionThisEvent').onclick = () => { handleSave('this'); confirmationModal.hide(); };
-            document.getElementById('actionAllEvents').onclick = () => { handleSave('all'); confirmationModal.hide(); };
-            confirmationModal.show();
-        } else {
-            handleSave('all');
-        }
-    });
-
-    document.getElementById('deleteEvent').addEventListener('click', function() {
-        const id = document.getElementById('eventId').value;
-        const recurringId = document.getElementById('eventRecurringId').value;
-        const eventModal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
-
-        const handleDelete = (scope) => {
-             if(scope === 'this') {
-                db.eventos = db.eventos.filter(e => e.id != id);
-            } else if (scope === 'all') {
-                db.eventos = db.eventos.filter(e => e.recurringId !== recurringId);
-            }
-            saveDB(); renderAll(); eventModal.hide();
-        }
-
-        if(recurringId) {
-            const confirmationModal = new bootstrap.Modal(document.getElementById('recurringActionModal'));
-            document.getElementById('recurringActionModalTitle').textContent = 'Excluir Evento Recorrente';
-            document.getElementById('actionThisEvent').onclick = () => { handleDelete('this'); confirmationModal.hide(); };
-            document.getElementById('actionAllEvents').onclick = () => { handleDelete('all'); confirmationModal.hide(); };
-            confirmationModal.show();
-        } else {
-            if(confirm('Tem certeza que deseja excluir este evento?')) {
-                db.eventos = db.eventos.filter(e => e.id != id);
-                saveDB(); renderAll(); eventModal.hide();
-            }
-        }
-    });
-
-    // Limpeza de modais
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('hidden.bs.modal', () => {
-            modal.querySelector('form')?.reset();
-            modal.querySelectorAll('input[type="hidden"]').forEach(i => i.value = '');
-            if (modal.id === 'horarioModal') document.getElementById('deleteHorario').classList.add('d-none');
-            if (modal.id === 'eventModal') {
-                document.getElementById('deleteEvent').classList.add('d-none');
-                document.getElementById('eventRecurrenceEndDateWrapper').classList.add('d-none');
-                document.getElementById('eventRecurrence').disabled = false;
-                document.getElementById('eventRecurrenceEndDate').disabled = false;
-            }
-            if (modal.id === 'financeiroModal') {
-                document.getElementById('deleteFinanceiro').classList.add('d-none');
-                document.getElementById('financeiroRecurrenceEndDateWrapper').classList.add('d-none');
-                document.getElementById('financeiroRecurrence').disabled = false;
-                document.getElementById('financeiroRecurrenceEndDate').disabled = false;
-            }
-        });
+        saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('horarioModal')).hide();
     });
     
-    // Delegação de eventos para botões de editar/excluir
-    document.body.addEventListener('click', function(e) {
-        let id, element;
-        const target = e.target.closest('button, a, .schedule-class-item, .event-item');
-        if (!target) return;
-        
-        id = target.dataset.id;
-        
-        if (target.matches('.edit-disciplina, .delete-disciplina')) {
-            e.preventDefault();
-            element = db.disciplinas.find(d => d.id == id);
-            if (target.matches('.edit-disciplina')) {
-                document.getElementById('disciplinaId').value = element.id;
-                document.getElementById('disciplinaNome').value = element.nome;
-                document.getElementById('disciplinaProfessor').value = element.professor;
-                document.getElementById('disciplinaFrequencia').value = element.frequencia;
-                new bootstrap.Modal(document.getElementById('disciplinaModal')).show();
-            } else {
-                 if (confirm('Tem certeza que deseja excluir esta disciplina e todos os seus dados associados?')) {
-                    db.disciplinas = db.disciplinas.filter(d => d.id != id);
-                    db.trabalhos = db.trabalhos.filter(t => t.disciplinaId != id);
-                    db.provas = db.provas.filter(p => p.disciplinaId != id);
-                    db.horarios = db.horarios.filter(h => h.disciplinaId != id);
-                    saveDB(); renderAll();
-                }
-            }
-        } else if (target.matches('.edit-trabalho, .delete-trabalho')) {
-            element = db.trabalhos.find(item => item.id == id);
-            if (target.matches('.edit-trabalho')) {
-                document.getElementById('trabalhoId').value = element.id;
-                document.getElementById('trabalhoDisciplina').value = element.disciplinaId;
-                document.getElementById('trabalhoTitulo').value = element.titulo;
-                document.getElementById('trabalhoEntrega').value = element.entrega;
-                document.getElementById('trabalhoStatus').value = element.status;
-                document.getElementById('trabalhoPrioridade').value = element.prioridade;
-                document.getElementById('trabalhoNota').value = element.nota;
-                new bootstrap.Modal(document.getElementById('trabalhoModal')).show();
-            } else if (confirm('Tem certeza?')) {
-                db.trabalhos = db.trabalhos.filter(item => item.id != id);
-                saveDB(); renderAll();
-            }
-        } else if (target.matches('.edit-prova, .delete-prova')) {
-             element = db.provas.find(item => item.id == id);
-             if (target.matches('.edit-prova')) {
-                document.getElementById('provaId').value = element.id;
-                document.getElementById('provaDisciplina').value = element.disciplinaId;
-                document.getElementById('provaConteudo').value = element.conteudo;
-                document.getElementById('provaData').value = element.data;
-                document.getElementById('provaHora').value = element.hora;
-                document.getElementById('provaStatus').value = element.status;
-                document.getElementById('provaNota').value = element.nota;
-                new bootstrap.Modal(document.getElementById('provaModal')).show();
-            } else if (confirm('Tem certeza?')) {
-                db.provas = db.provas.filter(item => item.id != id);
-                saveDB(); renderAll();
-            }
-        } else if (target.matches('.edit-financeiro')) {
-             element = db.financeiro.find(item => item.id == id);
-             if (element) {
-                document.getElementById('financeiroId').value = element.id;
-                document.getElementById('financeiroTipo').value = element.tipo;
-                document.getElementById('financeiroDescricao').value = element.descricao;
-                document.getElementById('financeiroValor').value = element.valor;
-                document.getElementById('financeiroCategoria').value = element.categoria;
-                document.getElementById('financeiroData').value = element.data;
-                document.getElementById('deleteFinanceiro').classList.remove('d-none');
-                
-                if (element.recurringId) {
-                    document.getElementById('financeiroRecurrence').disabled = true;
-                    document.getElementById('financeiroRecurrenceEndDate').disabled = true;
-                }
-                new bootstrap.Modal(document.getElementById('financeiroModal')).show();
-             }
-        } else if (target.matches('.delete-financeiro')) {
-            const financeiroModal = new bootstrap.Modal(document.getElementById('financeiroModal'));
-            const element = db.financeiro.find(t => t.id == id);
-            const recurringId = element ? element.recurringId : null;
-
-            const handleDelete = (scope) => {
-                if(scope === 'this') {
-                    db.financeiro = db.financeiro.filter(t => t.id != id);
-                } else if (scope === 'all') {
-                    db.financeiro = db.financeiro.filter(t => t.recurringId !== recurringId);
-                }
-                saveDB(); renderAll();
-            }
-
-            if(recurringId) {
-                const confirmationModal = new bootstrap.Modal(document.getElementById('recurringActionModal'));
-                document.getElementById('recurringActionModalTitle').textContent = 'Excluir Transação Recorrente';
-                document.getElementById('actionThisEvent').onclick = () => { handleDelete('this'); confirmationModal.hide(); };
-                document.getElementById('actionAllEvents').onclick = () => { handleDelete('all'); confirmationModal.hide(); };
-                confirmationModal.show();
-            } else {
-                if(confirm('Tem certeza que deseja excluir esta transação?')) {
-                   handleDelete('this');
-                }
-            }
-        } else if (target.matches('.schedule-class-item')) {
-            element = db.horarios.find(h => h.id == id);
-            document.getElementById('horarioId').value = element.id;
-            document.getElementById('horarioDisciplina').value = element.disciplinaId;
-            document.getElementById('horarioDiaSemana').value = element.diaSemana;
-            document.getElementById('horarioInicio').value = element.inicio;
-            document.getElementById('horarioFim').value = element.fim;
-            document.getElementById('horarioLocal').value = element.local;
-            document.getElementById('deleteHorario').classList.remove('d-none');
-            new bootstrap.Modal(document.getElementById('horarioModal')).show();
-        }
-    });
-
-    document.getElementById('prev-month').addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderAgenda(); });
-    document.getElementById('next-month').addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderAgenda(); });
-    
-    document.getElementById('calendar-days').addEventListener('click', (e) => {
-        if (e.target.classList.contains('calendar-day') && !e.target.classList.contains('empty')) {
-            const date = e.target.dataset.date;
-            const container = document.getElementById('agenda-eventos-dia');
-            const events = getEventsForDate(date);
-            document.querySelectorAll('.calendar-day.current').forEach(d => d.classList.remove('current'));
-            e.target.classList.add('current');
-            container.innerHTML = `<h4 class="card-title mb-4">Eventos de ${new Date(date + 'T00:00:00').toLocaleDateString('pt-BR')}</h4>`;
-            if (events.length === 0) {
-                container.innerHTML += `<p class="text-muted text-center">Nenhum evento agendado</p>`;
-            } else {
-                events.forEach(evento => {
-                    const item = document.createElement('div');
-                    item.className = `event-item ${evento.type}`;
-                    item.innerHTML = `<h6 class="mb-0">${evento.title}</h6><p class="mb-0 small">${evento.time || ''}</p>`;
-                    item.onclick = () => {
-                         const eventData = db.eventos.find(e => e.id === evento.id);
-                         if (eventData) {
-                             document.getElementById('eventId').value = eventData.id;
-                             document.getElementById('eventRecurringId').value = eventData.recurringId || '';
-                             document.getElementById('eventTitle').value = eventData.title;
-                             document.getElementById('eventType').value = eventData.type;
-                             document.getElementById('eventDate').value = eventData.date;
-                             document.getElementById('eventTime').value = eventData.time;
-                             document.getElementById('eventDescription').value = eventData.description;
-
-                             document.getElementById('deleteEvent').classList.remove('d-none');
-                             if(eventData.recurringId){
-                                document.getElementById('eventRecurrence').disabled = true;
-                                document.getElementById('eventRecurrenceEndDate').disabled = true;
-                             }
-
-                             new bootstrap.Modal(document.getElementById('eventModal')).show();
-                         }
-                    };
-                    container.appendChild(item);
-                });
-            }
-        }
-    });
-    
-    //-----------------------------------------------------
-    // 5. BACKUP E RESTAURAÇÃO
-    //-----------------------------------------------------
-
     document.getElementById('backup-btn').addEventListener('click', () => {
         const dataStr = JSON.stringify(db, null, 2);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([dataStr], { type: 'application/json' }));
-        link.download = `lex_academica_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        link.download = `academico_pro_backup_${new Date().toISOString().slice(0, 10)}.json`;
         link.click();
         URL.revokeObjectURL(link.href);
-        alert('Backup criado com sucesso!');
+        alert('Backup de todos os perfis criado com sucesso!');
     });
 
     document.getElementById('restore-input').addEventListener('change', (event) => {
         const file = event.target.files[0];
-        if (!file || !confirm('Restaurar este backup substituirá todos os dados atuais. Continuar?')) { event.target.value = ''; return; }
+        if (!file || !confirm('Restaurar este backup substituirá TODOS os perfis e dados atuais. Continuar?')) { event.target.value = ''; return; }
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const restoredDb = JSON.parse(e.target.result);
-                if (restoredDb.disciplinas && restoredDb.trabalhos && restoredDb.provas) {
+                if (restoredDb.profiles && restoredDb.hasOwnProperty('currentProfileId')) {
                     db = restoredDb;
                     saveDB();
-                    alert('Backup restaurado! A página será recarregada.');
+                    alert('Backup restaurado com sucesso! A página será recarregada.');
                     location.reload();
-                } else { alert('Arquivo de backup inválido.'); }
+                } else { alert('Arquivo de backup inválido ou em formato antigo.'); }
             } catch (error) { alert('Erro ao ler o arquivo de backup.'); } 
             finally { event.target.value = ''; }
         };
         reader.readAsText(file);
     });
 
-    // Inicialização da aplicação
+    document.body.addEventListener('click', function(e) {
+        const navOrCardLink = e.target.closest('.nav-link, .card-link');
+        if (navOrCardLink) {
+            e.preventDefault();
+            const targetId = navOrCardLink.dataset.target;
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(nl => nl.classList.remove('active'));
+            document.querySelector(`.nav-link[data-target="${targetId}"]`).classList.add('active');
+            const sidebar = document.getElementById('sidebar');
+            if(sidebar.classList.contains('open')) sidebar.classList.remove('open');
+        }
+    });
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+
+    // Delegação de eventos unificada
+    document.body.addEventListener('click', function(e) {
+        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item');
+        if (!target) return;
+
+        const profileData = getCurrentProfileData();
+        const id = target.dataset.id;
+        
+        if (target.matches('.delete-disciplina')) {
+             if (confirm('Tem certeza que deseja excluir esta disciplina e todos os seus dados associados?')) {
+                profileData.disciplinas = profileData.disciplinas.filter(d => d.id != id);
+                profileData.trabalhos = profileData.trabalhos.filter(t => t.disciplinaId != id);
+                profileData.provas = profileData.provas.filter(p => p.disciplinaId != id);
+                profileData.horarios = profileData.horarios.filter(h => h.disciplinaId != id);
+                saveDB(); renderAll();
+            }
+        } else if (target.matches('.edit-disciplina')) {
+            const el = profileData.disciplinas.find(d => d.id == id);
+            document.getElementById('disciplinaId').value = el.id;
+            document.getElementById('disciplinaNome').value = el.nome;
+            document.getElementById('disciplinaProfessor').value = el.professor;
+            document.getElementById('disciplinaFrequencia').value = el.frequencia;
+            new bootstrap.Modal(document.getElementById('disciplinaModal')).show();
+        }
+        // Adicionar lógica para outros botões aqui...
+    });
+    
     init();
 });
 </script>
