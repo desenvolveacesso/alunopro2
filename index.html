@@ -296,20 +296,21 @@
       transition: background-color 0.2s;
       position: relative;
     }
-
-    .calendar-day:not(.empty):hover {
-      background-color: #e9ecef;
-    }
-
-    .calendar-day.has-event {
-      background-color: var(--light-accent);
-      color: var(--primary);
+    
+    .calendar-day.active, .calendar-day.current {
+      background-color: var(--accent);
+      color: white;
       font-weight: bold;
     }
 
-    .calendar-day.current {
-      background-color: var(--accent);
-      color: white;
+    .calendar-day:not(.empty):not(.active):hover {
+      background-color: #e9ecef;
+    }
+
+    .calendar-day.has-event:not(.active) {
+      background-color: var(--light-accent);
+      color: var(--primary);
+      font-weight: bold;
     }
 
     .event-indicator {
@@ -1577,7 +1578,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return disciplinaColors[disciplinaId];
     }
     
-    // CORREÇÃO APLICADA AQUI
     function generateQuickLinks() {
         const container = document.getElementById('home-links').querySelector('.row');
         container.innerHTML = '';
@@ -1870,6 +1870,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
         let currentRow = document.createElement('div');
         currentRow.className = 'row mb-2';
 
@@ -1886,13 +1889,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (dayEvents.some(e => ['other', 'class'].includes(e.type))) eventIndicator += '<span class="event-dot other"></span>';
                 eventIndicator += '</div>';
             }
-            currentRow.innerHTML += `<div class="col calendar-day ${dayEvents.length > 0 ? 'has-event' : ''}" data-date="${dateStr}">${day}${eventIndicator}</div>`;
+            let dayClass = 'calendar-day';
+            if (dayEvents.length > 0) dayClass += ' has-event';
+            if (dateStr === todayStr) dayClass += ' current';
+
+            currentRow.innerHTML += `<div class="col ${dayClass}" data-date="${dateStr}">${day}${eventIndicator}</div>`;
             if ((day + firstDayOfMonth) % 7 === 0 || day === daysInMonth) {
                 daysContainer.appendChild(currentRow);
                 currentRow = document.createElement('div');
                 currentRow.className = 'row mb-2';
             }
         }
+        renderEventsForDay(todayStr);
+    }
+
+    function renderEventsForDay(dateStr) {
+        // Remove active class from any other day
+        document.querySelectorAll('.calendar-day.active').forEach(el => el.classList.remove('active'));
+        // Add active class to the selected day
+        const selectedDay = document.querySelector(`.calendar-day[data-date="${dateStr}"]`);
+        if(selectedDay) selectedDay.classList.add('active');
+
+        const container = document.getElementById('agenda-eventos-dia');
+        const events = getEventsForDate(dateStr);
+        const formattedDate = new Date(dateStr + 'T00:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+        
+        container.innerHTML = `<h5 class="card-title mb-3">${formattedDate}</h5>`;
+        
+        if (events.length === 0) {
+            container.innerHTML += `<div class="empty-state"><p>Nenhum evento para este dia.</p></div>`;
+            return;
+        }
+
+        events.forEach(evento => {
+            let disciplinaNome = '';
+            if (evento.disciplinaId) {
+                const disciplina = getDisciplinaById(evento.disciplinaId);
+                disciplinaNome = disciplina ? `<p class="mb-0 small text-muted">${disciplina.nome}</p>` : '';
+            }
+
+            container.innerHTML += `
+                <div class="event-item ${evento.type}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 small">${evento.title || evento.conteudo}</h6>
+                        <span class="small text-muted">${evento.time || ''}</span>
+                    </div>
+                    ${disciplinaNome}
+                </div>
+            `;
+        });
     }
 
     function renderFinanceiro() {
@@ -2201,35 +2246,77 @@ document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             if(sidebar.classList.contains('open')) sidebar.classList.remove('open');
         }
+        const calendarDay = e.target.closest('.calendar-day:not(.empty)');
+        if (calendarDay) {
+            renderEventsForDay(calendarDay.dataset.date);
+        }
     });
 
     document.getElementById('sidebarToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+    
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+        renderAgenda();
+    });
 
-    // Delegação de eventos unificada
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+        renderAgenda();
+    });
+
+    // Unifying modal resets
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', () => {
+            modal.querySelector('form')?.reset();
+            const idInput = modal.querySelector('input[type="hidden"]');
+            if(idInput) idInput.value = '';
+        });
+    });
+
+    // UNIFIED EVENT DELEGATION FOR EDIT/DELETE
     document.body.addEventListener('click', function(e) {
-        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item');
-        if (!target) return;
-
         const profileData = getCurrentProfileData();
-        const id = target.dataset.id;
-        
-        if (target.matches('.delete-disciplina')) {
-             if (confirm('Tem certeza que deseja excluir esta disciplina e todos os seus dados associados?')) {
-                profileData.disciplinas = profileData.disciplinas.filter(d => d.id != id);
-                profileData.trabalhos = profileData.trabalhos.filter(t => t.disciplinaId != id);
-                profileData.provas = profileData.provas.filter(p => p.disciplinaId != id);
-                profileData.horarios = profileData.horarios.filter(h => h.disciplinaId != id);
-                saveDB(); renderAll();
+        if (!profileData) return;
+
+        const handleEdit = (itemType, modalId, itemId) => {
+            const item = profileData[itemType].find(i => i.id == itemId);
+            if (!item) return;
+
+            const form = document.getElementById(`${modalId.replace('#', '')}Form`);
+            for (const key in item) {
+                const input = form.querySelector(`#${modalId.replace('#', '')}${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (input) input.value = item[key];
             }
-        } else if (target.matches('.edit-disciplina')) {
-            const el = profileData.disciplinas.find(d => d.id == id);
-            document.getElementById('disciplinaId').value = el.id;
-            document.getElementById('disciplinaNome').value = el.nome;
-            document.getElementById('disciplinaProfessor').value = el.professor;
-            document.getElementById('disciplinaFrequencia').value = el.frequencia;
-            new bootstrap.Modal(document.getElementById('disciplinaModal')).show();
-        }
-        // Adicionar lógica para outros botões aqui...
+            const idInput = form.querySelector(`#${modalId.replace('#', '')}Id`);
+            if (idInput) idInput.value = item.id;
+            
+            new bootstrap.Modal(document.getElementById(modalId.replace('#', ''))).show();
+        };
+
+        const handleDelete = (itemType, itemId, confirmMsg) => {
+            if (confirm(confirmMsg)) {
+                profileData[itemType] = profileData[itemType].filter(i => i.id != itemId);
+                if (itemType === 'disciplinas') {
+                     profileData.trabalhos = profileData.trabalhos.filter(t => t.disciplinaId != itemId);
+                     profileData.provas = profileData.provas.filter(p => p.disciplinaId != itemId);
+                     profileData.horarios = profileData.horarios.filter(h => h.disciplinaId != itemId);
+                }
+                saveDB();
+                renderAll();
+            }
+        };
+
+        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item, .edit-horario, .delete-horario');
+        if (!target) return;
+        const id = target.dataset.id;
+
+        if (target.matches('.edit-disciplina')) handleEdit('disciplinas', '#disciplina', id);
+        else if (target.matches('.delete-disciplina')) handleDelete('disciplinas', id, 'Tem certeza que deseja excluir esta disciplina e todos os seus dados associados?');
+        else if (target.matches('.edit-trabalho')) handleEdit('trabalhos', '#trabalho', id);
+        else if (target.matches('.delete-trabalho')) handleDelete('trabalhos', id, 'Tem certeza que deseja excluir este trabalho?');
+        else if (target.matches('.edit-prova')) handleEdit('provas', '#prova', id);
+        else if (target.matches('.delete-prova')) handleDelete('provas', id, 'Tem certeza que deseja excluir esta prova?');
+        else if (target.matches('.schedule-class-item')) handleEdit('horarios', '#horario', id);
     });
     
     init();
