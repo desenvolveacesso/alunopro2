@@ -11,24 +11,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #1a3a6c;
-      --secondary: #2d5b8f;
-      --accent: #9d7b5f;
-      --light: #f8f9fa;
-      --dark: #212529;
-      --success: #28a745;
-      --warning: #ffc107;
-      --danger: #dc3545;
-      --info: #17a2b8;
-      --light-accent: #e9e1d9;
-      --text-dark: #333;
-      --text-light: #6c757d;
-      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s ease;
+      --primary: #2c3e50;      /* Dark Slate Blue */
+      --secondary: #34495e;    /* Lighter Slate Blue */
+      --accent: #1abc9c;        /* Teal */
+      --light: #ecf0f1;         /* Light Gray */
+      --dark: #2c3e50;          /* Using primary for text for cohesion */
+      --success: #27ae60;       /* Emerald Green */
+      --warning: #f1c40f;       /* Sunflower Yellow */
+      --danger: #e74c3c;        /* Alizarin Red */
+      --info: #3498db;          /* Peter River Blue */
+      --orange: #e67e22;        /* Carrot Orange */
+      --purple: #9b59b6;        /* Amethyst Purple */
+      --light-accent: rgba(26, 188, 156, 0.1); /* Pale Teal */
+      --text-dark: #34495e;      /* Using secondary for main text */
+      --text-light: #7f8c8d;     /* Grayish text */
+      --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease-in-out;
     }
 
     body {
-      background-color: #f5f7fb;
+      background-color: var(--light);
       font-family: 'Poppins', sans-serif;
       color: var(--text-dark);
       line-height: 1.6;
@@ -115,13 +117,13 @@
       align-items: center;
       margin-bottom: 30px;
       padding-bottom: 15px;
-      border-bottom: 1px solid var(--light-accent);
+      border-bottom: 1px solid #dce4e6;
     }
 
     .card-link {
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: 15px;
       box-shadow: var(--shadow);
       color: var(--dark);
       border: none;
@@ -133,32 +135,64 @@
       transform: translateY(-5px);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
+    
+    .card-link:hover .icon-wrapper {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(26, 188, 156, 0.3);
+    }
 
     .card-link .card-body {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 20px;
+      justify-content: center;
+      padding: 25px 20px;
+      text-align: center;
     }
 
     .card-link .icon-wrapper {
-      background-color: var(--primary);
+      background-color: var(--accent);
       color: white;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-right: 1rem;
+      border-radius: 50%;
+      margin-bottom: 1rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
+      font-size: 1.8rem;
+      transition: var(--transition);
     }
 
     .card-link h5 {
       margin-bottom: 0;
       font-weight: 600;
+      color: var(--primary);
+    }
+    
+    /* ESTILOS PARA CARDS COLORIDOS */
+    .card-link[style*="background-color"] {
+        color: white;
     }
 
+    .card-link[style*="background-color"]:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        filter: brightness(1.1);
+    }
+    
+    .card-link[style*="background-color"]:hover .icon-wrapper {
+        box-shadow: none;
+    }
+
+    .card-link[style*="background-color"] h5 {
+        color: white;
+    }
+
+    .card-link[style*="background-color"] .icon-wrapper {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
     .content-panel {
       display: none;
       animation: fadeIn 0.3s ease;
@@ -174,7 +208,7 @@
     }
 
     .card-dashboard {
-      border-radius: 12px;
+      border-radius: 15px;
       border: none;
       box-shadow: var(--shadow);
       transition: var(--transition);
@@ -218,13 +252,13 @@
     }
 
     .calendar-day.has-event {
-      background-color: rgba(26, 58, 108, 0.1);
+      background-color: var(--light-accent);
       color: var(--primary);
       font-weight: bold;
     }
 
     .calendar-day.current {
-      background-color: var(--primary);
+      background-color: var(--accent);
       color: white;
     }
 
@@ -270,7 +304,7 @@
 
     .priority-medium {
       background-color: var(--warning);
-      color: #333;
+      color: var(--text-dark);
     }
 
     .priority-low {
@@ -285,25 +319,25 @@
     }
 
     .btn-primary {
-      background-color: var(--primary);
-      border-color: var(--primary);
+      background-color: var(--accent);
+      border-color: var(--accent);
     }
 
     .btn-primary:hover {
-      background-color: var(--secondary);
-      border-color: var(--secondary);
+      background-color: #16a085;
+      border-color: #16a085;
     }
 
     .btn-outline-primary {
-      color: var(--primary);
-      border-color: var(--primary);
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
     .btn-outline-primary:hover {
-      background-color: var(--primary);
+      background-color: var(--accent);
       color: white;
     }
-
+    
     .table th {
       font-weight: 600;
       color: var(--primary);
@@ -334,6 +368,7 @@
     .stats-card i {
       font-size: 2.5rem;
       opacity: 0.8;
+      color: var(--accent);
     }
 
     .stats-info {
@@ -352,7 +387,7 @@
     }
 
     .event-item {
-      border-left: 4px solid var(--primary);
+      border-left: 4px solid var(--accent);
       padding: 10px 15px;
       margin-bottom: 10px;
       background-color: white;
@@ -447,7 +482,7 @@
     }
 
     .schedule-time-slot {
-        background-color: var(--light-accent);
+        background-color: var(--light);
         color: var(--text-dark);
         font-size: 0.8rem;
     }
@@ -540,12 +575,13 @@
       }
 
       .card-link .card-body {
-        padding: 15px;
+        padding: 20px 15px;
       }
 
       .card-link .icon-wrapper {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
       }
 
       .stats-card {
@@ -568,7 +604,7 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background-color: var(--primary);
+      background-color: var(--accent);
       color: white;
       border: none;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -594,8 +630,8 @@
 <div class="app-container">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-logo">Lex Academica</div>
-      <div class="sidebar-subtitle">Controle Acadêmico Jurídico</div>
+      <div class="sidebar-logo">Acadêmico Pro</div>
+      <div class="sidebar-subtitle">Controle Estudantil</div>
     </div>
     <nav>
       <div class="nav-menu">
@@ -670,7 +706,7 @@
 
     <div class="content-panel active" id="home-links">
       <div class="content-header">
-        <h2>Início</h2>
+        <h2>Início Rápido</h2>
       </div>
       <div class="row g-4">
         </div>
@@ -685,7 +721,7 @@
                 <div class="card card-dashboard">
                     <div class="card-body">
                         <div class="stats-card">
-                            <i class="fas fa-book text-primary"></i>
+                            <i class="fas fa-book"></i>
                             <div class="stats-info">
                                 <h4 id="dashboard-disciplinas-count">0</h4>
                                 <p>Disciplinas</p>
@@ -1414,7 +1450,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const disciplinaColors = {};
-    const colorPalette = ["#1a3a6c", "#2d5b8f", "#9d7b5f", "#17a2b8", "#28a745", "#ffc107", "#dc3545", "#6f42c1"];
+    const colorPalette = ["#1abc9c", "#3498db", "#9b59b6", "#f1c40f", "#e67e22", "#e74c3c", "#34495e", "#7f8c8d"];
 
     function getDisciplinaColor(disciplinaId) {
         if (!disciplinaColors[disciplinaId]) {
@@ -1430,15 +1466,30 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateQuickLinks() {
         const container = document.getElementById('home-links').querySelector('.row');
         container.innerHTML = '';
+
+        // Mapa de cores intuitivas para cada card
+        const cardColors = {
+            dashboard: 'var(--info)',
+            disciplinas: 'var(--primary)',
+            horarios: 'var(--purple)',
+            trabalhos: 'var(--accent)',
+            provas: 'var(--warning)',
+            agenda: 'var(--orange)',
+            financeiro: 'var(--success)',
+            relatorios: 'var(--secondary)'
+        };
+
         document.querySelectorAll('.sidebar .nav-link').forEach(link => {
             const target = link.dataset.target;
             if (target === 'home-links' || target === 'configuracoes') return;
             const iconClass = link.querySelector('i').className;
             const title = link.querySelector('span').textContent;
+            const cardColor = cardColors[target];
+            const styleAttribute = cardColor ? `style="background-color: ${cardColor};"` : '';
 
             container.innerHTML += `
                 <div class="col-md-6 col-lg-3 mb-4">
-                  <div class="card card-link" data-target="${target}">
+                  <div class="card card-link" data-target="${target}" ${styleAttribute}>
                     <div class="card-body">
                       <div class="icon-wrapper">
                         <i class="${iconClass}"></i>
@@ -1585,7 +1636,7 @@ document.addEventListener('DOMContentLoaded', function() {
                       </div>
                       
                       <div class="d-flex justify-content-between">
-                        <span class="badge bg-primary">${db.trabalhos.filter(t => t.disciplinaId === d.id).length} Trabalhos</span>
+                        <span class="badge bg-info">${db.trabalhos.filter(t => t.disciplinaId === d.id).length} Trabalhos</span>
                         <span class="badge bg-warning">${db.provas.filter(p => p.disciplinaId === d.id).length} Provas</span>
                       </div>
                     </div>
@@ -1830,7 +1881,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const relatorioTrabalhos = document.getElementById('relatorio-trabalhos');
         relatorioTrabalhos.innerHTML = '';
-        db.disciplinas.forEach(d => relatorioTrabalhos.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge bg-primary">${db.trabalhos.filter(t => t.disciplinaId === d.id && t.status === 'Entregue').length}/${db.trabalhos.filter(t => t.disciplinaId === d.id).length}</span></div>`);
+        db.disciplinas.forEach(d => relatorioTrabalhos.innerHTML += `<div class="report-item"><span>${d.nome}</span><span class="badge bg-info">${db.trabalhos.filter(t => t.disciplinaId === d.id && t.status === 'Entregue').length}/${db.trabalhos.filter(t => t.disciplinaId === d.id).length}</span></div>`);
         
         const relatorioProvas = document.getElementById('relatorio-provas');
         relatorioProvas.innerHTML = '';
