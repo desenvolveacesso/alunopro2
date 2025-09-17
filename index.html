@@ -481,7 +481,7 @@
       border-left-color: var(--danger);
     }
 
-    .event-item.other {
+    .event-item.other, .event-item.class {
       border-left-color: var(--warning);
     }
 
@@ -1940,9 +1940,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderEventsForDay(dateStr) {
-        // Remove active class from any other day
         document.querySelectorAll('.calendar-day.active').forEach(el => el.classList.remove('active'));
-        // Add active class to the selected day
         const selectedDay = document.querySelector(`.calendar-day[data-date="${dateStr}"]`);
         if(selectedDay) selectedDay.classList.add('active');
 
@@ -1963,9 +1961,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const disciplina = getDisciplinaById(evento.disciplinaId);
                 disciplinaNome = disciplina ? `<p class="mb-0 small text-muted">${disciplina.nome}</p>` : '';
             }
+            // Mapeia o tipo do evento para um tipo de dado para a edição
+            let dataType = '';
+            if (evento.type === 'assignment') dataType = 'trabalhos';
+            else if (evento.type === 'exam') dataType = 'provas';
+            else if (['other', 'class'].includes(evento.type)) dataType = 'eventos';
 
             container.innerHTML += `
-                <div class="event-item ${evento.type}">
+                <div class="event-item ${evento.type}" data-event-type="${dataType}" data-event-id="${evento.id}">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6 class="mb-0 small">${evento.title || evento.conteudo}</h6>
                         <span class="small text-muted">${evento.time || ''}</span>
@@ -2240,6 +2243,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('horarioModal')).hide();
     });
+
+    document.getElementById('saveEvent').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
+        const id = document.getElementById('eventId').value;
+        const evento = {
+            title: document.getElementById('eventTitle').value,
+            type: document.getElementById('eventType').value,
+            date: document.getElementById('eventDate').value,
+            time: document.getElementById('eventTime').value,
+            description: document.getElementById('eventDescription').value
+        };
+        if (!evento.title || !evento.date) { alert('Título e data são obrigatórios.'); return; }
+        if(id) {
+            const index = profileData.eventos.findIndex(e => e.id == id);
+            profileData.eventos[index] = { ...profileData.eventos[index], ...evento };
+        } else {
+            evento.id = getNewId('eventos');
+            profileData.eventos.push(evento);
+        }
+        saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+    });
+
+    document.getElementById('saveFinanceiro').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
+        const id = document.getElementById('financeiroId').value;
+        const transacao = {
+            tipo: document.getElementById('financeiroTipo').value,
+            descricao: document.getElementById('financeiroDescricao').value,
+            valor: parseFloat(document.getElementById('financeiroValor').value),
+            categoria: document.getElementById('financeiroCategoria').value,
+            data: document.getElementById('financeiroData').value
+        };
+        if (!transacao.descricao || isNaN(transacao.valor) || !transacao.data) { alert('Descrição, valor e data são obrigatórios.'); return; }
+        if (id) {
+            const index = profileData.financeiro.findIndex(f => f.id == id);
+            profileData.financeiro[index] = { ...profileData.financeiro[index], ...transacao };
+        } else {
+            transacao.id = getNewId('financeiro');
+            profileData.financeiro.push(transacao);
+        }
+        saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('financeiroModal')).hide();
+    });
     
     document.getElementById('backup-btn').addEventListener('click', () => {
         const dataStr = JSON.stringify(db, null, 2);
@@ -2287,7 +2332,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.nav-link').forEach(nl => nl.classList.remove('active'));
             document.querySelector(`.nav-link[data-target="${targetId}"]`).classList.add('active');
             
-            updateMainHeaderTitle(); // Atualiza o título ao navegar
+            updateMainHeaderTitle();
 
             const sidebar = document.getElementById('sidebar');
             if(sidebar.classList.contains('open')) sidebar.classList.remove('open');
@@ -2310,19 +2355,19 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAgenda();
     });
 
-    document.getElementById('horarioModal').addEventListener('hidden.bs.modal', () => {
-        const modal = document.getElementById('horarioModal');
-        modal.querySelector('form')?.reset();
-        modal.querySelector('#horarioId').value = '';
-        modal.querySelector('#horarioModalLabel').textContent = 'Nova Aula';
-        modal.querySelector('#deleteHorario').classList.add('d-none');
-    });
-
-    document.querySelectorAll('.modal:not(#horarioModal)').forEach(modal => {
+    document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', () => {
             modal.querySelector('form')?.reset();
             const idInput = modal.querySelector('input[type="hidden"]');
             if(idInput) idInput.value = '';
+            
+            // Reset modal titles
+            if(modal.id === 'horarioModal') modal.querySelector('.modal-title').textContent = 'Nova Aula';
+            if(modal.id === 'disciplinaModal') modal.querySelector('.modal-title').textContent = 'Nova Disciplina';
+            if(modal.id === 'trabalhoModal') modal.querySelector('.modal-title').textContent = 'Novo Trabalho';
+            if(modal.id === 'provaModal') modal.querySelector('.modal-title').textContent = 'Nova Prova';
+            if(modal.id === 'eventModal') modal.querySelector('.modal-title').textContent = 'Novo Evento';
+            if(modal.id === 'financeiroModal') modal.querySelector('.modal-title').textContent = 'Nova Transação';
         });
     });
 
@@ -2331,19 +2376,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const profileData = getCurrentProfileData();
         if (!profileData) return;
 
-        const handleEdit = (itemType, modalId, itemId) => {
+        const handleEdit = (itemType, modalPrefix, itemId) => {
             const item = profileData[itemType].find(i => i.id == itemId);
             if (!item) return;
+            
+            const modalId = `${modalPrefix}Modal`;
+            const modalElement = document.getElementById(modalId);
+            const modalTitle = modalElement.querySelector('.modal-title');
+            
+            // Ajusta o título para "Editar..."
+            if(modalTitle.textContent.startsWith('Nova')) {
+                modalTitle.textContent = modalTitle.textContent.replace('Nova', 'Editar');
+            } else if (modalTitle.textContent.startsWith('Novo')) {
+                 modalTitle.textContent = modalTitle.textContent.replace('Novo', 'Editar');
+            }
 
-            const form = document.getElementById(`${modalId.replace('#', '')}Form`);
+            const form = document.getElementById(`${modalPrefix}Form`);
+            // Preenche o formulário
             for (const key in item) {
-                const input = form.querySelector(`#${modalId.replace('#', '')}${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                // Renomeia chaves para corresponder aos IDs dos inputs
+                let inputKey = key;
+                if (itemType === 'trabalhos' && key === 'entrega') inputKey = 'Entrega';
+                if (itemType === 'provas' && key === 'data') inputKey = 'Data';
+                if (itemType === 'eventos' && key === 'title') inputKey = 'Title';
+                
+                const input = form.querySelector(`#${modalPrefix}${inputKey.charAt(0).toUpperCase() + inputKey.slice(1)}`);
                 if (input) input.value = item[key];
             }
-            const idInput = form.querySelector(`#${modalId.replace('#', '')}Id`);
-            if (idInput) idInput.value = item.id;
+            form.querySelector(`#${modalPrefix}Id`).value = item.id;
             
-            new bootstrap.Modal(document.getElementById(modalId.replace('#', ''))).show();
+            new bootstrap.Modal(modalElement).show();
         };
 
         const handleDelete = (itemType, itemId, confirmMsg) => {
@@ -2375,18 +2437,35 @@ document.addEventListener('DOMContentLoaded', function() {
             
             new bootstrap.Modal(document.getElementById('horarioModal')).show();
         };
+        
+        // Listener para itens de evento na agenda
+        const eventItem = e.target.closest('.event-item');
+        if (eventItem) {
+            const eventType = eventItem.dataset.eventType;
+            const eventId = eventItem.dataset.eventId;
+            if(eventType && eventId) {
+                const modalMap = {
+                    'trabalhos': 'trabalho',
+                    'provas': 'prova',
+                    'eventos': 'event'
+                };
+                handleEdit(eventType, modalMap[eventType], eventId);
+            }
+        }
 
-        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item, .edit-horario, .delete-horario');
+        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item, .edit-horario, .delete-horario, .edit-financeiro, .delete-financeiro');
         if (!target) return;
         const id = target.dataset.id;
 
-        if (target.matches('.edit-disciplina')) handleEdit('disciplinas', '#disciplina', id);
+        if (target.matches('.edit-disciplina')) handleEdit('disciplinas', 'disciplina', id);
         else if (target.matches('.delete-disciplina')) handleDelete('disciplinas', id, 'Tem certeza que deseja excluir esta disciplina e todos os seus dados associados?');
-        else if (target.matches('.edit-trabalho')) handleEdit('trabalhos', '#trabalho', id);
+        else if (target.matches('.edit-trabalho')) handleEdit('trabalhos', 'trabalho', id);
         else if (target.matches('.delete-trabalho')) handleDelete('trabalhos', id, 'Tem certeza que deseja excluir este trabalho?');
-        else if (target.matches('.edit-prova')) handleEdit('provas', '#prova', id);
+        else if (target.matches('.edit-prova')) handleEdit('provas', 'prova', id);
         else if (target.matches('.delete-prova')) handleDelete('provas', id, 'Tem certeza que deseja excluir esta prova?');
         else if (target.matches('.schedule-class-item')) editHorario(id);
+        else if (target.matches('.edit-financeiro')) handleEdit('financeiro', 'financeiro', id);
+        else if (target.matches('.delete-financeiro')) handleDelete('financeiro', id, 'Tem certeza que deseja excluir esta transação?');
     });
     
     document.getElementById('deleteHorario').addEventListener('click', () => {
