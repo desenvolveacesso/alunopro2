@@ -586,6 +586,27 @@
         opacity: 0.9;
     }
 
+    .next-event-card {
+        background: linear-gradient(135deg, var(--accent), var(--info));
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .next-event-card .countdown-item {
+        text-align: center;
+    }
+    .next-event-card .countdown-number {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .next-event-card .countdown-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        opacity: 0.8;
+    }
+
     @media (max-width: 992px) {
       .app-container {
         flex-direction: column;
@@ -769,6 +790,18 @@
             </a>
             </div>
             <div class="nav-item">
+                <a class="nav-link" href="#" data-target="biblioteca">
+                    <i class="fas fa-book-open"></i>
+                    <span>Biblioteca</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" data-target="filmes">
+                    <i class="fas fa-film"></i>
+                    <span>Filmes</span>
+                </a>
+            </div>
+            <div class="nav-item">
             <a class="nav-link" href="#" data-target="financeiro">
                 <i class="fas fa-dollar-sign"></i>
                 <span>Financeiro</span>
@@ -812,7 +845,8 @@
       <div class="content-header">
         <h2>Início Rápido</h2>
       </div>
-      <div class="row g-4">
+      <div id="next-event-container" class="mb-4"></div>
+      <div class="row g-4" id="quick-links-container">
       </div>
     </div>
     <div class="content-panel" id="dashboard">
@@ -1016,6 +1050,30 @@
                 </div>
             </div>
         </div>
+    </div>
+     <div class="content-panel" id="biblioteca">
+      <div class="content-header">
+        <h2>Biblioteca</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bibliotecaModal">
+            <i class="fas fa-plus"></i> Adicionar Livro
+          </button>
+        </div>
+      </div>
+      <div class="row g-4" id="biblioteca-lista">
+        </div>
+    </div>
+    <div class="content-panel" id="filmes">
+      <div class="content-header">
+        <h2>Filmes</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filmeModal">
+            <i class="fas fa-plus"></i> Adicionar Filme
+          </button>
+        </div>
+      </div>
+      <div class="row g-4" id="filmes-lista">
+      </div>
     </div>
     <div class="content-panel" id="financeiro">
         <div class="content-header">
@@ -1468,6 +1526,63 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="bibliotecaModal" tabindex="-1" aria-labelledby="bibliotecaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bibliotecaModalLabel">Novo Livro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bibliotecaForm">
+                    <input type="hidden" id="bibliotecaId">
+                    <div class="mb-3">
+                        <label for="bibliotecaTitulo" class="form-label">Título do Livro</label>
+                        <input type="text" class="form-control" id="bibliotecaTitulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bibliotecaArquivo" class="form-label">Arquivo PDF</label>
+                        <input type="file" class="form-control" id="bibliotecaArquivo" accept=".pdf" required>
+                    </div>
+                     <div class="alert alert-info small">
+                        <strong>Nota:</strong> O arquivo PDF será salvo localmente no seu navegador. Evite arquivos muito grandes para garantir o bom funcionamento.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveLivro">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="filmeModal" tabindex="-1" aria-labelledby="filmeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filmeModalLabel">Novo Filme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filmeForm">
+                    <input type="hidden" id="filmeId">
+                    <div class="mb-3">
+                        <label for="filmeTitulo" class="form-label">Título do Filme</label>
+                        <input type="text" class="form-control" id="filmeTitulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filmeUrl" class="form-label">Link (URL)</label>
+                        <input type="url" class="form-control" id="filmeUrl" placeholder="https://..." required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveFilme">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -1476,6 +1591,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let db;
     let currentCalendarDate = new Date();
     const DB_KEY = 'lexAcademicaDB_v2';
+    let nextEventInterval;
 
     const createNewProfileData = () => ({
         disciplinas: [],
@@ -1483,7 +1599,9 @@ document.addEventListener('DOMContentLoaded', function() {
         trabalhos: [],
         provas: [],
         eventos: [],
-        financeiro: []
+        financeiro: [],
+        biblioteca: [],
+        filmes: []
     });
 
     function getCurrentProfileData() {
@@ -1515,7 +1633,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 trabalhos: [ { id: 1, disciplinaId: 1, titulo: "Estudo de Caso - Contratos", entrega: "2025-09-25", status: "Pendente", prioridade: "high", nota: null } ],
                 provas: [ { id: 1, disciplinaId: 3, conteudo: "Teoria Geral do Crime", data: "2025-10-15", hora: "14:00", status: "Agendada", nota: null } ],
                 eventos: [ { id: 1, title: "Seminário Internacional", type: 'other', date: "2025-09-30", time: "09:00", description: "Auditório Central" } ],
-                financeiro: [ { id: 1, tipo: "receita", descricao: "Bolsa Auxílio", valor: 500.00, categoria: "Bolsa", data: "2025-09-05" } ]
+                financeiro: [ { id: 1, tipo: "receita", descricao: "Bolsa Auxílio", valor: 500.00, categoria: "Bolsa", data: "2025-09-05" } ],
+                biblioteca: [],
+                filmes: []
             };
             const firstProfile = { id: 1, name: "Meu Curso", data: initialProfileData };
             db.profiles.push(firstProfile);
@@ -1525,6 +1645,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!db.currentProfileId && db.profiles.length > 0) {
             db.currentProfileId = db.profiles[0].id;
         }
+        
+        // Ensure new data structures exist on older profiles
+        db.profiles.forEach(profile => {
+            if (!profile.data.biblioteca) profile.data.biblioteca = [];
+            if (!profile.data.filmes) profile.data.filmes = [];
+        });
 
         saveDB();
         generateQuickLinks();
@@ -1549,7 +1675,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             trabalhos: parsedOldData.trabalhos || [],
                             provas: parsedOldData.provas || [],
                             eventos: parsedOldData.eventos || [],
-                            financeiro: parsedOldData.financeiro || []
+                            financeiro: parsedOldData.financeiro || [],
+                            biblioteca: [],
+                            filmes: []
                         }
                     };
                     db.profiles.push(migratedProfile);
@@ -1580,12 +1708,15 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
+        renderProximoEventoCard();
         renderDashboard();
         renderDisciplinas();
         renderHorarios();
         renderTrabalhos();
         renderProvas();
         renderAgenda();
+        renderBiblioteca();
+        renderFilmes();
         renderFinanceiro();
         renderRelatorios();
         populateDisciplinaSelects();
@@ -1615,7 +1746,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function generateQuickLinks() {
-        const container = document.getElementById('home-links').querySelector('.row');
+        const container = document.getElementById('quick-links-container');
         container.innerHTML = '';
 
         const cardColors = {
@@ -1625,6 +1756,8 @@ document.addEventListener('DOMContentLoaded', function() {
             trabalhos: 'var(--accent)',
             provas: 'var(--warning)',
             agenda: 'var(--orange)',
+            biblioteca: 'var(--danger)',
+            filmes: '#607D8B', // Blue Grey
             financeiro: 'var(--success)',
             relatorios: 'var(--secondary)'
         };
@@ -1651,6 +1784,93 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         });
     }
+
+    function renderProximoEventoCard() {
+        const profileData = getCurrentProfileData();
+        if (!profileData) return;
+        const container = document.getElementById('next-event-container');
+        if (nextEventInterval) clearInterval(nextEventInterval);
+
+        const hoje = new Date();
+        const todosEventos = [
+            ...profileData.trabalhos.filter(t => t.status === 'Pendente').map(t => ({...t, type: 'assignment', date: t.entrega, title: t.titulo, time: '23:59'})),
+            ...profileData.provas.filter(p => p.status === 'Agendada').map(p => ({...p, type: 'exam', date: p.data, title: p.conteudo, time: p.hora || '08:00'})),
+            ...profileData.eventos.map(e => ({...e, time: e.time || '00:00' }))
+        ];
+        
+        const proximoEvento = todosEventos
+            .map(e => {
+                const eventDate = new Date(`${e.date}T${e.time}`);
+                return {...e, eventDate};
+            })
+            .filter(e => e.eventDate >= hoje)
+            .sort((a,b) => a.eventDate - b.eventDate)[0];
+
+        if (!proximoEvento) {
+            container.innerHTML = `
+                <div class="card card-dashboard">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Nenhum evento próximo</h5>
+                        <p class="text-muted">Você está em dia! Adicione novas tarefas na agenda.</p>
+                        <i class="fas fa-check-circle fa-3x text-success"></i>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        const updateCountdown = () => {
+            const agora = new Date().getTime();
+            const distancia = proximoEvento.eventDate.getTime() - agora;
+
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown-dias').textContent = String(dias).padStart(2, '0');
+            document.getElementById('countdown-horas').textContent = String(horas).padStart(2, '0');
+            document.getElementById('countdown-minutos').textContent = String(minutos).padStart(2, '0');
+            document.getElementById('countdown-segundos').textContent = String(segundos).padStart(2, '0');
+
+            if (distancia < 0) {
+                clearInterval(nextEventInterval);
+                renderProximoEventoCard();
+            }
+        };
+        
+        const eventTypeMap = {
+            assignment: { icon: 'fa-tasks', label: 'Trabalho' },
+            exam: { icon: 'fa-file-alt', label: 'Prova' },
+            other: { icon: 'fa-calendar-day', label: 'Evento' },
+            class: { icon: 'fa-chalkboard-teacher', label: 'Aula'}
+        };
+
+        const eventInfo = eventTypeMap[proximoEvento.type] || eventTypeMap['other'];
+        const formattedDate = proximoEvento.eventDate.toLocaleString('pt-BR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' });
+
+        container.innerHTML = `
+            <div class="next-event-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-5">
+                        <h6 class="text-uppercase small" style="opacity: 0.8;">Próximo Evento</h6>
+                        <h3 class="mb-1">${proximoEvento.title}</h3>
+                        <p class="mb-2"><i class="fas ${eventInfo.icon} me-2"></i><strong>${eventInfo.label}:</strong> ${formattedDate}</p>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="d-flex justify-content-around">
+                            <div class="countdown-item"><div id="countdown-dias" class="countdown-number">00</div><div class="countdown-label">Dias</div></div>
+                            <div class="countdown-item"><div id="countdown-horas" class="countdown-number">00</div><div class="countdown-label">Horas</div></div>
+                            <div class="countdown-item"><div id="countdown-minutos" class="countdown-number">00</div><div class="countdown-label">Minutos</div></div>
+                            <div class="countdown-item"><div id="countdown-segundos" class="countdown-number">00</div><div class="countdown-label">Segundos</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        updateCountdown();
+        nextEventInterval = setInterval(updateCountdown, 1000);
+    }
+
 
     function renderDashboard() {
         const profileData = getCurrentProfileData();
@@ -1979,6 +2199,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function renderBiblioteca() {
+        const profileData = getCurrentProfileData();
+        const container = document.getElementById('biblioteca-lista');
+        container.innerHTML = '';
+        if (profileData.biblioteca.length === 0) {
+            container.innerHTML = `<div class="col-12"><div class="empty-state card-dashboard p-4"><p>Clique em "Adicionar Livro" para começar a sua biblioteca.</p></div></div>`;
+            return;
+        }
+        profileData.biblioteca.forEach(livro => {
+            const card = `
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-dashboard">
+                    <div class="card-body text-center">
+                      <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                      <h5 class="card-title">${livro.titulo}</h5>
+                      <div class="mt-3">
+                         <a href="${livro.pdfData}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i> Visualizar</a>
+                         <button class="btn btn-sm btn-outline-danger delete-livro" data-id="${livro.id}"><i class="fas fa-trash"></i> Excluir</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+            container.innerHTML += card;
+        });
+    }
+
+    function renderFilmes() {
+        const profileData = getCurrentProfileData();
+        const container = document.getElementById('filmes-lista');
+        container.innerHTML = '';
+        if (profileData.filmes.length === 0) {
+            container.innerHTML = `<div class="col-12"><div class="empty-state card-dashboard p-4"><p>Clique em "Adicionar Filme" para salvar seus links.</p></div></div>`;
+            return;
+        }
+        profileData.filmes.forEach(filme => {
+            const card = `
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-dashboard">
+                    <div class="card-body text-center">
+                      <i class="fas fa-film fa-3x text-secondary mb-3"></i>
+                      <h5 class="card-title">${filme.titulo}</h5>
+                      <div class="mt-3">
+                         <a href="${filme.url}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-external-link-alt"></i> Acessar Link</a>
+                         <button class="btn btn-sm btn-outline-danger delete-filme" data-id="${filme.id}"><i class="fas fa-trash"></i> Excluir</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+            container.innerHTML += card;
+        });
+    }
+
     function renderFinanceiro() {
         const profileData = getCurrentProfileData();
         const tbody = document.getElementById('financeiro-tabela');
@@ -2285,6 +2557,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         saveDB(); renderAll(); bootstrap.Modal.getInstance(document.getElementById('financeiroModal')).hide();
     });
+
+    document.getElementById('saveLivro').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
+        const id = document.getElementById('bibliotecaId').value;
+        const titulo = document.getElementById('bibliotecaTitulo').value;
+        const arquivoInput = document.getElementById('bibliotecaArquivo');
+        const file = arquivoInput.files[0];
+
+        if (!titulo || !file) {
+            alert('Título e arquivo PDF são obrigatórios.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const pdfData = e.target.result;
+            const livro = { id: getNewId('biblioteca'), titulo, pdfData };
+            profileData.biblioteca.push(livro);
+            saveDB();
+            renderAll();
+            bootstrap.Modal.getInstance(document.getElementById('bibliotecaModal')).hide();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('saveFilme').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
+        const id = document.getElementById('filmeId').value;
+        const filme = {
+            titulo: document.getElementById('filmeTitulo').value,
+            url: document.getElementById('filmeUrl').value
+        };
+        if (!filme.titulo || !filme.url) {
+            alert('Título e URL são obrigatórios.');
+            return;
+        }
+        if (id) {
+            const index = profileData.filmes.findIndex(f => f.id == id);
+            profileData.filmes[index] = { ...profileData.filmes[index], ...filme };
+        } else {
+            filme.id = getNewId('filmes');
+            profileData.filmes.push(filme);
+        }
+        saveDB();
+        renderAll();
+        bootstrap.Modal.getInstance(document.getElementById('filmeModal')).hide();
+    });
     
     document.getElementById('backup-btn').addEventListener('click', () => {
         const dataStr = JSON.stringify(db, null, 2);
@@ -2362,12 +2681,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if(idInput) idInput.value = '';
             
             // Reset modal titles
-            if(modal.id === 'horarioModal') modal.querySelector('.modal-title').textContent = 'Nova Aula';
-            if(modal.id === 'disciplinaModal') modal.querySelector('.modal-title').textContent = 'Nova Disciplina';
-            if(modal.id === 'trabalhoModal') modal.querySelector('.modal-title').textContent = 'Novo Trabalho';
-            if(modal.id === 'provaModal') modal.querySelector('.modal-title').textContent = 'Nova Prova';
-            if(modal.id === 'eventModal') modal.querySelector('.modal-title').textContent = 'Novo Evento';
-            if(modal.id === 'financeiroModal') modal.querySelector('.modal-title').textContent = 'Nova Transação';
+            const modalTitle = modal.querySelector('.modal-title');
+            if (modalTitle) {
+                if(modal.id === 'horarioModal') modalTitle.textContent = 'Nova Aula';
+                if(modal.id === 'disciplinaModal') modalTitle.textContent = 'Nova Disciplina';
+                if(modal.id === 'trabalhoModal') modalTitle.textContent = 'Novo Trabalho';
+                if(modal.id === 'provaModal') modalTitle.textContent = 'Nova Prova';
+                if(modal.id === 'eventModal') modalTitle.textContent = 'Novo Evento';
+                if(modal.id === 'financeiroModal') modalTitle.textContent = 'Nova Transação';
+                if(modal.id === 'bibliotecaModal') modalTitle.textContent = 'Novo Livro';
+                if(modal.id === 'filmeModal') modalTitle.textContent = 'Novo Filme';
+            }
         });
     });
 
@@ -2384,7 +2708,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const modalElement = document.getElementById(modalId);
             const modalTitle = modalElement.querySelector('.modal-title');
             
-            // Ajusta o título para "Editar..."
             if(modalTitle.textContent.startsWith('Nova')) {
                 modalTitle.textContent = modalTitle.textContent.replace('Nova', 'Editar');
             } else if (modalTitle.textContent.startsWith('Novo')) {
@@ -2392,15 +2715,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const form = document.getElementById(`${modalPrefix}Form`);
-            // Preenche o formulário
             for (const key in item) {
-                // Renomeia chaves para corresponder aos IDs dos inputs
-                let inputKey = key;
-                if (itemType === 'trabalhos' && key === 'entrega') inputKey = 'Entrega';
-                if (itemType === 'provas' && key === 'data') inputKey = 'Data';
-                if (itemType === 'eventos' && key === 'title') inputKey = 'Title';
-                
-                const input = form.querySelector(`#${modalPrefix}${inputKey.charAt(0).toUpperCase() + inputKey.slice(1)}`);
+                let inputKey = key.charAt(0).toUpperCase() + key.slice(1);
+                const input = form.querySelector(`#${modalPrefix}${inputKey}`);
                 if (input) input.value = item[key];
             }
             form.querySelector(`#${modalPrefix}Id`).value = item.id;
@@ -2424,7 +2741,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const editHorario = (id) => {
             const aula = profileData.horarios.find(h => h.id == id);
             if (!aula) return;
-
             document.getElementById('horarioModalLabel').textContent = 'Editar Aula';
             document.getElementById('horarioId').value = aula.id;
             document.getElementById('horarioDisciplina').value = aula.disciplinaId;
@@ -2432,28 +2748,21 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('horarioInicio').value = aula.inicio;
             document.getElementById('horarioFim').value = aula.fim;
             document.getElementById('horarioLocal').value = aula.local;
-            
             document.getElementById('deleteHorario').classList.remove('d-none');
-            
             new bootstrap.Modal(document.getElementById('horarioModal')).show();
         };
         
-        // Listener para itens de evento na agenda
         const eventItem = e.target.closest('.event-item');
         if (eventItem) {
             const eventType = eventItem.dataset.eventType;
             const eventId = eventItem.dataset.eventId;
             if(eventType && eventId) {
-                const modalMap = {
-                    'trabalhos': 'trabalho',
-                    'provas': 'prova',
-                    'eventos': 'event'
-                };
+                const modalMap = {'trabalhos': 'trabalho', 'provas': 'prova', 'eventos': 'event'};
                 handleEdit(eventType, modalMap[eventType], eventId);
             }
         }
 
-        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item, .edit-horario, .delete-horario, .edit-financeiro, .delete-financeiro');
+        const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item, .delete-horario, .edit-financeiro, .delete-financeiro, .delete-livro, .delete-filme');
         if (!target) return;
         const id = target.dataset.id;
 
@@ -2466,6 +2775,8 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (target.matches('.schedule-class-item')) editHorario(id);
         else if (target.matches('.edit-financeiro')) handleEdit('financeiro', 'financeiro', id);
         else if (target.matches('.delete-financeiro')) handleDelete('financeiro', id, 'Tem certeza que deseja excluir esta transação?');
+        else if (target.matches('.delete-livro')) handleDelete('biblioteca', id, 'Tem certeza que deseja excluir este livro?');
+        else if (target.matches('.delete-filme')) handleDelete('filmes', id, 'Tem certeza que deseja excluir este filme?');
     });
     
     document.getElementById('deleteHorario').addEventListener('click', () => {
