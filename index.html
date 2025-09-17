@@ -579,14 +579,27 @@
         z-index: 1000;
         padding: 10px 0;
         flex-direction: row;
+        align-items: center; /* Adicionado para centralizar itens verticalmente */
       }
 
       .sidebar-header {
         display: none;
       }
       
+      /* CORREÇÃO APLICADA AQUI */
       .profile-switcher {
-          display: none;
+        padding: 0 15px;
+        margin-bottom: 0;
+        border-bottom: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        align-self: center;
+        flex-shrink: 0; /* Impede que o seletor encolha */
+      }
+
+      .profile-switcher .dropdown-toggle {
+        padding: 8px 10px;
+        width: auto;
+        min-width: 150px; /* Garante uma largura mínima */
       }
       
       .nav-menu-wrapper {
@@ -618,7 +631,7 @@
       }
 
       .main-content {
-        padding: 20px 15px 80px;
+        padding: 20px 15px 100px; /* Aumentado padding inferior para não sobrepor o menu */
       }
     }
 
@@ -651,6 +664,14 @@
       .stats-info {
         margin-left: 0;
         margin-top: 10px;
+      }
+      
+      .profile-switcher .dropdown-toggle {
+        min-width: 120px; /* Reduz a largura mínima em telas ainda menores */
+      }
+      
+      #current-profile-name {
+        font-size: 0.8rem; /* Reduz o tamanho da fonte do nome do perfil */
       }
     }
 
@@ -762,7 +783,7 @@
             <div class="nav-item">
             <a class="nav-link" href="#" data-target="configuracoes">
                 <i class="fas fa-cog"></i>
-                <span>Configurações</span>
+                <span>Config.</span>
             </a>
             </div>
         </nav>
