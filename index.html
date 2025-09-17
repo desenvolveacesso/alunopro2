@@ -625,7 +625,7 @@
         position: absolute;
         top: 10px;
         right: 10px;
-        z-index: 10;
+        z-index: 1056; /* Higher than flipbook */
         border: none;
         background: none;
     }
@@ -635,6 +635,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
     }
     .viewer-modal iframe {
         width: 100%;
@@ -646,6 +647,26 @@
         border-radius: 50%;
         padding: 0.5em;
     }
+
+    /* --- Flipbook Styles --- */
+    #viewerModalBody .loading-indicator {
+        color: white;
+        font-size: 1.5rem;
+    }
+    #flipbook .page {
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    #flipbook .page img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .turn-page {
+        background-color: #ccc;
+    }
+    /* --- End Flipbook Styles --- */
+
 
     @media (max-width: 992px) {
       .app-container {
@@ -1637,9 +1658,15 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
+    // PDF.js worker configuration
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+
     let db;
     let currentCalendarDate = new Date();
     const DB_KEY = 'lexAcademicaDB_v2';
@@ -2262,7 +2289,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="col-md-6 col-lg-4">
                   <div class="card card-dashboard">
                     <div class="card-body text-center">
-                      <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                      <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
                       <h5 class="card-title">${livro.titulo}</h5>
                       <div class="mt-3">
                          <button class="btn btn-sm btn-outline-primary view-livro" data-id="${livro.id}"><i class="fas fa-eye"></i> Visualizar</button>
@@ -2745,11 +2772,94 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const viewerModal = new bootstrap.Modal(document.getElementById('viewerModal'));
-    const viewerModalBody = document.getElementById('viewerModalBody');
     
     document.getElementById('viewerModal').addEventListener('hidden.bs.modal', () => {
-        viewerModalBody.innerHTML = ''; // Clear content on close
+        const flipbook = $('#flipbook');
+        if (flipbook.length && flipbook.turn('is')) {
+            flipbook.turn('destroy');
+        }
+        document.getElementById('viewerModalBody').innerHTML = '';
     });
+
+    async function displayFlipbook(pdfDataUrl, container) {
+        const pdfData = atob(pdfDataUrl.substring(pdfDataUrl.indexOf(',') + 1));
+        const flipbookContainer = document.createElement('div');
+        flipbookContainer.id = 'flipbook';
+
+        try {
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+            const numPages = pdf.numPages;
+
+            const firstPage = await pdf.getPage(1);
+            const viewportForRatio = firstPage.getViewport({ scale: 1.0 });
+            const aspectRatio = viewportForRatio.width / viewportForRatio.height;
+            
+            const renderScale = 2; 
+            const renderViewport = firstPage.getViewport({ scale: renderScale });
+            
+            const pagePromises = [];
+            for (let i = 1; i <= numPages; i++) {
+                pagePromises.push(pdf.getPage(i).then(page => {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = renderViewport.height;
+                    canvas.width = renderViewport.width;
+
+                    return page.render({ canvasContext: context, viewport: renderViewport }).promise.then(() => {
+                        const pageElement = document.createElement('div');
+                        const img = document.createElement('img');
+                        img.src = canvas.toDataURL('image/jpeg', 0.9);
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        pageElement.appendChild(img);
+                        return pageElement;
+                    });
+                }));
+            }
+            
+            const pageElements = await Promise.all(pagePromises);
+            pageElements.forEach(el => flipbookContainer.appendChild(el));
+
+            container.innerHTML = '';
+            container.appendChild(flipbookContainer);
+            
+            const modalHeight = container.clientHeight * 0.95;
+            const modalWidth = container.clientWidth * 0.95;
+
+            let bookHeight = modalHeight;
+            let bookWidth = (bookHeight * aspectRatio) * 2;
+
+            if (bookWidth > modalWidth) {
+                bookWidth = modalWidth;
+                bookHeight = (bookWidth / 2) / aspectRatio;
+            }
+
+            $(flipbookContainer).turn({
+                width: bookWidth,
+                height: bookHeight,
+                elevation: 50,
+                gradients: true,
+                autoCenter: true,
+            });
+
+        } catch (error) {
+            console.error('Error rendering PDF:', error);
+            container.innerHTML = `<div class="alert alert-danger m-3">Não foi possível carregar o livro. O arquivo pode estar corrompido ou em um formato não suportado.</div>`;
+        }
+    }
+
+    function openBookViewer(livro) {
+        const viewerModalEl = document.getElementById('viewerModal');
+        const viewerModalBody = document.getElementById('viewerModalBody');
+        viewerModalBody.innerHTML = `<div class="d-flex align-items-center justify-content-center h-100"><div class="loading-indicator">Carregando livro...</div></div>`;
+
+        $(viewerModalEl).one('shown.bs.modal', async function () {
+            await displayFlipbook(livro.pdfData, viewerModalBody);
+        });
+
+        viewerModal.show();
+    }
+
 
     function getYouTubeEmbedUrl(url) {
         let videoId = null;
@@ -2839,8 +2949,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const livroId = viewLivroBtn.dataset.id;
             const livro = profileData.biblioteca.find(l => l.id == livroId);
             if (livro) {
-                viewerModalBody.innerHTML = `<iframe src="${livro.pdfData}"></iframe>`;
-                viewerModal.show();
+                openBookViewer(livro);
             }
         }
         
@@ -2848,6 +2957,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (viewFilmeBtn) {
             const url = viewFilmeBtn.dataset.url;
             const embedUrl = getYouTubeEmbedUrl(url);
+            const viewerModalBody = document.getElementById('viewerModalBody');
             if (embedUrl) {
                 viewerModalBody.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                 viewerModal.show();
