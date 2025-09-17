@@ -75,8 +75,6 @@
       font-size: 0.9rem;
       opacity: 0.8;
     }
-    
-    /* ESTILOS ANTIGOS DO PROFILE-SWITCHER REMOVIDOS DA SIDEBAR */
 
     #current-profile-name {
         font-weight: 600;
@@ -128,7 +126,6 @@
       transition: var(--transition);
     }
 
-    /* NOVO CABEÇALHO PRINCIPAL */
     .main-header {
       display: flex;
       justify-content: space-between;
@@ -142,7 +139,6 @@
         margin: 0;
     }
 
-    /* NOVOS ESTILOS PARA O PROFILE SWITCHER NO CABEÇALHO */
     .main-header .profile-switcher .dropdown-toggle {
         background-color: #fff;
         border: 1px solid #dde2e3;
@@ -191,7 +187,6 @@
       margin-bottom: 30px;
     }
 
-    /* Oculta o h2 dos painéis individuais, pois o título agora é global */
     .content-panel > .content-header > h2 {
       display: none;
     }
@@ -1643,7 +1638,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const styleAttribute = cardColor ? `style="background-color: ${cardColor};"` : '';
 
             container.innerHTML += `
-                <div class="col-md-6 col-lg-3 mb-4">
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
                   <div class="card card-link" data-target="${target}" ${styleAttribute}>
                     <div class="card-body">
                       <div class="icon-wrapper">
@@ -2315,8 +2310,15 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAgenda();
     });
 
-    // Unifying modal resets
-    document.querySelectorAll('.modal').forEach(modal => {
+    document.getElementById('horarioModal').addEventListener('hidden.bs.modal', () => {
+        const modal = document.getElementById('horarioModal');
+        modal.querySelector('form')?.reset();
+        modal.querySelector('#horarioId').value = '';
+        modal.querySelector('#horarioModalLabel').textContent = 'Nova Aula';
+        modal.querySelector('#deleteHorario').classList.add('d-none');
+    });
+
+    document.querySelectorAll('.modal:not(#horarioModal)').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', () => {
             modal.querySelector('form')?.reset();
             const idInput = modal.querySelector('input[type="hidden"]');
@@ -2356,6 +2358,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderAll();
             }
         };
+        
+        const editHorario = (id) => {
+            const aula = profileData.horarios.find(h => h.id == id);
+            if (!aula) return;
+
+            document.getElementById('horarioModalLabel').textContent = 'Editar Aula';
+            document.getElementById('horarioId').value = aula.id;
+            document.getElementById('horarioDisciplina').value = aula.disciplinaId;
+            document.getElementById('horarioDiaSemana').value = aula.diaSemana;
+            document.getElementById('horarioInicio').value = aula.inicio;
+            document.getElementById('horarioFim').value = aula.fim;
+            document.getElementById('horarioLocal').value = aula.local;
+            
+            document.getElementById('deleteHorario').classList.remove('d-none');
+            
+            new bootstrap.Modal(document.getElementById('horarioModal')).show();
+        };
 
         const target = e.target.closest('.edit-disciplina, .delete-disciplina, .edit-trabalho, .delete-trabalho, .edit-prova, .delete-prova, .schedule-class-item, .edit-horario, .delete-horario');
         if (!target) return;
@@ -2367,7 +2386,20 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (target.matches('.delete-trabalho')) handleDelete('trabalhos', id, 'Tem certeza que deseja excluir este trabalho?');
         else if (target.matches('.edit-prova')) handleEdit('provas', '#prova', id);
         else if (target.matches('.delete-prova')) handleDelete('provas', id, 'Tem certeza que deseja excluir esta prova?');
-        else if (target.matches('.schedule-class-item')) handleEdit('horarios', '#horario', id);
+        else if (target.matches('.schedule-class-item')) editHorario(id);
+    });
+    
+    document.getElementById('deleteHorario').addEventListener('click', () => {
+        const profileData = getCurrentProfileData();
+        const id = document.getElementById('horarioId').value;
+        if (!id) return;
+
+        if (confirm('Tem certeza que deseja excluir esta aula?')) {
+            profileData.horarios = profileData.horarios.filter(h => h.id != id);
+            saveDB();
+            renderAll();
+            bootstrap.Modal.getInstance(document.getElementById('horarioModal')).hide();
+        }
     });
     
     init();
