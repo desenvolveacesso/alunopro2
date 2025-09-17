@@ -62,7 +62,7 @@
     .sidebar-header {
       padding: 0 20px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .sidebar-logo {
@@ -76,42 +76,8 @@
       opacity: 0.8;
     }
     
-    .profile-switcher {
-        padding: 10px 20px;
-        margin-bottom: 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    /* ESTILOS ANTIGOS DO PROFILE-SWITCHER REMOVIDOS DA SIDEBAR */
 
-    .profile-switcher .dropdown-toggle {
-        background-color: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: white;
-        width: 100%;
-        text-align: left;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-    }
-
-    .profile-switcher .dropdown-toggle::after {
-        margin-left: auto;
-    }
-
-    .profile-switcher .dropdown-menu {
-        width: 100%;
-        background-color: var(--secondary);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .profile-switcher .dropdown-item {
-        color: white;
-        font-size: 0.9rem;
-    }
-    .profile-switcher .dropdown-item:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-    .profile-switcher .dropdown-item i {
-        margin-right: 8px;
-    }
     #current-profile-name {
         font-weight: 600;
         white-space: nowrap;
@@ -162,13 +128,72 @@
       transition: var(--transition);
     }
 
-    .content-header {
+    /* NOVO CABEÇALHO PRINCIPAL */
+    .main-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
       padding-bottom: 15px;
       border-bottom: 1px solid #dce4e6;
+    }
+    
+    #main-header-title {
+        margin: 0;
+    }
+
+    /* NOVOS ESTILOS PARA O PROFILE SWITCHER NO CABEÇALHO */
+    .main-header .profile-switcher .dropdown-toggle {
+        background-color: #fff;
+        border: 1px solid #dde2e3;
+        color: var(--text-dark);
+        width: auto;
+        min-width: 220px;
+        text-align: left;
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .main-header .profile-switcher .dropdown-toggle:hover {
+      background-color: #f8f9fa;
+    }
+
+    .main-header .profile-switcher .dropdown-toggle::after {
+        margin-left: auto;
+    }
+
+    .main-header .profile-switcher .dropdown-menu {
+        width: 100%;
+        background-color: white;
+        border: 1px solid #dde2e3;
+        box-shadow: var(--shadow);
+    }
+    
+    .main-header .profile-switcher .dropdown-item {
+        color: var(--text-dark);
+        font-size: 0.9rem;
+    }
+    
+    .main-header .profile-switcher .dropdown-item:hover {
+        background-color: var(--light-accent);
+    }
+    
+    .main-header .profile-switcher .dropdown-item i {
+        margin-right: 8px;
+        color: var(--primary);
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    /* Oculta o h2 dos painéis individuais, pois o título agora é global */
+    .content-panel > .content-header > h2 {
+      display: none;
     }
 
     .card-link {
@@ -579,38 +604,25 @@
         z-index: 1000;
         padding: 10px 0;
         flex-direction: row;
-        align-items: center; /* Adicionado para centralizar itens verticalmente */
+        align-items: center;
       }
 
       .sidebar-header {
         display: none;
       }
       
-      /* CORREÇÃO APLICADA AQUI */
-      .profile-switcher {
-        padding: 0 15px;
-        margin-bottom: 0;
-        border-bottom: none;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-        align-self: center;
-        flex-shrink: 0; /* Impede que o seletor encolha */
-      }
-
-      .profile-switcher .dropdown-toggle {
-        padding: 8px 10px;
-        width: auto;
-        min-width: 150px; /* Garante uma largura mínima */
-      }
-      
       .nav-menu-wrapper {
           overflow-x: auto;
           display: flex;
+          flex-grow: 1;
       }
 
       .nav-menu {
         display: flex;
         flex-shrink: 0;
         padding: 0 10px;
+        width: 100%;
+        justify-content: space-around;
       }
 
       .nav-item {
@@ -631,11 +643,22 @@
       }
 
       .main-content {
-        padding: 20px 15px 100px; /* Aumentado padding inferior para não sobrepor o menu */
+        padding: 20px 15px 100px;
       }
     }
 
     @media (max-width: 768px) {
+      .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      .main-header .profile-switcher {
+        align-self: flex-end;
+      }
+      .main-header .profile-switcher .dropdown-toggle {
+        min-width: 180px;
+      }
       .content-header {
         flex-direction: column;
         align-items: flex-start;
@@ -664,14 +687,6 @@
       .stats-info {
         margin-left: 0;
         margin-top: 10px;
-      }
-      
-      .profile-switcher .dropdown-toggle {
-        min-width: 120px; /* Reduz a largura mínima em telas ainda menores */
-      }
-      
-      #current-profile-name {
-        font-size: 0.8rem; /* Reduz o tamanho da fonte do nome do perfil */
       }
     }
 
@@ -712,16 +727,6 @@
     <div class="sidebar-header">
       <div class="sidebar-logo">Acadêmico Pro</div>
       <div class="sidebar-subtitle">Controle Estudantil</div>
-    </div>
-    
-    <div class="profile-switcher">
-        <div class="dropdown">
-            <button class="btn dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <span id="current-profile-name">Carregando...</span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="profileDropdown" id="profile-dropdown-menu">
-            </ul>
-        </div>
     </div>
     
     <div class="nav-menu-wrapper">
@@ -794,6 +799,20 @@
     <button class="sidebar-toggle" id="sidebarToggle">
       <i class="fas fa-bars"></i>
     </button>
+    
+    <header class="main-header">
+        <h2 id="main-header-title"></h2>
+        <div class="profile-switcher">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="current-profile-name">Carregando...</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" id="profile-dropdown-menu">
+                </ul>
+            </div>
+        </div>
+    </header>
+
     <div class="content-panel active" id="home-links">
       <div class="content-header">
         <h2>Início Rápido</h2>
@@ -1516,6 +1535,7 @@ document.addEventListener('DOMContentLoaded', function() {
         generateQuickLinks();
         renderProfileSwitcher();
         renderAll();
+        updateMainHeaderTitle(); // Define o título inicial
     }
 
     function migrateOldData() {
@@ -2254,6 +2274,13 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         reader.readAsText(file);
     });
+    
+    function updateMainHeaderTitle() {
+        const activePanelId = document.querySelector('.content-panel.active').id;
+        const titleElement = document.querySelector(`#${activePanelId} h2`);
+        const titleText = titleElement ? titleElement.textContent : 'Acadêmico Pro';
+        document.getElementById('main-header-title').textContent = titleText;
+    }
 
     document.body.addEventListener('click', function(e) {
         const navOrCardLink = e.target.closest('.nav-link, .card-link');
@@ -2264,6 +2291,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(targetId).classList.add('active');
             document.querySelectorAll('.nav-link').forEach(nl => nl.classList.remove('active'));
             document.querySelector(`.nav-link[data-target="${targetId}"]`).classList.add('active');
+            
+            updateMainHeaderTitle(); // Atualiza o título ao navegar
+
             const sidebar = document.getElementById('sidebar');
             if(sidebar.classList.contains('open')) sidebar.classList.remove('open');
         }
